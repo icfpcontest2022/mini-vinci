@@ -32,6 +32,10 @@ const Login = (): JSX.Element => {
     );
   }, []);
 
+  useEffect(() => {
+    document.title = isRegistering ? 'Register' : 'Login';
+  }, [isRegistering]);
+
   const handleChangeEmail = (e: any) => setEmail(e.target.value as string);
   const handleChangePassword = (e: any) => {
     ValidatorForm.removeValidationRule(`passwordMatch${password}`);
