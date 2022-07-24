@@ -1,6 +1,3 @@
-import { makeStyles } from 'tss-react/mui';
-import { createTheme } from '@mui/material/styles';
-
 export const sharedColors = {
   black: '#000000',
   blue1: '#E3F2FD',
@@ -30,20 +27,16 @@ export const sharedColors = {
   yellowDark: '#382C00',
 };
 
-export const sharedMeasurements = {
-  drawerWidth: 280,
-};
-
-export const useSharedStyles = makeStyles()(() => ({
+export const sharedStyles = {
   iconColor: {
     color: sharedColors.gray4,
   },
   buttonText: {
     fontFamily: 'Roboto',
     fontStyle: 'normal',
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: '13px',
-    textTransform: 'none',
+    textTransform: 'none' as any,
   },
   caption: {
     fontFamily: 'Roboto',
@@ -111,21 +104,6 @@ export const useSharedStyles = makeStyles()(() => ({
   hidden: {
     display: 'none',
   },
-}));
-
-const timePickerColors = {
-  background: sharedColors.white,
-  main: sharedColors.blue5,
-  secondary: sharedColors.blue5,
-  mainShadow: sharedColors.blue5,
-  el2: sharedColors.gray4,
-  el3: sharedColors.blue5,
 };
 
-export const timePickerTheme = createTheme({
-  palette: {
-    primary: {
-      main: timePickerColors.main,
-    },
-  },
-});
+export const multiClass = (classList: any) => classList.join(' ');

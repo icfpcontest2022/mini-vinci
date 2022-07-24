@@ -8,6 +8,7 @@ import { useSetRecoilState } from 'recoil';
 import { authToken as authTokenAtom } from '../atoms/auth';
 import { login, register } from '../services/auth';
 import Loading from './Loading';
+import { updateAuthTokenInStorage } from '../utilities/auth';
 
 const Login = (): JSX.Element => {
   const { classes } = useStyles();
@@ -59,12 +60,18 @@ const Login = (): JSX.Element => {
     setLoading(true);
     if (isRegistering) {
       register(email, password, teamName)
-        .then((token) => setAuthToken(token))
+        .then((token) => {
+          setAuthToken(token);
+          updateAuthTokenInStorage(token);
+        })
         .catch((err) => toast.error(err.message))
         .finally(() => setLoading(false));
     } else {
       login(email, password)
-        .then((token) => setAuthToken(token))
+        .then((token) => {
+          setAuthToken(token);
+          updateAuthTokenInStorage(token);
+        })
         .catch((err) => toast.error(err.message))
         .finally(() => setLoading(false));
     }
