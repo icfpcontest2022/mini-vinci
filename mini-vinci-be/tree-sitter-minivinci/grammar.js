@@ -90,13 +90,13 @@ module.exports = grammar({
             seq($.id, '.', $.block_id)
         ),
 
-        // <x> | <y> := all positive integers
-        x: $ => /\d+/,
-        y: $ => /\d+/,
+        // <x> | <y> := all positive integers including 0
+        x: $ => /[0-9]+/,
+        y: $ => /[0-9]+/,
 
-        // <id> | <line> := all positive integers
-        id: $ => /\d+/,
-        line: $ => /\d+/,
+        // <id> | <line> := all positive integers including 0
+        id: $ => /[0-9]+/,
+        line: $ => /[0-9]+/,
 
         // <r> | <g> | <b> := [0-255]
         r: $ => /([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/,
