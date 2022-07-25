@@ -1,5 +1,10 @@
 [
   {
+    "type": "a",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "b",
     "named": true,
     "fields": {}
@@ -46,6 +51,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "a",
+          "named": true
+        },
         {
           "type": "b",
           "named": true
@@ -310,11 +319,19 @@
     "named": false
   },
   {
+    "type": "h",
+    "named": false
+  },
+  {
     "type": "merge",
     "named": false
   },
   {
     "type": "swap",
+    "named": false
+  },
+  {
+    "type": "v",
     "named": false
   }
 ]
