@@ -91,21 +91,6 @@
     "fields": {}
   },
   {
-    "type": "join_move",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "block",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "lcut_move",
     "named": true,
     "fields": {},
@@ -131,7 +116,32 @@
   {
     "type": "line",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "id",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "merge_move",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "block",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "move",
@@ -146,11 +156,11 @@
           "named": true
         },
         {
-          "type": "join_move",
+          "type": "lcut_move",
           "named": true
         },
         {
-          "type": "lcut_move",
+          "type": "merge_move",
           "named": true
         },
         {
@@ -166,6 +176,21 @@
   },
   {
     "type": "orientation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "orientation_type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "orientation_type",
     "named": true,
     "fields": {}
   },
@@ -261,6 +286,14 @@
     "named": false
   },
   {
+    "type": "H",
+    "named": false
+  },
+  {
+    "type": "V",
+    "named": false
+  },
+  {
     "type": "[",
     "named": false
   },
@@ -277,19 +310,11 @@
     "named": false
   },
   {
-    "type": "h",
-    "named": false
-  },
-  {
-    "type": "join",
+    "type": "merge",
     "named": false
   },
   {
     "type": "swap",
-    "named": false
-  },
-  {
-    "type": "v",
     "named": false
   }
 ]

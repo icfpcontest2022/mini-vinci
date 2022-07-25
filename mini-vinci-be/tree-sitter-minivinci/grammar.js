@@ -6,13 +6,13 @@ module.exports = grammar({
         // we might use repeat1 to specify that the program must be at least one move long
         program: $ => repeat($.move),
 
-        // move := <pcut-move> | <lcut-move> | <color-move> | <swap-move> | <join-move>
+        // move := <pcut-move> | <lcut-move> | <color-move> | <swap-move> | <merge-move>
         move: $ => choice(
             $.pcut_move,
             $.lcut_move,
             $.color_move,
             $.swap_move,
-            $.join_move
+            $.merge_move
         ),
 
         // pcut_move := "cut" <block> <position>
@@ -44,17 +44,24 @@ module.exports = grammar({
             $.block
         ),
 
-        // join_move := "join" <block> <block>
-        join_move: $ => seq(
-            'join',
+        // merge_move := "merge" <block> <block>
+        merge_move: $ => seq(
+            'merge',
             $.block,
             $.block
         ),
         
-        // orientation := "h" | "v"
-        orientation: $ => choice(
-            'h',
-            'v'
+        // orientation := "[" <orientation_type> "]"
+        orientation: $ => seq(
+            '[',
+            $.orientation_type,
+            ']'
+        ),
+
+        // orientation_type := "H" | "V"
+        orientation_type: $ => choice(
+            'H',
+            'V'
         ),
 
         // block := "[" <block-id> "]"
@@ -90,13 +97,19 @@ module.exports = grammar({
             seq($.id, '.', $.block_id)
         ),
 
+        // line := "[" <id> "]"
+        line: $ => seq( 
+            '[',
+            $.id,
+            ']'
+        ),
+
         // <x> | <y> := all positive integers including 0
         x: $ => /[0-9]+/,
         y: $ => /[0-9]+/,
 
-        // <id> | <line> := all positive integers including 0
+        // <id> := all positive integers including 0
         id: $ => /[0-9]+/,
-        line: $ => /[0-9]+/,
 
         // <r> | <g> | <b> := [0-255]
         r: $ => /([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/,
