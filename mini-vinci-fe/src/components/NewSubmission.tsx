@@ -10,7 +10,7 @@ import {
   Theme,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DropzoneArea } from 'react-mui-dropzone';
 import { toast } from 'material-react-toastify';
 import { useRecoilValue } from 'recoil';
@@ -18,6 +18,7 @@ import { authToken as authTokenAtom } from '../atoms/auth';
 import { sharedColors } from '../utilities/styles';
 import Loading from './Loading';
 import { makeNewSubmission } from '../services/submission';
+import { Interpreter } from '../contest-logic/interpreter';
 
 interface NewSubmissionProps {
   open: boolean;
@@ -34,11 +35,30 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const [submittedFile, setSubmittedFile] = useState<File | null>(null);
   const [codeToSubmit, setCodeToSubmit] = useState('');
 
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   useEffect(() => {
     if (submittedFile) {
       const reader = new FileReader();
       reader.readAsText(submittedFile);
-      reader.onload = () => setCodeToSubmit(reader.result as string);
+      reader.onload = () => {
+        setCodeToSubmit(reader.result as string);
+
+        const interpreter = new Interpreter(reader.result as string);
+        const renderedData = interpreter.draw(4000, 4000).render();
+
+        const canvas = canvasRef.current!;
+        const context = canvas.getContext('2d')!;
+
+        canvas.width = 4000;
+        canvas.height = 4000;
+
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+        renderedData.forEach((pixel: number, index: number) => {
+          imgData.data[index] = pixel;
+        });
+        context.putImageData(imgData, 0, 0);
+      };
       reader.onerror = () => toast.error('Could not read the uploaded file');
     } else {
       setCodeToSubmit('');
@@ -73,6 +93,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
               onChange={handleUploadFile}
             />
           </FormControl>
+          <canvas ref={canvasRef} />
           <TextareaAutosize
             placeholder='Code to be submitted'
             value={codeToSubmit}
