@@ -9,6 +9,7 @@ import {
   TextareaAutosize,
   Theme,
 } from '@mui/material';
+
 import { makeStyles } from 'tss-react/mui';
 import { useEffect, useRef, useState } from 'react';
 import { DropzoneArea } from 'react-mui-dropzone';
@@ -18,7 +19,9 @@ import { authToken as authTokenAtom } from '../atoms/auth';
 import { sharedColors } from '../utilities/styles';
 import Loading from './Loading';
 import { makeNewSubmission } from '../services/submission';
-import { Interpreter } from '../contest-logic/interpreter';
+import { Interpreter } from '../contest-logic/Interpreter';
+import { Frame } from '../contest-logic/Image';
+import { Rgba } from '../contest-logic/Rgba';
 
 interface NewSubmissionProps {
   open: boolean;
@@ -45,7 +48,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
         setCodeToSubmit(reader.result as string);
 
         const interpreter = new Interpreter(reader.result as string);
-        const renderedData = interpreter.draw(4000, 4000).render();
+        const renderedData = interpreter.draw(4000, 4000).render() as Frame;
 
         const canvas = canvasRef.current!;
         const context = canvas.getContext('2d')!;
@@ -54,8 +57,11 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
         canvas.height = 4000;
 
         const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-        renderedData.forEach((pixel: number, index: number) => {
-          imgData.data[index] = pixel;
+        renderedData.forEach((pixel: Rgba, index: number) => {
+          imgData.data[index] = pixel.r;
+          imgData.data[index + 1] = pixel.g;
+          imgData.data[index + 2] = pixel.b;
+          imgData.data[index + 3] = pixel.a;
         });
         context.putImageData(imgData, 0, 0);
       };
