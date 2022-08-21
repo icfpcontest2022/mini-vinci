@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/announcement"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/problem"
@@ -12,6 +13,8 @@ import (
 )
 
 func setUpRouters(r *gin.Engine) error {
+	r.Use(cors.Default())
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
