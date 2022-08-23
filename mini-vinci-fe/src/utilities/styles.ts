@@ -13,6 +13,7 @@ export const sharedColors = {
   gray6: '#424242',
   gray7: '#232323',
   gray8: '#EEEEEE',
+  stepIconDisabled: '#9E9E9E',
   purple1: '#F3E5F5',
   statusGreen: '#008A00',
   statusGreenLightest: '#EBF6EB',

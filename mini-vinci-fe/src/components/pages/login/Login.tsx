@@ -4,16 +4,22 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { makeStyles } from 'tss-react/mui';
 import { useEffect, useState } from 'react';
 import { toast } from 'material-react-toastify';
-import { useSetRecoilState } from 'recoil';
-import { authToken as authTokenAtom } from '../atoms/auth';
-import { login, register } from '../services/auth';
-import Loading from './Loading';
-import { updateAuthTokenInStorage } from '../utilities/auth';
+import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
+import { authToken as authTokenAtom } from '../../../atoms/auth';
+import { login, register } from '../../../services/auth';
+import Loading from '../../Loading';
+import {
+  isAuthTokenExpired,
+  updateAuthTokenInStorage,
+} from '../../../utilities/auth';
 
 const Login = (): JSX.Element => {
   const { classes } = useStyles();
 
-  const setAuthToken = useSetRecoilState(authTokenAtom);
+  const navigate = useNavigate();
+
+  const [authToken, setAuthToken] = useRecoilState(authTokenAtom);
 
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -21,6 +27,12 @@ const Login = (): JSX.Element => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [teamName, setTeamName] = useState('');
+
+  useEffect(() => {
+    if (!isAuthTokenExpired(authToken)) {
+      navigate('/dashboard');
+    }
+  }, [authToken]);
 
   useEffect(() => {
     ValidatorForm.addValidationRule(
@@ -60,9 +72,9 @@ const Login = (): JSX.Element => {
     setLoading(true);
     if (isRegistering) {
       register(email, password, teamName)
-        .then((token) => {
-          setAuthToken(token);
-          updateAuthTokenInStorage(token);
+        .then(() => {
+          toast.success('Verification mail sent');
+          setIsRegistering(false);
         })
         .catch((err) => toast.error(err.message))
         .finally(() => setLoading(false));

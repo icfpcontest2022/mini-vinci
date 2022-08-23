@@ -13,11 +13,12 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { ToastContainer } from 'material-react-toastify';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import Login from './components/pages/login/Login';
+import Dashboard from './components/pages/dashboard/Dashboard';
 import App from './components/App';
-import Announcements from './components/Announcements';
+import Announcements from './components/pages/announcements/Announcements';
 import { TabURL } from './variables/tabs';
+import Support from './components/pages/support/Support';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -31,6 +32,7 @@ root.render(
             <Route path={TabURL.LOGIN} element={<Login />} />
             <Route path={TabURL.DASHBOARD} element={<Dashboard />} />
             <Route path={TabURL.ANNOUNCEMENTS} element={<Announcements />} />
+            <Route path={TabURL.SUPPORT} element={<Support />} />
             <Route path='*' element={<App />} />
           </Routes>
           <ToastContainer

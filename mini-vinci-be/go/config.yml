@@ -1,0 +1,30 @@
+database:
+  host: minivinci.c3gefkpzobhk.us-east-1.rds.amazonaws.com
+  user: postgres
+  password: AsV20f84#D3M
+  name: postgres
+  port: 5432
+
+jwt:
+  login_secret: interestingsecret
+  verification_secret: anotherinterestingsecret
+  renew_password_secret: yetanotherinterestingsecret
+
+async:
+  eager: true
+
+email:
+  ses_region: us-east-1
+  from: mrgllemre@gmail.com
+  verification_url: http://localhost:8080/users/verification/
+
+redis:
+  address: 127.0.0.1:6379
+
+s3:
+  region: us-east-1
+  submissions_bucket_name: vinci-submissions
+
+logging:
+  output_file: logrus.log
+  level: debug
