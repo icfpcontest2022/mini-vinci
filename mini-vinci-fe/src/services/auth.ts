@@ -6,7 +6,7 @@ export const login = async (
   email: string,
   password: string,
 ): Promise<string> => {
-  const url = '/auth/login';
+  const url = '/users/login';
   const res = await api.post(url, newLoginRequest(email, password));
   if (res.data?.token) {
     return res.data.token;
@@ -18,14 +18,7 @@ export const register = async (
   email: string,
   password: string,
   teamName: string,
-): Promise<string> => {
-  const url = '/auth/register';
-  const res = await api.post(
-    url,
-    newRegisterRequest(email, password, teamName),
-  );
-  if (res.data?.token) {
-    return res.data.token;
-  }
-  throw new Error('Unexpected error: no token received after register');
+): Promise<void> => {
+  const url = '/users/register';
+  await api.post(url, newRegisterRequest(email, password, teamName));
 };

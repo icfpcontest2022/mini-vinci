@@ -8,3 +8,7 @@ export const deleteAuthTokenFromStorage = (): void =>
 
 export const updateAuthTokenInStorage = (authToken: string): void =>
   localStorage.setItem(authTokenStorageKey, authToken);
+
+// TODO: Implement this method
+export const isAuthTokenExpired = (authToken: string | null): boolean =>
+  !authToken;

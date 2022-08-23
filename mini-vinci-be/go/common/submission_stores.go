@@ -36,7 +36,7 @@ func (s *SubmissionStore) First(cond map[string]interface{}) (Submission, error)
 func (s *SubmissionStore) Find(cond map[string]interface{}) ([]Submission, error) {
 	var subs []Submission
 
-	err := s.db.Where(cond).First(&subs).Error
+	err := s.db.Where(cond).Find(&subs).Error
 	if err != nil {
 		return nil, err
 	}
