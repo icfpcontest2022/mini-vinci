@@ -22,14 +22,14 @@ import { useEffect, useRef, useState } from 'react';
 import { DropzoneArea } from 'react-mui-dropzone';
 import { toast } from 'material-react-toastify';
 import { useRecoilValue } from 'recoil';
-import { authToken as authTokenAtom } from '../atoms/auth';
-import { sharedColors } from '../utilities/styles';
-import Loading from './Loading';
-import { makeNewSubmission } from '../services/submission';
-import { getPreviewImageName } from '../utilities/submission';
-import { Interpreter } from '../contest-logic/Interpreter';
-import { Frame } from '../contest-logic/Image';
-import { Rgba } from '../contest-logic/Rgba';
+import { authToken as authTokenAtom } from '../../../atoms/auth';
+import { sharedColors } from '../../../utilities/styles';
+import Loading from '../../Loading';
+import { makeNewSubmission } from '../../../services/submission';
+import { getPreviewImageName } from '../../../utilities/submission';
+import { Interpreter } from '../../../contest-logic/Interpreter';
+import { Frame } from '../../../contest-logic/Image';
+import { Rgba } from '../../../contest-logic/Rgba';
 
 interface NewSubmissionProps {
   open: boolean;

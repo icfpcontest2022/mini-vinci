@@ -38,6 +38,10 @@ const AppHeader = () => {
         navigate(`/${TabURL.ANNOUNCEMENTS}`);
         break;
       }
+      case TabKind.SUPPORT: {
+        navigate(`/${TabURL.SUPPORT}`);
+        break;
+      }
       default: {
         navigate(`/${TabURL.DASHBOARD}`);
       }
@@ -68,6 +72,12 @@ const AppHeader = () => {
               </Typography>
             }
             id='announcements-tab'
+          />
+          <Tab
+            label={
+              <Typography className={classes.tabLabel}>Support</Typography>
+            }
+            id='support-tab'
           />
         </Tabs>
       </Box>
