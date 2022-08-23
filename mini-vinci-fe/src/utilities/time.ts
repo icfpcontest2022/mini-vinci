@@ -1,2 +1,2 @@
-export const formatSubmissionDate = (date: Date): string =>
+export const formatToLocalDateTime = (date: Date): string =>
   date.toLocaleString();

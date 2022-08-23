@@ -1,14 +1,14 @@
 import { AxiosRequestConfig } from 'axios';
 import { isArray } from 'lodash';
 import { setAuthToken } from '../utilities/request';
-import { SupportHistory, supportHistoryFromResponse } from '../models/support';
+import { SupportMessage, supportMessageFromResponse } from '../models/support';
 import api from './api';
 
 const supportEndpoint = '/support';
 
 export const getSupportHistory = async (
   authToken: string,
-): Promise<SupportHistory[]> => {
+): Promise<SupportMessage[]> => {
   let request: AxiosRequestConfig = {
     url: supportEndpoint,
     method: 'get',
@@ -23,6 +23,22 @@ export const getSupportHistory = async (
   }
 
   return response.data.history.map((history: any) =>
-    supportHistoryFromResponse(history),
+    supportMessageFromResponse(history),
   );
+};
+
+export const sendMessage = async (
+  message: string,
+  authToken: string,
+): Promise<void> => {
+  let request: AxiosRequestConfig = {
+    url: supportEndpoint,
+    method: 'post',
+    headers: {},
+    data: { message },
+  };
+
+  request = setAuthToken(request, authToken);
+
+  await api(request);
 };
