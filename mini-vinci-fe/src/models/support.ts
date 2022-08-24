@@ -1,10 +1,10 @@
-export interface SupportHistory {
+export interface SupportMessage {
   time: Date;
   message: string;
   isAnswer: boolean;
 }
 
-export const supportHistoryFromResponse = (response: any): SupportHistory => ({
+export const supportMessageFromResponse = (response: any): SupportMessage => ({
   time: new Date(response.time),
   message: response.message,
   isAnswer: response.is_answer,

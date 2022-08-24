@@ -17,7 +17,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { makeStyles } from 'tss-react/mui';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useEffect, useState } from 'react';
 import { toast } from 'material-react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -27,11 +27,14 @@ import AppHeader from '../../AppHeader';
 import { TabKind } from '../../../variables/tabs';
 import { sharedColors, sharedStyles } from '../../../utilities/styles';
 import { Submission } from '../../../models/submission';
-import { formatSubmissionDate } from '../../../utilities/time';
+import { formatToLocalDateTime } from '../../../utilities/time';
 import { formatSubmissionStatus } from '../../../utilities/submission';
 import { SubmissionStatus } from '../../../variables/submission';
 import NewSubmission from './NewSubmission';
-import { isAuthTokenExpired } from '../../../utilities/auth';
+import {
+  getAuthTokenFromStorage,
+  isAuthTokenExpired,
+} from '../../../utilities/auth';
 import Loading from '../../Loading';
 import { getSubmissionsList } from '../../../services/submission';
 
@@ -40,18 +43,8 @@ const Dashboard = (): JSX.Element => {
 
   const navigate = useNavigate();
 
-  const authToken = useRecoilValue(authTokenAtom);
+  const [authToken, setAuthToken] = useRecoilState(authTokenAtom);
   const setSelectedTab = useSetRecoilState(selectedTabAtom);
-
-  useEffect(() => {
-    if (isAuthTokenExpired(authToken)) {
-      navigate('/login');
-    }
-  }, [authToken]);
-
-  const [loading, setLoading] = useState(false);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
 
   const refreshSubmissions = () => {
     setLoading(true);
@@ -63,11 +56,30 @@ const Dashboard = (): JSX.Element => {
       .finally(() => setLoading(false));
   };
 
+  const initializeTokenFromStorage = () => {
+    const storedAuthToken = getAuthTokenFromStorage();
+    if (isAuthTokenExpired(storedAuthToken)) {
+      navigate('/login');
+    } else {
+      setAuthToken(storedAuthToken);
+    }
+  };
+
   useEffect(() => {
+    initializeTokenFromStorage();
     setSelectedTab(TabKind.DASHBOARD);
     document.title = 'ICFPC 2022 Dashboard';
-    refreshSubmissions();
   }, []);
+
+  useEffect(() => {
+    if (!isAuthTokenExpired(authToken)) {
+      refreshSubmissions();
+    }
+  }, [authToken]);
+
+  const [loading, setLoading] = useState(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
 
   const submissionStatusIcon = (status: SubmissionStatus): JSX.Element => {
     switch (status) {
@@ -173,7 +185,7 @@ const Dashboard = (): JSX.Element => {
                 </TableCell>
                 <TableCell>
                   <Box component='div' className={classes.tableStringField}>
-                    {formatSubmissionDate(submission.date)}
+                    {formatToLocalDateTime(submission.date)}
                   </Box>
                 </TableCell>
                 <TableCell>

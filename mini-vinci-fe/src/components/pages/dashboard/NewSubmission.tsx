@@ -1,3 +1,4 @@
+
 import {
   Box,
   Button,
@@ -27,9 +28,10 @@ import { sharedColors } from '../../../utilities/styles';
 import Loading from '../../Loading';
 import { makeNewSubmission } from '../../../services/submission';
 import { getPreviewImageName } from '../../../utilities/submission';
-import { Interpreter } from '../../../contest-logic/Interpreter';
-import { Frame } from '../../../contest-logic/Image';
-import { Rgba } from '../../../contest-logic/Rgba';
+import { Interpreter, InterpreterError } from '../../../contest-logic/Interpreter';
+import { RGBA } from '../../../contest-logic/Color';
+import { Canvas } from '../../../contest-logic/Canvas';
+import { Painter } from '../../../contest-logic/Painter';
 
 interface NewSubmissionProps {
   open: boolean;
@@ -60,23 +62,33 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const [proposedScore, setProposedScore] = useState(0);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
+  
+  const interpret = (fileContent: string) => {
+    const interpreter = new Interpreter();
+    const interpretedStructure = interpreter.run(fileContent);
+    if (interpretedStructure.typ === 'error') {
+      const { lineNumber, error } = interpretedStructure.result as InterpreterError;
+      throw Error(`[${error} at ${lineNumber}`);
+    }
+    return interpretedStructure.result as Canvas;
+  };
+  
   const drawToCanvas = (fileContent: string) => {
-    const interpreter = new Interpreter(fileContent);
-    const renderedData = interpreter.draw(500, 500).render() as Frame;
-
+    const interpretedCanvas = interpret(fileContent);
+    const painter = new Painter();
+    const renderedData = painter.draw(interpretedCanvas);
     const canvas = canvasRef.current!;
     const context = canvas.getContext('2d')!;
 
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = 100;
+    canvas.height = 100;
 
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    renderedData.forEach((pixel: Rgba, index: number) => {
-      imgData.data[index] = pixel.r;
-      imgData.data[index + 1] = pixel.g;
-      imgData.data[index + 2] = pixel.b;
-      imgData.data[index + 3] = pixel.a;
+    renderedData.forEach((pixel: RGBA, index: number) => {
+      imgData.data[index * 4] = pixel.r;
+      imgData.data[index * 4 + 1] = pixel.g;
+      imgData.data[index * 4 + 2] = pixel.b;
+      imgData.data[index * 4 + 3] = pixel.a;
     });
     context.putImageData(imgData, 0, 0);
 
