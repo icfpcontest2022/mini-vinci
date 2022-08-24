@@ -16,7 +16,7 @@ async:
 email:
   ses_region: us-east-1
   from: noreply@robovinci.xyz
-  verification_url: http://localhost:8080/users/verification/
+  verification_url: http://dev.robovinci.xyz/users/verification/
 
 redis:
   address: 127.0.0.1:6379
