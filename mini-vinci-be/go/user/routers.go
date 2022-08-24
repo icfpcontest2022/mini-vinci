@@ -27,7 +27,7 @@ func (r *UserRouter) RetrieveUser(c *gin.Context) {
 
 func (r *UserRouter) VerificateUser(c *gin.Context) {
 	var params VerificateUserParams
-	if err := c.BindUri(&params); err != nil {
+	if err := c.BindQuery(&params); err != nil {
 		logging.Logger.WithField("location", "VerificateUser").WithError(err).Warnf("could not bind params")
 		c.JSON(apiresponses.BadRequestError(err.Error()))
 		return

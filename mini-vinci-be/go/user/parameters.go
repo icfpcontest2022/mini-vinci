@@ -7,7 +7,7 @@ type CreateUserParams struct {
 }
 
 type VerificateUserParams struct {
-	VerificationToken string `json:"verification_token" uri:"verification_token" binding:"required"`
+	Token string `form:"token" binding:"required"`
 }
 
 type ResendVerificationEmailParams struct {
@@ -19,6 +19,6 @@ type SendRenewPasswordEmailParams struct {
 }
 
 type RenewPasswordParams struct {
-	RenewPasswordToken string `json:"renew_password_token" binding:"required"`
-	Password           string `json:"password" binding:"required,min=6,max=100"`
+	Token    string `json:"token" binding:"required"`
+	Password string `json:"password" binding:"required,min=6,max=100"`
 }

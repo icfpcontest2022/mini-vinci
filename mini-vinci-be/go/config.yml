@@ -1,7 +1,7 @@
 database:
-  host: minivinci.c3gefkpzobhk.us-east-1.rds.amazonaws.com
+  host: minivinci-dev.czpfcl2hnwoi.us-east-1.rds.amazonaws.com
   user: postgres
-  password: AsV20f84#D3M
+  password: A2^LHa6!mt&64$m
   name: postgres
   port: 5432
 
@@ -15,7 +15,7 @@ async:
 
 email:
   ses_region: us-east-1
-  from: mrgllemre@gmail.com
+  from: noreply@robovinci.xyz
   verification_url: http://localhost:8080/users/verification/
 
 redis:
@@ -23,7 +23,7 @@ redis:
 
 s3:
   region: us-east-1
-  submissions_bucket_name: vinci-submissions
+  submissions_bucket_name: minivinci-dev-submissions
 
 logging:
   output_file: logrus.log

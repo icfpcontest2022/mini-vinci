@@ -21,9 +21,9 @@ func EvaluateSubmission(payload SubmissionEvaluationPayload) error {
 		"status_changed_at": time.Now(),
 	})
 
-	n := 1000 + rand.Intn(1000)
-	fmt.Println(n, "ms")
-	time.Sleep(time.Duration(n) * time.Millisecond)
+	randomSleep := 1000 + rand.Intn(1000)
+	fmt.Println(randomSleep, "ms")
+	time.Sleep(time.Duration(randomSleep) * time.Millisecond)
 
 	err = submissionStore.Update(payload.SubmissionID, map[string]interface{}{
 		"status":            SubmissionStatusSucceed,

@@ -23,14 +23,5 @@ func (ac *AnnouncementController) GetAnnouncements(c *gin.Context) (int, interfa
 		return apiresponses.InternalServerError()
 	}
 
-	var resp GetAnnouncementsResponse
-
-	for _, a := range announcements {
-		resp.Announcements = append(resp.Announcements, SingleAnnouncementResponse{
-			Time:    a.CreatedAt,
-			Content: a.Content,
-		})
-	}
-
-	return http.StatusOK, resp
+	return http.StatusOK, GetAnnouncementsSerializer{Announcements: announcements}.Response()
 }

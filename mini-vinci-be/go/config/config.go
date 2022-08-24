@@ -15,7 +15,7 @@ type Config struct {
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	Async    AsyncConfig    `mapstructure:"async"`
 	Email    EmailConfig    `mapstructure:"email"`
-	Redis    RedisConfig    `mapstructure:"email"`
+	Redis    RedisConfig    `mapstructure:"redis"`
 	S3       S3Config       `mapstructure:"s3"`
 	Logging  LoggingConfig  `mapstructure:"logging"`
 }

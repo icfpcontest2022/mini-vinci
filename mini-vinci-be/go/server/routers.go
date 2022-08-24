@@ -12,17 +12,17 @@ import (
 )
 
 func CORS() gin.HandlerFunc {
-    // TO allow CORS
-    return func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-        if c.Request.Method == "OPTIONS" {
-            c.AbortWithStatus(204)
-            return
-        }
-        c.Next()
-    }
+	// TO allow CORS
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
 }
 
 func setUpRouters(r *gin.Engine) error {
@@ -51,7 +51,7 @@ func setUpRouters(r *gin.Engine) error {
 	nonAuthUserGroup := r.Group("users")
 	nonAuthUserGroup.POST("register", userRouter.CreateUser)
 	nonAuthUserGroup.POST("login", authMiddleware.LoginHandler)
-	nonAuthUserGroup.GET("verification/:verification_token", userRouter.VerificateUser)
+	nonAuthUserGroup.GET("verification", userRouter.VerificateUser)
 	nonAuthUserGroup.POST("verification/resend-email", userRouter.ResendVerificationEmail)
 	nonAuthUserGroup.POST("password/send-renew-email", userRouter.SendRenewPasswordEmail)
 	nonAuthUserGroup.POST("password/renew", userRouter.RenewPassword)
@@ -73,7 +73,6 @@ func setUpRouters(r *gin.Engine) error {
 	problemGroup.GET("", problemRouter.GetProblems)
 
 	// support
-
 	supportRouter := support.SupportRouter{}
 
 	supportGroup := r.Group("support")
@@ -82,10 +81,9 @@ func setUpRouters(r *gin.Engine) error {
 	supportGroup.POST("", supportRouter.SendMessage)
 
 	// announcement
-
 	announcementRouter := announcement.AnnouncementRouter{}
 
-	announcementGroup := r.Group("announcement")
+	announcementGroup := r.Group("announcements")
 	announcementGroup.GET("", announcementRouter.GetAnnouncements)
 
 	return nil

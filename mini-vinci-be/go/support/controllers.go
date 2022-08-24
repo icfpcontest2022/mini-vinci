@@ -28,21 +28,11 @@ func (sc *SupportController) GetMessages(c *gin.Context) (int, interface{}) {
 		"user_id": usr.ID,
 	})
 	if err != nil {
-		log.WithError(err).Errorf("could not get tickets")
+		log.WithError(err).Errorf("could not get support messages")
 		return apiresponses.InternalServerError()
 	}
 
-	var resp GetSupportMessagesResponse
-
-	for _, t := range supportMessages {
-		resp.History = append(resp.History, SingleMessageResponse{
-			Time:     t.CreatedAt,
-			Message:  t.Content,
-			IsAnswer: t.IsAnswer,
-		})
-	}
-
-	return http.StatusOK, resp
+	return http.StatusOK, GetSupportMessagesSerializer{SupportMessages: supportMessages}.Response()
 }
 
 func (sc *SupportController) SendMessage(c *gin.Context, params SendMessageParams) (int, interface{}) {
@@ -68,5 +58,5 @@ func (sc *SupportController) SendMessage(c *gin.Context, params SendMessageParam
 		return apiresponses.InternalServerError()
 	}
 
-	return apiresponses.SuccessMessage("support message created successfully")
+	return apiresponses.SuccessMessage("support message sent successfully")
 }

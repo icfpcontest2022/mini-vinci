@@ -16,22 +16,12 @@ func (pc *ProblemController) GetProblems(c *gin.Context) (int, interface{}) {
 	})
 
 	problemStore := NewProblemStore()
+
 	problems, err := problemStore.Find()
 	if err != nil {
 		log.WithError(err).Errorf("could not get problems")
 		return apiresponses.InternalServerError()
 	}
 
-	var resp GetProblemsResponse
-	for _, problem := range problems {
-		resp.Problems = append(resp.Problems, SingleProblem{
-			ID:          problem.ID,
-			Name:        problem.Name,
-			Description: problem.Description,
-			CanvasLink:  problem.CanvasLink,
-			TargetLink:  problem.TargetLink,
-		})
-	}
-
-	return http.StatusOK, resp
+	return http.StatusOK, GetProblemsSerializer{Problems: problems}.Response()
 }

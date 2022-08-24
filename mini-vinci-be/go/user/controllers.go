@@ -69,11 +69,11 @@ func (uc *UserController) CreateUser(c *gin.Context, params CreateUserParams) (i
 	}
 
 	err = async.SendEmail(email.EmailDeliveryPayload{
-		Receiver: "erenerisken@hotmail.com",
+		Receiver: "mrgllemre@gmail.com",
 		Subject:  "Verificate Your Vinci Account",
 		HTMLBody: email.RenderVerificationEmailTemplate(email.TemplateValues{
 			TeamName: createdUser.TeamName,
-			Link:     config.Get().Email.VerificationURL + verificationToken,
+			Link:     config.Get().Email.VerificationURL + "?token=" + verificationToken,
 		}),
 	})
 	if err != nil {
@@ -108,7 +108,7 @@ func (uc *UserController) VerificateUser(c *gin.Context, params VerificateUserPa
 		"location": "VerificateUser",
 	})
 
-	email, err := ValidateEmailVerificationToken(params.VerificationToken)
+	email, err := ValidateEmailVerificationToken(params.Token)
 	if err != nil {
 		log.Println("could not validate verification token:", err)
 		return apiresponses.InternalServerError()
@@ -122,7 +122,7 @@ func (uc *UserController) VerificateUser(c *gin.Context, params VerificateUserPa
 		return http.StatusInternalServerError, gin.H{"error": "internal server error"}
 	}
 
-	if user.VerificationToken != params.VerificationToken {
+	if user.VerificationToken != params.Token {
 		log.Println("invalid verification token", err)
 		return http.StatusBadRequest, gin.H{"error": "invalid token"}
 	}
@@ -181,7 +181,7 @@ func (uc *UserController) ResendVerificationEmail(c *gin.Context, params ResendV
 
 	HtmlBody := "<p><a href='" + fmt.Sprintf("http://localhost:8080/users/verification/%s", verificationToken) + "'>Click to verificate your Vinci User</a></p>"
 	async.SendEmail(email.EmailDeliveryPayload{
-		Receiver: "erenerisken@hotmail.com",
+		Receiver: "mrgllemre@gmail.com",
 		Subject:  "Verificate Your Vinci User",
 		HTMLBody: HtmlBody,
 	})
@@ -217,7 +217,7 @@ func (uc *UserController) SendRenewPasswordEmail(c *gin.Context, params SendRene
 	}
 
 	err = async.SendEmail(email.EmailDeliveryPayload{
-		Receiver: "erenerisken@hotmail.com",
+		Receiver: "mrgllemre@gmail.com",
 		Subject:  "Renew Password of Your Vinci Account",
 		HTMLBody: email.RenderRenewPasswordEmailTemplate(email.TemplateValues{
 			TeamName: user.TeamName,
@@ -237,7 +237,7 @@ func (uc *UserController) RenewPassword(c *gin.Context, params RenewPasswordPara
 		"location": "RenewPassword",
 	})
 
-	email, err := ValidateRenewPasswordToken(params.RenewPasswordToken)
+	email, err := ValidateRenewPasswordToken(params.Token)
 	if err != nil {
 		log.WithError(err).Errorf("could not validate renew password token")
 		return apiresponses.InternalServerError()
@@ -251,7 +251,7 @@ func (uc *UserController) RenewPassword(c *gin.Context, params RenewPasswordPara
 		return apiresponses.InternalServerError()
 	}
 
-	if user.RenewPasswordToken != params.RenewPasswordToken {
+	if user.RenewPasswordToken != params.Token {
 		log.Println("invalid renew password token", err)
 		return apiresponses.BadRequestError("given token is invalid")
 	}

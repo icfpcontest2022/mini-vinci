@@ -113,13 +113,10 @@ func (sc *SubmissionController) RetrieveSubmission(c *gin.Context, params Retrie
 		return apiresponses.InternalServerError()
 	}
 
-	return http.StatusOK, RetrieveSubmissionResponse{
-		ID:          sub.ID,
-		SubmittedAt: sub.CreatedAt,
-		Status:      sub.Status,
-		Score:       sub.Score,
-		FileURL:     presignedURL,
-	}
+	return http.StatusOK, RetrieveSubmissionSerializer{
+		Submission:   sub,
+		PresignedURl: presignedURL,
+	}.Response()
 }
 
 func (sc *SubmissionController) GetSubmissions(c *gin.Context) (int, interface{}) {
@@ -142,17 +139,5 @@ func (sc *SubmissionController) GetSubmissions(c *gin.Context) (int, interface{}
 		return apiresponses.InternalServerError()
 	}
 
-	var responseSubs []SingleSubmission
-	for _, sub := range subs {
-		responseSubs = append(responseSubs, SingleSubmission{
-			ID:          sub.ID,
-			Status:      sub.Status,
-			Score:       sub.Score,
-			SubmittedAt: sub.CreatedAt,
-		})
-	}
-
-	return http.StatusOK, GetSubmissionsResponse{
-		Submissions: responseSubs,
-	}
+	return http.StatusOK, GetSubmissionsSerializer{Submissions: subs}.Response()
 }
