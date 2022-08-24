@@ -17,34 +17,69 @@ import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { makeStyles } from 'tss-react/mui';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useEffect, useState } from 'react';
 import { toast } from 'material-react-toastify';
-import { selectedTab as selectedTabAtom } from '../atoms/tabs';
-import AppHeader from './AppHeader';
-import { TabKind } from '../variables/tabs';
-import { sharedColors, sharedStyles } from '../utilities/styles';
-import { Submission } from '../models/submission';
-import { mockSubmissions } from '../mocks/submission';
-import { formatSubmissionDate } from '../utilities/time';
-import { formatSubmissionStatus } from '../utilities/submission';
-import { SubmissionStatus } from '../variables/submission';
+import { useNavigate } from 'react-router-dom';
+import { authToken as authTokenAtom } from '../../../atoms/auth';
+import { selectedTab as selectedTabAtom } from '../../../atoms/tabs';
+import AppHeader from '../../AppHeader';
+import { TabKind } from '../../../variables/tabs';
+import { sharedColors, sharedStyles } from '../../../utilities/styles';
+import { Submission } from '../../../models/submission';
+import { formatToLocalDateTime } from '../../../utilities/time';
+import { formatSubmissionStatus } from '../../../utilities/submission';
+import { SubmissionStatus } from '../../../variables/submission';
 import NewSubmission from './NewSubmission';
+import {
+  getAuthTokenFromStorage,
+  isAuthTokenExpired,
+} from '../../../utilities/auth';
+import Loading from '../../Loading';
+import { getSubmissionsList } from '../../../services/submission';
 
 const Dashboard = (): JSX.Element => {
   const { classes } = useStyles();
 
+  const navigate = useNavigate();
+
+  const [authToken, setAuthToken] = useRecoilState(authTokenAtom);
   const setSelectedTab = useSetRecoilState(selectedTabAtom);
 
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
+  const refreshSubmissions = () => {
+    setLoading(true);
+    getSubmissionsList(authToken!)
+      .then((submissionsList) => {
+        setSubmissions(submissionsList);
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  const initializeTokenFromStorage = () => {
+    const storedAuthToken = getAuthTokenFromStorage();
+    if (isAuthTokenExpired(storedAuthToken)) {
+      navigate('/login');
+    } else {
+      setAuthToken(storedAuthToken);
+    }
+  };
 
   useEffect(() => {
+    initializeTokenFromStorage();
     setSelectedTab(TabKind.DASHBOARD);
     document.title = 'ICFPC 2022 Dashboard';
-    // TODO: Remove this after get submissions is implemented
-    setSubmissions(mockSubmissions);
   }, []);
+
+  useEffect(() => {
+    if (!isAuthTokenExpired(authToken)) {
+      refreshSubmissions();
+    }
+  }, [authToken]);
+
+  const [loading, setLoading] = useState(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
 
   const submissionStatusIcon = (status: SubmissionStatus): JSX.Element => {
     switch (status) {
@@ -80,10 +115,12 @@ const Dashboard = (): JSX.Element => {
   const handleNewSubmission = () => {
     setShowNewSubmissionDialog(false);
     toast.success('Successfully made a new submission');
+    refreshSubmissions();
   };
 
   return (
     <Box component='div' className={classes.mainContainer}>
+      <Loading open={loading} />
       <AppHeader />
       <NewSubmission
         open={showNewSubmissionDialog}
@@ -148,7 +185,7 @@ const Dashboard = (): JSX.Element => {
                 </TableCell>
                 <TableCell>
                   <Box component='div' className={classes.tableStringField}>
-                    {formatSubmissionDate(submission.date)}
+                    {formatToLocalDateTime(submission.date)}
                   </Box>
                 </TableCell>
                 <TableCell>
