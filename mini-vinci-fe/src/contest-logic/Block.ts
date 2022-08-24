@@ -1,12 +1,65 @@
+/* eslint-disable */
 
-export type Shape = [[number, number], [number, number]];
+import { Point } from './Point';
+import { RGBA } from './Color';
 
-export class Block {
-    shape: Shape
-    bid: string
 
-    constructor(shape: Shape, bid: string) {
-        this.shape = shape;
-        this.bid = bid
+export type Size = Point;
+export enum BlockType { SimpleBlockType, ComplexBlockType };
+export type Block =
+    | SimpleBlock
+    | ComplexBlock;
+
+export class SimpleBlock {
+    typ: BlockType;
+
+    id: string;
+
+    bottomLeft: Point;
+
+    topRight: Point;
+
+    size: Size;
+
+    color: RGBA;
+    
+    constructor(id: string, bottomLeft: Point, topRight: Point, color: RGBA) {
+        this.typ = BlockType.SimpleBlockType;
+        this.id = id;
+        this.bottomLeft = bottomLeft;
+        this.topRight = topRight;
+        this.size = topRight.getDiff(bottomLeft);
+        this.color = color;
+    }
+
+    getChildren() {
+        return [this];
+    }
+}
+
+export class ComplexBlock {
+    typ: BlockType;
+    
+    id: string;
+
+    bottomLeft: Point;
+
+    topRight: Point;
+
+    size: Size;
+
+    subBlocks: SimpleBlock[];
+
+    constructor(id: string, bottomLeft: Point, topRight: Point, subBlocks: SimpleBlock[]) {
+        this.typ = BlockType.ComplexBlockType;
+        this.id = id;
+        this.bottomLeft = bottomLeft;
+        this.topRight = topRight;
+        this.size = topRight.getDiff(bottomLeft);
+        this.subBlocks = subBlocks;
+    }
+
+    getChildren() {
+        return this.subBlocks;
     }
 }
