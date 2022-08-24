@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/announcement"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/problem"
@@ -27,6 +28,8 @@ func CORS() gin.HandlerFunc {
 
 func setUpRouters(r *gin.Engine) error {
 	r.Use(CORS())
+
+	r.Use(static.Serve("/", static.LocalFile("../../mini-vinci-fe/build", false)))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
