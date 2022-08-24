@@ -23,26 +23,15 @@ import { useEffect, useRef, useState } from 'react';
 import { DropzoneArea } from 'react-mui-dropzone';
 import { toast } from 'material-react-toastify';
 import { useRecoilValue } from 'recoil';
-<<<<<<< HEAD:mini-vinci-fe/src/components/NewSubmission.tsx
-import { authToken as authTokenAtom } from '../atoms/auth';
-import { sharedColors } from '../utilities/styles';
-import Loading from './Loading';
-import { makeNewSubmission } from '../services/submission';
-import { getPreviewImageName } from '../utilities/submission';
-import { Interpreter, InterpreterError } from '../contest-logic/Interpreter';
-import { Canvas } from '../contest-logic/Canvas';
-import { Painter } from '../contest-logic/Painter';
-import { RGBA } from '../contest-logic/Color';
-=======
 import { authToken as authTokenAtom } from '../../../atoms/auth';
 import { sharedColors } from '../../../utilities/styles';
 import Loading from '../../Loading';
 import { makeNewSubmission } from '../../../services/submission';
 import { getPreviewImageName } from '../../../utilities/submission';
-import { Interpreter } from '../../../contest-logic/Interpreter';
-import { Frame } from '../../../contest-logic/Image';
-import { Rgba } from '../../../contest-logic/Rgba';
->>>>>>> 8d42d973a623e398de2092cc3428beb6168fb6ff:mini-vinci-fe/src/components/pages/dashboard/NewSubmission.tsx
+import { Interpreter, InterpreterError } from '../../../contest-logic/Interpreter';
+import { RGBA } from '../../../contest-logic/Color';
+import { Canvas } from '../../../contest-logic/Canvas';
+import { Painter } from '../../../contest-logic/Painter';
 
 interface NewSubmissionProps {
   open: boolean;

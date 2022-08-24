@@ -34,7 +34,6 @@ export class Canvas {
     simplify(): SimpleBlock[] {
         let simplifiedBlocks: SimpleBlock[] = [];
         this.blocks.forEach(value => {
-            console.log(value.getChildren());
             simplifiedBlocks = simplifiedBlocks.concat(value.getChildren());
         });
         return simplifiedBlocks;
