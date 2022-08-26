@@ -8,8 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/apiresponses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/async"
-	. "github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/evaluation"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
 	"github.com/sirupsen/logrus"
@@ -30,7 +31,7 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 		return apiresponses.InternalServerError()
 	}
 
-	submissionStore := NewSubmissionStore()
+	submissionStore := common.NewSubmissionStore()
 
 	subFile, err := params.File.Open()
 	if err != nil {
@@ -60,15 +61,19 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 		return apiresponses.InternalServerError()
 	}
 
-	createdSub, _ := submissionStore.Create(Submission{
+	createdSub, _ := submissionStore.Create(common.Submission{
 		ProblemID:       params.ProblemID,
 		UserID:          usr.ID,
 		S3Key:           s3Key,
-		Status:          SubmissionStatusQueued,
+		Status:          common.SubmissionStatusQueued,
 		StatusChangedAt: time.Now(),
 	})
 
-	async.PlanSubmissionEvaluation(async.SubmissionEvaluationPayload{SubmissionID: createdSub.ID})
+	err = async.NewSubmissionEvaluationTask(evaluation.SubmissionEvaluationPayload{SubmissionID: createdSub.ID})
+	if err != nil {
+		log.WithError(err).Errorf("could not plan submission evaluation task")
+		return apiresponses.InternalServerError()
+	}
 
 	return apiresponses.SuccessMessage("submission created successfully")
 }
@@ -84,7 +89,7 @@ func (sc *SubmissionController) RetrieveSubmission(c *gin.Context, params Retrie
 		return apiresponses.InternalServerError()
 	}
 
-	submissionStore := NewSubmissionStore()
+	submissionStore := common.NewSubmissionStore()
 	sub, err := submissionStore.First(map[string]interface{}{
 		"id":      params.ID,
 		"user_id": usr.ID,
@@ -130,7 +135,7 @@ func (sc *SubmissionController) GetSubmissions(c *gin.Context) (int, interface{}
 		return apiresponses.InternalServerError()
 	}
 
-	submissionStore := NewSubmissionStore()
+	submissionStore := common.NewSubmissionStore()
 	subs, err := submissionStore.Find(map[string]interface{}{
 		"user_id": usr.ID,
 	})

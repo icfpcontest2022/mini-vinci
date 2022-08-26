@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/announcement"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/problem"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/result"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/submission"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/support"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
@@ -87,7 +88,16 @@ func setUpRouters(r *gin.Engine) error {
 	announcementRouter := announcement.AnnouncementRouter{}
 
 	announcementGroup := r.Group("announcements")
+	announcementGroup.Use(authMiddleware.MiddlewareFunc())
 	announcementGroup.GET("", announcementRouter.GetAnnouncements)
+
+	// result
+	resultRouter := result.ResultRouter{}
+
+	resultGroup := r.Group("results")
+	resultGroup.Use(authMiddleware.MiddlewareFunc())
+	resultGroup.GET("user", resultRouter.GetUserResults)
+	resultGroup.GET("scoreboard", resultRouter.GetScoreboard)
 
 	return nil
 }

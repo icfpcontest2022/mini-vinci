@@ -3,11 +3,12 @@ package problem
 import "sort"
 
 type SingleProblemResponse struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	CanvasLink  string `json:"canvas_link"`
-	TargetLink  string `json:"target_link"`
+	ID                uint   `json:"id"`
+	Name              string `json:"name"`
+	Description       string `json:"description"`
+	CanvasLink        string `json:"canvas_link"`
+	InitialConfigLink string `json:"initial_config_link"`
+	TargetLink        string `json:"target_link"`
 }
 
 type GetProblemsResponse struct {
@@ -23,11 +24,12 @@ func (s GetProblemsSerializer) Response() GetProblemsResponse {
 
 	for _, p := range s.Problems {
 		resp.Problems = append(resp.Problems, SingleProblemResponse{
-			ID:          p.ID,
-			Name:        p.Name,
-			Description: p.Description,
-			CanvasLink:  p.CanvasLink,
-			TargetLink:  p.TargetLink,
+			ID:                p.ID,
+			Name:              p.Name,
+			Description:       p.Description,
+			CanvasLink:        p.CanvasLink,
+			InitialConfigLink: p.InitialConfigLink,
+			TargetLink:        p.TargetLink,
 		})
 	}
 

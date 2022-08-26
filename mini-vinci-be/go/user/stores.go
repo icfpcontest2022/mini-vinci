@@ -22,6 +22,17 @@ func (s *UserStore) Create(usr User) (User, error) {
 	return usr, nil
 }
 
+func (s *UserStore) Find() ([]User, error) {
+	var users []User
+
+	err := s.db.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (s *UserStore) First(cond map[string]interface{}) (User, error) {
 	var usr User
 

@@ -1,7 +1,7 @@
 package submission
 
 import (
-	. "github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"sort"
 	"time"
 )
@@ -15,7 +15,7 @@ type RetrieveSubmissionResponse struct {
 }
 
 type RetrieveSubmissionSerializer struct {
-	Submission   Submission
+	Submission   common.Submission
 	PresignedURl string
 }
 
@@ -41,7 +41,7 @@ type GetSubmissionsResponse struct {
 }
 
 type GetSubmissionsSerializer struct {
-	Submissions []Submission
+	Submissions []common.Submission
 }
 
 func (s GetSubmissionsSerializer) Response() GetSubmissionsResponse {

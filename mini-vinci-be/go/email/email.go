@@ -1,11 +1,11 @@
 package email
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
+	"github.com/sirupsen/logrus"
 )
 
 type EmailDeliveryPayload struct {
@@ -15,7 +15,6 @@ type EmailDeliveryPayload struct {
 }
 
 func SendEmail(payload EmailDeliveryPayload) error {
-	fmt.Println("sending email")
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			CcAddresses: []*string{},
@@ -44,7 +43,9 @@ func SendEmail(payload EmailDeliveryPayload) error {
 	svc := ses.New(sess)
 	_, err = svc.SendEmail(input)
 
-	fmt.Println("email sent error", err)
+	if err != nil {
+		logrus.WithError(err).Errorf("could not send email")
+	}
 
 	return err
 }

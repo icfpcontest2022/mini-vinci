@@ -68,7 +68,7 @@ func (uc *UserController) CreateUser(c *gin.Context, params CreateUserParams) (i
 		return apiresponses.InternalServerError()
 	}
 
-	err = async.SendEmail(email.EmailDeliveryPayload{
+	err = async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: userToCreate.Email,
 		Subject:  "Verificate Your Vinci Account",
 		HTMLBody: email.RenderVerificationEmailTemplate(email.TemplateValues{
@@ -180,7 +180,7 @@ func (uc *UserController) ResendVerificationEmail(c *gin.Context, params ResendV
 	}
 
 	HtmlBody := "<p><a href='" + fmt.Sprintf("http://localhost:8080/users/verification/%s", verificationToken) + "'>Click to verificate your Vinci User</a></p>"
-	async.SendEmail(email.EmailDeliveryPayload{
+	async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: user.Email,
 		Subject:  "Verificate Your Vinci User",
 		HTMLBody: HtmlBody,
@@ -216,7 +216,7 @@ func (uc *UserController) SendRenewPasswordEmail(c *gin.Context, params SendRene
 		return apiresponses.InternalServerError()
 	}
 
-	err = async.SendEmail(email.EmailDeliveryPayload{
+	err = async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: user.Email,
 		Subject:  "Renew Password of Your Vinci Account",
 		HTMLBody: email.RenderRenewPasswordEmailTemplate(email.TemplateValues{

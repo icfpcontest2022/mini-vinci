@@ -4,8 +4,9 @@ import "gorm.io/gorm"
 
 type Problem struct {
 	gorm.Model
-	Name        string
-	Description string
-	CanvasLink  string
-	TargetLink  string
+	Name              string
+	Description       string
+	CanvasLink        string
+	InitialConfigLink string
+	TargetLink        string
 }

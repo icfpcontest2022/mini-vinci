@@ -16,7 +16,7 @@ func InitializeWorker() {
 
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(TypeEmailDelivery, HandleEmailDeliveryTask)
-	mux.HandleFunc(TypeEvaluateSubmission, HandleSubmissionEvaluation)
+	mux.HandleFunc(TypeEvaluateSubmission, HandleSubmissionEvaluationTask)
 
 	if err := srv.Run(mux); err != nil {
 		log.Fatalf("could not run server: %v", err)
