@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"mrgllemre@gmail.com\",\n    \"team_name\": \"Cool Team\",\n    \"password\": \"123456\"\n}",
+					"raw": "{\n    \"email\": \"mrgllemre+6@gmail.com\",\n    \"team_name\": \"Team JBL\",\n    \"password\": \"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -46,7 +46,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"email\": \"mrgllemre@gmail.com\",\n    \"password\": \"123456789\"\n}",
+					"raw": "{\n    \"email\": \"mrgllemre@gmail.com\",\n    \"password\": \"123456\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -204,7 +204,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjEzNzE4MDQsIm9yaWdfaWF0IjoxNjYxMzY4MjA0fQ.rNa9-rcMyUeHJ_9erI2aMwpvG4uw-b_4oXZNQXTq1PY",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjE0NzQxNTcsIm9yaWdfaWF0IjoxNjYxNDcwNTU3fQ.9pReo4Izwu-aaitmVWYYatDbSaHVFm_Fwr81WdA_slI",
 						"type": "text"
 					}
 				],
@@ -224,13 +224,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/submissions/23/create",
+					"raw": "{{base_url}}/submissions/2/create",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"submissions",
-						"23",
+						"2",
 						"create"
 					]
 				}
@@ -292,7 +292,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjEzNzE4NzMsIm9yaWdfaWF0IjoxNjYxMzY4MjczfQ.3f2f03KBel6akrgUrFsNmiVpaj4qg5jRhvfzXRwbMLQ",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjE1MjM1OTEsIm9yaWdfaWF0IjoxNjYxNTE5OTkxfQ.aDzelamHVKF7wqiZp-dHCqU9Im6on4xZ0NEUdgag5mo",
 						"type": "text"
 					}
 				],
@@ -381,6 +381,54 @@
 					],
 					"path": [
 						"announcements"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Result/GetUserResults",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjE1MjM1OTEsIm9yaWdfaWF0IjoxNjYxNTE5OTkxfQ.aDzelamHVKF7wqiZp-dHCqU9Im6on4xZ0NEUdgag5mo",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/results/user",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"results",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Result/GetScoreboard",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1yZ2xsZW1yZUBnbWFpbC5jb20iLCJleHAiOjE2NjE1MjM1OTEsIm9yaWdfaWF0IjoxNjYxNTE5OTkxfQ.aDzelamHVKF7wqiZp-dHCqU9Im6on4xZ0NEUdgag5mo",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/results/scoreboard",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"results",
+						"scoreboard"
 					]
 				}
 			},
