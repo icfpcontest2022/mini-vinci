@@ -249,7 +249,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}//submissions/1",
+					"raw": "{{base_url}}/submissions/1",
 					"host": [
 						"{{base_url}}"
 					],

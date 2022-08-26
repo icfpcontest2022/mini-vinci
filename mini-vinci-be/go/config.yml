@@ -11,7 +11,7 @@ jwt:
   renew_password_secret: yetanotherinterestingsecret
 
 async:
-  eager: true
+  eager: false
 
 email:
   ses_region: us-east-1
@@ -19,7 +19,7 @@ email:
   verification_url: http://dev.robovinci.xyz/users/verification/
 
 redis:
-  address: 127.0.0.1:6379
+  address: vincitest-001.2cisz4.0001.use1.cache.amazonaws.com:6379
 
 s3:
   region: us-east-1
