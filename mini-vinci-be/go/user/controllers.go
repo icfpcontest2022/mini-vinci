@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/apiresponses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/async"
@@ -70,7 +69,7 @@ func (uc *UserController) CreateUser(c *gin.Context, params CreateUserParams) (i
 
 	err = async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: userToCreate.Email,
-		Subject:  "Verificate Your Vinci Account",
+		Subject:  "Verificate Your Robo Vinci Account",
 		HTMLBody: email.RenderVerificationEmailTemplate(email.TemplateValues{
 			TeamName: createdUser.TeamName,
 			Link:     config.Get().Email.VerificationURL + "?token=" + verificationToken,
@@ -179,11 +178,13 @@ func (uc *UserController) ResendVerificationEmail(c *gin.Context, params ResendV
 		return apiresponses.InternalServerError()
 	}
 
-	HtmlBody := "<p><a href='" + fmt.Sprintf("http://localhost:8080/users/verification/%s", verificationToken) + "'>Click to verificate your Vinci User</a></p>"
-	async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
+	err = async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: user.Email,
-		Subject:  "Verificate Your Vinci User",
-		HTMLBody: HtmlBody,
+		Subject:  "Verificate Your Robo Vinci Account",
+		HTMLBody: email.RenderVerificationEmailTemplate(email.TemplateValues{
+			TeamName: user.TeamName,
+			Link:     config.Get().Email.VerificationURL + "?token=" + verificationToken,
+		}),
 	})
 
 	return apiresponses.SuccessMessage("verification email sent successfully")

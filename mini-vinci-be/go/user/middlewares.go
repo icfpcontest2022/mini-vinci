@@ -1,12 +1,14 @@
 package user
 
 import (
-	"fmt"
+	"errors"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
 	"time"
 )
+
+var ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
 
 type LoginParams struct {
 	Email    string `form:"email" json:"email" binding:"required"`
@@ -17,10 +19,10 @@ var IdentityKey = "email"
 
 func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "Vinci",
+		Realm:       "Robo Vinci",
 		Key:         []byte(config.Get().JWT.LoginSecret),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
+		Timeout:     24 * time.Hour,
+		MaxRefresh:  24 * time.Hour,
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
@@ -39,12 +41,11 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			userStore := NewUserStore()
 			usr, err := userStore.First(map[string]interface{}{"email": loginParams.Email})
 			if err != nil {
-				return "", fmt.Errorf("could not get user: %v", err)
+				return "", ErrIncorrectEmailOrPassword
 			}
-
 			err = usr.CheckPassword(loginParams.Password)
 			if err != nil {
-				return "", fmt.Errorf("could not validate is password correct: %v", err)
+				return "", ErrIncorrectEmailOrPassword
 			}
 
 			return &User{
