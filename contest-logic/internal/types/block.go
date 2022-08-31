@@ -12,6 +12,9 @@ type Block interface {
 	IsPointInside(*Point) bool
 	DivideAroundPoint(p *Point) [4]Block
 	DivideVertical(lineNumber int) [2]Block
+	DivideHorizontal(lineNumber int) [2]Block
+	IsVerticalLineInside(lineNumber int) bool
+	IsHorizontalLineInside(lineNumber int) bool
 }
 
 // type BlockType interface {
@@ -127,6 +130,20 @@ func (b *ComplexBlock) DivideAroundPoint(point *Point) [4]Block {
 	return [4]Block{bottomLeftBlk, bottomRightBlk, topRightBlk, topLeftBlk}
 }
 
+func (b *SimpleBlock) IsVerticalLineInside(lineNumber int) bool {
+	return b.bottomLeft.x <= lineNumber && b.topRight.x >= lineNumber
+}
+func (b *SimpleBlock) IsHorizontalLineInside(lineNumber int) bool {
+	return b.bottomLeft.y <= lineNumber && b.topRight.y >= lineNumber
+}
+
+func (b *ComplexBlock) IsVerticalLineInside(lineNumber int) bool {
+	return b.bottomLeft.x <= lineNumber && b.topRight.x >= lineNumber
+}
+func (b *ComplexBlock) IsHorizontalLineInside(lineNumber int) bool {
+	return b.bottomLeft.y <= lineNumber && b.topRight.y >= lineNumber
+}
+
 func (b *SimpleBlock) DivideVertical(lineNumber int) [2]Block {
 	return [2]Block{
 		NewSimpleBlock(b.id+".0", b.bottomLeft, &Point{x: lineNumber, y: b.topRight.y}, b.color), // left block
@@ -163,5 +180,44 @@ func (b *ComplexBlock) DivideVertical(lineNumber int) [2]Block {
 	return [2]Block{
 		NewComplexBlock(b.id+".0", b.bottomLeft, &Point{x: lineNumber, y: b.topRight.y}, leftBlocks),  // left block
 		NewComplexBlock(b.id+".1", &Point{x: lineNumber, y: b.bottomLeft.y}, b.topRight, rightBlocks), // right block
+	}
+}
+
+func (b *SimpleBlock) DivideHorizontal(lineNumber int) [2]Block {
+	return [2]Block{
+		NewSimpleBlock(b.id+".0", b.bottomLeft, &Point{x: b.topRight.x, y: lineNumber}, b.color), // bottom block
+		NewSimpleBlock(b.id+".1", &Point{x: b.bottomLeft.x, y: lineNumber}, b.topRight, b.color), // top block
+	}
+}
+
+func (b *ComplexBlock) DivideHorizontal(lineNumber int) [2]Block {
+	bottomBlocks := []*SimpleBlock{}
+	topBlocks := []*SimpleBlock{}
+
+	for _, sub := range b.subBlocks {
+		if sub.bottomLeft.y >= lineNumber {
+			topBlocks = append(topBlocks, sub)
+			continue
+		}
+		if sub.topRight.y <= lineNumber {
+			bottomBlocks = append(bottomBlocks, sub)
+			continue
+		}
+		bottomBlocks = append(bottomBlocks, NewSimpleBlock(
+			"child",
+			sub.bottomLeft,
+			&Point{x: sub.topRight.x, y: lineNumber},
+			sub.color,
+		))
+		topBlocks = append(topBlocks, NewSimpleBlock(
+			"child",
+			&Point{x: sub.bottomLeft.x, y: lineNumber},
+			sub.topRight,
+			sub.color,
+		))
+	}
+	return [2]Block{
+		NewComplexBlock(b.id+".0", b.bottomLeft, &Point{x: b.topRight.x, y: lineNumber}, bottomBlocks), // bottom block
+		NewComplexBlock(b.id+".1", &Point{x: b.bottomLeft.x, y: lineNumber}, b.topRight, topBlocks),    // top block
 	}
 }
