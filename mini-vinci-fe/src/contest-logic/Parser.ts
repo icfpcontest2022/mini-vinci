@@ -61,7 +61,7 @@ export class Parser {
     const byte_re = `\(25\[0-5\]|2\[0-4\]\[0-9\]|1\[0-9\]\[0-9\]|\[1-9\]\[0-9\]|\[0-9\]\)`;
     const color_re = `${byte_re},${byte_re},${byte_re},${byte_re}`;
     const block_id_re = `${number_re}\(\\\.${number_re}\)*`;
-    const point_re = `${byte_re},${byte_re}`;
+    const point_re = `${number_re},${number_re}`;
     const COLOR_INSTRUCTION_REGEX = 
         new RegExp(`color\\\[\(${block_id_re}\)\\\]\\\[(${color_re})\\\]$`);
     const LINE_CUT_INSTRUCTION_REGEX = 
