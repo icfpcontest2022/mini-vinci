@@ -9,8 +9,16 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/submission"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/support"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
+	"github.com/ulule/limiter/v3"
+	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
+	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"log"
 	"net/http"
+	"time"
+)
+
+const (
+	ReactBuildPath = "../../mini-vinci-fe/build"
 )
 
 func CORS() gin.HandlerFunc {
@@ -30,7 +38,7 @@ func CORS() gin.HandlerFunc {
 func setUpRouters(r *gin.Engine) error {
 	r.Use(CORS())
 
-	r.Use(static.Serve("/", static.LocalFile("../../mini-vinci-fe/build", false)))
+	r.Use(static.Serve("/", static.LocalFile(ReactBuildPath, false)))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
@@ -45,12 +53,30 @@ func setUpRouters(r *gin.Engine) error {
 		log.Fatal("error while initializing auth middleware:" + err.Error())
 	}
 
+	// set general rate limiter
+	r.Use(mgin.NewMiddleware(
+		limiter.New(memory.NewStore(),
+			limiter.Rate{
+				Period: 15 * time.Minute,
+				Limit:  1000,
+			}),
+	))
+
 	//user
 	userRouter := user.UserRouter{}
 
 	userGroup := r.Group("users")
 	userGroup.Use(authMiddleware.MiddlewareFunc())
 	userGroup.GET("", userRouter.RetrieveUser)
+
+	// set non auth rate limiter
+	r.Use(mgin.NewMiddleware(
+		limiter.New(memory.NewStore(),
+			limiter.Rate{
+				Period: 1 * time.Minute,
+				Limit:  10,
+			}),
+	))
 
 	nonAuthUserGroup := r.Group("users")
 	nonAuthUserGroup.POST("register", userRouter.CreateUser)
