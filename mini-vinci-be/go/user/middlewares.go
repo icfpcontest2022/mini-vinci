@@ -21,8 +21,8 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "Robo Vinci",
 		Key:         []byte(config.Get().JWT.LoginSecret),
-		Timeout:     24 * time.Hour,
-		MaxRefresh:  24 * time.Hour,
+		Timeout:     config.Get().JWT.LoginExpireTime * time.Hour,
+		MaxRefresh:  config.Get().JWT.LoginExpireTime * time.Hour,
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {

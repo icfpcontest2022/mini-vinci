@@ -222,7 +222,7 @@ func (uc *UserController) SendRenewPasswordEmail(c *gin.Context, params SendRene
 		Subject:  "Renew Password of Your Vinci Account",
 		HTMLBody: email.RenderRenewPasswordEmailTemplate(email.TemplateValues{
 			TeamName: user.TeamName,
-			Link:     config.Get().Email.VerificationURL + renewPasswordToken,
+			Link:     config.Get().Email.RenewPasswordURL + "?token=" + renewPasswordToken,
 		}),
 	})
 	if err != nil {
