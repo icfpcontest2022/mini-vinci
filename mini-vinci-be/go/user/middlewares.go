@@ -9,6 +9,7 @@ import (
 )
 
 var ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
+var ErrEmailIsNotVerifiedYet = errors.New("email is not verified yet")
 
 type LoginParams struct {
 	Email    string `form:"email" json:"email" binding:"required"`
@@ -46,6 +47,10 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			err = usr.CheckPassword(loginParams.Password)
 			if err != nil {
 				return "", ErrIncorrectEmailOrPassword
+			}
+
+			if !usr.IsVerified {
+				return "", ErrEmailIsNotVerifiedYet
 			}
 
 			return &User{
