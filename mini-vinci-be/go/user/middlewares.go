@@ -5,11 +5,15 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"time"
 )
 
-var ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
-var ErrEmailIsNotVerifiedYet = errors.New("email is not verified yet")
+var (
+	ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
+	ErrEmailIsNotVerifiedYet    = errors.New("email is not verified yet")
+	ErrLoginsNotOpenedYet       = errors.New("email is verified, but not allowed to login at this time")
+)
 
 type LoginParams struct {
 	Email    string `form:"email" json:"email" binding:"required"`
@@ -51,6 +55,10 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 
 			if !usr.IsVerified {
 				return "", ErrEmailIsNotVerifiedYet
+			}
+
+			if !featureflags.IsLoginAllowed() {
+				return "", ErrLoginsNotOpenedYet
 			}
 
 			return &User{

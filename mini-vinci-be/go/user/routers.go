@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/apiresponses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
+	"net/http"
 )
 
 type UserRouter struct {
@@ -33,7 +34,16 @@ func (r *UserRouter) VerificateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(r.controller.VerificateUser(c, params))
+	// todo: handle this in frontend
+	code, resp := r.controller.VerificateUser(c, params)
+	if code == http.StatusOK {
+		c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(
+			"<h1>Your email is verified successfully!<h1/>",
+		))
+		return
+	}
+
+	c.JSON(code, resp)
 }
 
 func (r *UserRouter) ResendVerificationEmail(c *gin.Context) {

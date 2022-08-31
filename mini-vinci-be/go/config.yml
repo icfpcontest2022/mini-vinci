@@ -11,7 +11,7 @@ jwt:
   renew_password_secret: yetanotherinterestingsecret
 
 async:
-  eager: false
+  eager: true
 
 email:
   ses_region: us-east-1

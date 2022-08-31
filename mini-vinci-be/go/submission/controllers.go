@@ -112,7 +112,7 @@ func (sc *SubmissionController) RetrieveSubmission(c *gin.Context, params Retrie
 		Key:    aws.String(sub.S3Key),
 	})
 
-	presignedURL, err := r.Presign(5 * time.Minute)
+	presignedURL, err := r.Presign(15 * time.Minute)
 	if err != nil {
 		log.WithError(err).Errorf("could not generate presigned url")
 		return apiresponses.InternalServerError()

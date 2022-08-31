@@ -8,6 +8,7 @@ import (
 
 type RetrieveSubmissionResponse struct {
 	ID          uint      `json:"id"`
+	ProblemID   uint      `json:"problem_id"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
 	Score       uint      `json:"score"`
@@ -22,6 +23,7 @@ type RetrieveSubmissionSerializer struct {
 func (s RetrieveSubmissionSerializer) Response() RetrieveSubmissionResponse {
 	return RetrieveSubmissionResponse{
 		ID:          s.Submission.ID,
+		ProblemID:   s.Submission.ProblemID,
 		SubmittedAt: s.Submission.CreatedAt,
 		Status:      s.Submission.Status,
 		Score:       s.Submission.Score,
@@ -31,6 +33,7 @@ func (s RetrieveSubmissionSerializer) Response() RetrieveSubmissionResponse {
 
 type SingleSubmissionResponse struct {
 	ID          uint      `json:"id"`
+	ProblemID   uint      `json:"problem_id"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
 	Score       uint      `json:"score"`
@@ -50,6 +53,7 @@ func (s GetSubmissionsSerializer) Response() GetSubmissionsResponse {
 	for _, sub := range s.Submissions {
 		resp.Submissions = append(resp.Submissions, SingleSubmissionResponse{
 			ID:          sub.ID,
+			ProblemID:   sub.ProblemID,
 			SubmittedAt: sub.CreatedAt,
 			Status:      sub.Status,
 			Score:       sub.Score,
