@@ -119,3 +119,22 @@ func (c *Canvas) SwapBlocks(blockID1, blockID2 string) error {
 	c.blocks[blockID2] = block1
 	return nil
 }
+
+func (c *Canvas) MergeBlocks(blockID1, blockID2, newBlockID string) error {
+	block1, err := c.getBlock(blockID1)
+	if err != nil {
+		return err
+	}
+	block2, err := c.getBlock(blockID2)
+	if err != nil {
+		return err
+	}
+	newBlock, err := block1.MergeTo(block2, newBlockID)
+	if err != nil {
+		return err
+	}
+	delete(c.blocks, blockID1)
+	delete(c.blocks, blockID2)
+	c.blocks[newBlockID] = newBlock
+	return nil
+}

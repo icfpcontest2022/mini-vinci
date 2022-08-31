@@ -10,6 +10,7 @@ type Block interface {
 	Size() *Point
 	SetID(id string)
 	BlockID() string
+	anchors() [2]*Point
 	Children() []*SimpleBlock
 	IsPointInside(*Point) bool
 	DivideAroundPoint(p *Point) [4]Block
@@ -17,11 +18,8 @@ type Block interface {
 	DivideHorizontal(lineNumber int) [2]Block
 	IsVerticalLineInside(lineNumber int) bool
 	IsHorizontalLineInside(lineNumber int) bool
+	MergeTo(other Block, id string) (Block, error)
 }
-
-// type BlockType interface {
-// 	SimpleBlock | ComplexBlock
-// }
 
 type SimpleBlock struct {
 	id         string
@@ -67,14 +65,22 @@ func (b *ComplexBlock) Children() []*SimpleBlock {
 	return b.subBlocks
 }
 
+func (b *SimpleBlock) anchors() [2]*Point {
+	return [2]*Point{b.bottomLeft.Clone(), b.topRight.Clone()}
+}
+
+func (b *ComplexBlock) anchors() [2]*Point {
+	return [2]*Point{b.bottomLeft.Clone(), b.topRight.Clone()}
+}
+
 func (b *SimpleBlock) SetID(id string)  { b.id = id }
 func (b *ComplexBlock) SetID(id string) { b.id = id }
 
 func (b *SimpleBlock) BlockID() string  { return b.id }
 func (b *ComplexBlock) BlockID() string { return b.id }
 
-func (b *SimpleBlock) Size() *Point  { return &Point{b.size.x, b.size.y} }
-func (b *ComplexBlock) Size() *Point { return &Point{b.size.x, b.size.y} }
+func (b *SimpleBlock) Size() *Point  { return b.size.Clone() }
+func (b *ComplexBlock) Size() *Point { return b.size.Clone() }
 
 func (b *SimpleBlock) IsPointInside(p *Point) bool {
 	return p.IsInside(b.bottomLeft, b.topRight)
@@ -228,4 +234,44 @@ func (b *ComplexBlock) DivideHorizontal(lineNumber int) [2]Block {
 		NewComplexBlock(b.id+".0", b.bottomLeft, &Point{x: b.topRight.x, y: lineNumber}, bottomBlocks), // bottom block
 		NewComplexBlock(b.id+".1", &Point{x: b.bottomLeft.x, y: lineNumber}, b.topRight, topBlocks),    // top block
 	}
+}
+
+func (b *SimpleBlock) MergeTo(other Block, id string) (Block, error) {
+	return mergeBlocks(b, other, id)
+}
+
+func (b *ComplexBlock) MergeTo(other Block, id string) (Block, error) {
+	return mergeBlocks(b, other, id)
+}
+
+func mergeBlocks(b1 Block, b2 Block, id string) (Block, error) {
+	anchors1 := b1.anchors()
+	anchors2 := b2.anchors()
+	// Bottom to top direction
+	if anchors1[0].x == anchors2[0].x && anchors1[1].x == anchors2[1].x {
+		newBottomLeft := anchors2[0]
+		newTopRight := anchors1[1]
+		if anchors1[0].y < anchors2[0].y {
+			newBottomLeft = anchors1[0]
+			newTopRight = anchors2[1]
+		}
+		return NewComplexBlock(
+			id, newBottomLeft, newTopRight,
+			append(b1.Children(), b2.Children()...),
+		), nil
+	}
+	// Left to right direction
+	if anchors1[0].y == anchors2[0].y && anchors1[1].y == anchors2[1].y {
+		newBottomLeft := anchors2[0]
+		newTopRight := anchors1[1]
+		if anchors1[0].x < anchors2[0].x {
+			newBottomLeft = anchors1[0]
+			newTopRight = anchors2[1]
+		}
+		return NewComplexBlock(
+			id, newBottomLeft, newTopRight,
+			append(b1.Children(), b2.Children()...),
+		), nil
+	}
+	return nil, fmt.Errorf("blocks %s and %s can't be merged", b1.Repr(), b2.Repr())
 }

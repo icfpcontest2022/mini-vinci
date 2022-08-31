@@ -30,3 +30,7 @@ func (p *Point) Repr() string {
 func (p *Point) IsEqual(other *Point) bool {
 	return p.x == other.x && p.y == other.y
 }
+
+func (p *Point) Clone() *Point {
+	return &Point{p.x, p.y}
+}

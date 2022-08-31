@@ -106,27 +106,29 @@ type MergeInstruction struct {
 	blockID2 string
 }
 
-func (i *NopInstruction) Execute(canvas *Canvas, ctxtr Contextor) error     { return nil }
-func (i *CommentInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil }
+func (i *NopInstruction) Execute(canvas *Canvas, _ Contextor) error     { return nil }
+func (i *CommentInstruction) Execute(canvas *Canvas, _ Contextor) error { return nil }
 
-func (i *ColorInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+func (i *ColorInstruction) Execute(canvas *Canvas, _ Contextor) error {
 	return canvas.ColorBlock(i.blockID, i.color)
 }
 
-func (i *PointCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+func (i *PointCutInstruction) Execute(canvas *Canvas, _ Contextor) error {
 	return canvas.PointCut(i.blockID, i.point)
 }
 
-func (i *VerticalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+func (i *VerticalCutInstruction) Execute(canvas *Canvas, _ Contextor) error {
 	return canvas.VerticalCut(i.blockID, i.lineNumber)
 }
 
-func (i *HorizontalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+func (i *HorizontalCutInstruction) Execute(canvas *Canvas, _ Contextor) error {
 	return canvas.HorizontalCut(i.blockID, i.lineNumber)
 }
 
-func (i *SwapInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+func (i *SwapInstruction) Execute(canvas *Canvas, _ Contextor) error {
 	return canvas.SwapBlocks(i.blockID1, i.blockID2)
 }
 
-func (i *MergeInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil } // TODO
+func (i *MergeInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+	return canvas.MergeBlocks(i.blockID1, i.blockID2, ctxtr.GetNextBlockID())
+}
