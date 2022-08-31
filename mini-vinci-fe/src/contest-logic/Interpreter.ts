@@ -40,6 +40,7 @@ export class Interpreter {
         );
         for(let index = 0; index < program.instructions.length; index++) {
             let result = this.interpret(index, canvas, program.instructions[index]);
+            
             if (result.typ === 'error') {
                 return result;
             }
@@ -51,7 +52,7 @@ export class Interpreter {
     interpret(lineNumber: number, context: Canvas, instruction: Instruction): InterpreterResult {
         switch(instruction.typ) {
             case InstructionType.NopInstructionType || InstructionType.CommentInstructionType: {
-                return {typ: "canvas", result: context};
+                return {typ: "canvas", result: context} as InterpreterResult;
             }
             case InstructionType.ColorInstructionType: {
                 return this.colorCanvas(lineNumber, context, instruction as ColorInstruction);
@@ -145,7 +146,7 @@ export class Interpreter {
                 }
             };
         }
-        if (!point.isInside(block.bottomLeft, block.topRight)) {
+        if (!point.isStrictlyInside(block.bottomLeft, block.topRight)) {
             return {
                 typ: "error", 
                 result: {
@@ -203,48 +204,139 @@ export class Interpreter {
             let topRightBlocks: SimpleBlock[] = [];
             let topLeftBlocks: SimpleBlock[] = [];
             (block as ComplexBlock).subBlocks.forEach(subBlock => {
+                /**
+                 * __________________________
+                 * |        |       |       |
+                 * |   1    |   2   |   3   |
+                 * |________|_______|_______|
+                 * |        |       |       |
+                 * |   4    |   5   |  6    |
+                 * |________|_______|_______|
+                 * |        |       |       |
+                 * |   7    |   8   |   9   |
+                 * |________|_______|_______| 
+                 */
+                // Case 2
                 if (subBlock.bottomLeft.px >= point.px && subBlock.bottomLeft.py >= point.py) {
                     topRightBlocks.push(subBlock);
                     return;
                 }
+                // Case 7
                 if (subBlock.topRight.px <= point.px && subBlock.topRight.py <= point.py) {
                     bottomLeftBlocks.push(subBlock);
                     return;
                 }
+                // Case 1
                 if (subBlock.topRight.px <= point.px && subBlock.bottomLeft.py >= point.py) {
                     topLeftBlocks.push(subBlock);
                     return;
                 }
+                // Case 9
                 if (subBlock.bottomLeft.px >= point.px && subBlock.topRight.py <= point.py) {
                     bottomRightBlocks.push(subBlock);
                     return;
                 }
+                // Case 5
+                if (point.isInside(subBlock.bottomLeft, subBlock.topRight)) {
+                    bottomLeftBlocks.push(new SimpleBlock(
+                        'bl_child',
+                        subBlock.bottomLeft,
+                        point,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    bottomRightBlocks.push(new SimpleBlock(
+                        'br_child',
+                        new Point([point.px, subBlock.bottomLeft.py]),
+                        new Point([subBlock.topRight.px, point.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    topRightBlocks.push(new SimpleBlock(
+                        'tr_child',
+                        point,
+                        subBlock.topRight,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    topLeftBlocks.push(new SimpleBlock(
+                        'tl_child',
+                        new Point([subBlock.bottomLeft.px, point.py]),
+                        new Point([point.px, subBlock.topRight.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    return;
+                }
 
-                bottomLeftBlocks.push(new SimpleBlock(
-                    'child',
-                    subBlock.bottomLeft,
-                    point,
-                    (subBlock as SimpleBlock).color
-                ));
-                bottomRightBlocks.push(new SimpleBlock(
-                    'child',
-                    new Point([point.px, subBlock.bottomLeft.py]),
-                    new Point([subBlock.topRight.px, point.py]),
-                    (subBlock as SimpleBlock).color
-                ));
-                topRightBlocks.push(new SimpleBlock(
-                    'child',
-                    point,
-                    subBlock.topRight,
-                    (subBlock as SimpleBlock).color
-                ));
-                topLeftBlocks.push(new SimpleBlock(
-                    'child',
-                    new Point([subBlock.bottomLeft.px, point.py]),
-                    new Point([point.px, subBlock.topRight.py]),
-                    (subBlock as SimpleBlock).color
-                ));
-
+                // Case 2
+                if (subBlock.bottomLeft.px <= point.px 
+                    && point.px <= subBlock.topRight.px 
+                    && point.py < subBlock.bottomLeft.py) {
+                    topLeftBlocks.push(new SimpleBlock(
+                        'case2_tl_child',
+                        subBlock.bottomLeft,
+                        new Point([point.px, subBlock.topRight.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    topRightBlocks.push(new SimpleBlock(
+                        'case2_tr_child',
+                        new Point([point.px, subBlock.bottomLeft.py]),
+                        subBlock.topRight,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    return;
+                } 
+                // Case 8
+                if (subBlock.bottomLeft.px <= point.px 
+                    && point.px <= subBlock.topRight.px 
+                    && point.py > subBlock.topRight.py) {
+                    bottomLeftBlocks.push(new SimpleBlock(
+                        'case8_bl_child',
+                        subBlock.bottomLeft,
+                        new Point([point.px, subBlock.topRight.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    bottomRightBlocks.push(new SimpleBlock(
+                        'case8_br_child',
+                        new Point([point.px, subBlock.bottomLeft.py]),
+                        subBlock.topRight,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    return;
+                } 
+                // Case 4
+                if (subBlock.bottomLeft.py <= point.py
+                    && point.py <= subBlock.topRight.py 
+                    && point.px < subBlock.bottomLeft.px) {
+                    bottomRightBlocks.push(new SimpleBlock(
+                        'case4_br_child',
+                        subBlock.bottomLeft,
+                        new Point([subBlock.topRight.px, point.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    topRightBlocks.push(new SimpleBlock(
+                        'case4_tr_child',
+                        new Point([subBlock.bottomLeft.px, point.py]),
+                        subBlock.topRight,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    return;
+                } 
+                // Case 6
+                if (subBlock.bottomLeft.py <= point.py
+                    && point.py <= subBlock.topRight.py 
+                    && point.px > subBlock.topRight.px) {
+                    bottomLeftBlocks.push(new SimpleBlock(
+                        'case6_bl_child',
+                        subBlock.bottomLeft,
+                        new Point([subBlock.topRight.px, point.py]),
+                        (subBlock as SimpleBlock).color
+                    ));
+                    topLeftBlocks.push(new SimpleBlock(
+                        'case6_br_child',
+                        new Point([subBlock.bottomLeft.px, point.py]),
+                        subBlock.topRight,
+                        (subBlock as SimpleBlock).color
+                    ));
+                    return;
+                } 
             });
             const bottomLeftBlock = new ComplexBlock(
                 blockId + '.0',
@@ -290,7 +382,6 @@ export class Interpreter {
             }
         };
     }
-
 
     verticalCutCanvas(line: number, context: Canvas, verticalCutInstruction: VerticalCutInstruction): InterpreterResult {
         // TypeCheck Starts
@@ -596,7 +687,9 @@ export class Interpreter {
         // Scoring Ends
         
         // Processing Starts
-        const bottomToTop = block1.bottomLeft.px === block2.bottomLeft.px &&
+        const bottomToTop = ( block1.bottomLeft.py === block2.topRight.py ||
+                            block1.topRight.py === block2.bottomLeft.py ) &&
+                            block1.bottomLeft.px === block2.bottomLeft.px &&
                             block1.topRight.px === block2.topRight.px;
         if (bottomToTop) {
             this.topLevelIdCounter++;
@@ -623,7 +716,9 @@ export class Interpreter {
             }
         }
 
-        const leftToRight = block1.bottomLeft.py === block2.bottomLeft.py &&
+        const leftToRight = ( block1.bottomLeft.px === block2.topRight.px ||
+                            block1.topRight.px === block2.bottomLeft.px ) &&
+                            block1.bottomLeft.py === block2.bottomLeft.py &&
                             block1.topRight.py === block2.topRight.py
         if (leftToRight) {
             this.topLevelIdCounter++;
@@ -652,7 +747,6 @@ export class Interpreter {
 
         
         if(!(bottomToTop || leftToRight)) {
-            console.log(context);
             return {
                 typ: "error", 
                 result: {

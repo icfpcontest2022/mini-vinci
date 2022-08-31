@@ -18,6 +18,7 @@ export class Canvas {
     constructor(width: number, height: number, backgroundColor: Color) {
         this.width = width;
         this.height = height;
+        
         this.backgroundColor = backgroundColor;
         this.blocks = new Map();
         this.blocks.set(
@@ -29,6 +30,10 @@ export class Canvas {
                 backgroundColor,
             )
         );
+    }
+
+    get size(): Point {
+        return new Point([this.width, this.height]);
     }
 
     simplify(): SimpleBlock[] {
