@@ -28,9 +28,8 @@ import { sharedColors } from '../../../utilities/styles';
 import Loading from '../../Loading';
 import { makeNewSubmission } from '../../../services/submission';
 import { getPreviewImageName } from '../../../utilities/submission';
-import { Interpreter, InterpreterError } from '../../../contest-logic/Interpreter';
+import { Interpreter, InterpreterResult } from '../../../contest-logic/Interpreter';
 import { RGBA } from '../../../contest-logic/Color';
-import { Canvas } from '../../../contest-logic/Canvas';
 import { Painter } from '../../../contest-logic/Painter';
 
 interface NewSubmissionProps {
@@ -54,6 +53,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
 
   const [loading, setLoading] = useState(false);
   const [submittedFile, setSubmittedFile] = useState<File | null>(null);
+  const [interpreterResult, setInterpreterResult] = useState<InterpreterResult | undefined>();
   const [codeToSubmit, setCodeToSubmit] = useState('');
   const [submissionPhase, setSubmissionPhase] = useState(
     SubmissionPhase.ENTER_CODE,
@@ -66,22 +66,19 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const interpret = (fileContent: string) => {
     const interpreter = new Interpreter();
     const interpretedStructure = interpreter.run(fileContent);
-    if (interpretedStructure.typ === 'error') {
-      const { lineNumber, error } = interpretedStructure.result as InterpreterError;
-      throw Error(`[${error} at ${lineNumber}`);
-    }
-    return interpretedStructure.result as Canvas;
+    return interpretedStructure;
   };
   
-  const drawToCanvas = (fileContent: string) => {
-    const interpretedCanvas = interpret(fileContent);
+  const drawToCanvas = (canvasToDraw: InterpreterResult) => {
+    const interpretedCanvas = canvasToDraw.canvas;
+    const instructionCost = canvasToDraw.cost;
     const painter = new Painter();
     const renderedData = painter.draw(interpretedCanvas);
     const canvas = canvasRef.current!;
     const context = canvas.getContext('2d')!;
 
-    canvas.width = 100;
-    canvas.height = 100;
+    canvas.width = interpretedCanvas.width;
+    canvas.height = interpretedCanvas.height;
 
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
     renderedData.forEach((pixel: RGBA, index: number) => {
@@ -92,8 +89,8 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     });
     context.putImageData(imgData, 0, 0);
 
-    // TODO: This should be replaced with the actual score
-    return 31;
+    // TODO: This should also have the similarity cost added to it.
+    return instructionCost;
   };
 
   useEffect(() => {
@@ -137,7 +134,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     setIsRendered(true);
     setTimeout(() => {
       try {
-        setProposedScore(drawToCanvas(codeToSubmit));
+        setProposedScore(drawToCanvas(interpreterResult as InterpreterResult));
         setSubmissionPhase(SubmissionPhase.READY_TO_SUBMIT);
       } catch (err: any) {
         toast.error(err.message);
@@ -148,8 +145,22 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
       }
     }, 500);
   };
-  const handleTypeCheck = async () =>
-    new Promise((resolve) => setTimeout(resolve, 1000));
+  const handleTypeCheck = () => {
+    setLoading(true);
+    setSubmissionPhase(SubmissionPhase.TYPE_CHECK);
+    setTimeout(() => {
+      try {
+        setInterpreterResult(interpret(codeToSubmit));
+        setSubmissionPhase(SubmissionPhase.READY_TO_SUBMIT);
+      } catch (err: any) {
+        toast.error(err.message);
+        setSubmissionPhase(SubmissionPhase.ENTER_CODE);
+        setIsRendered(false);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+  };
 
   const handleDownloadCanvas = () => {
     const canvas = canvasRef.current!;
@@ -199,13 +210,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
             onClick={() => {
               setLoading(true);
               setSubmissionPhase(SubmissionPhase.TYPE_CHECK);
-              handleTypeCheck()
-                .then(() => {
-                  setSubmissionPhase(SubmissionPhase.READY_TO_SUBMIT);
-                  setIsRendered(false);
-                })
-                .catch((err) => toast.error(err.message))
-                .finally(() => setLoading(false));
+              handleTypeCheck();
             }}
             disabled={codeToSubmit === ''}
           >

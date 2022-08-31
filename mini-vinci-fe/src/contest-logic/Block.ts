@@ -30,6 +30,10 @@ export class SimpleBlock {
         this.topRight = topRight;
         this.size = topRight.getDiff(bottomLeft);
         this.color = color;
+        if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
+            console.log(this)
+            throw Error('Invalid Block');
+        }
     }
 
     getChildren() {
@@ -57,6 +61,10 @@ export class ComplexBlock {
         this.topRight = topRight;
         this.size = topRight.getDiff(bottomLeft);
         this.subBlocks = subBlocks;
+        if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
+            console.log(`Invalid Complex Block:`)
+            console.log(this)
+        }
     }
 
     getChildren() {

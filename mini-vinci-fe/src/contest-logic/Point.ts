@@ -32,11 +32,27 @@ export class Point {
       return new Point([newX, newY]);
     }
 
-    isInside(bottomLeft: Point, topRight: Point) {
-      return bottomLeft.px < this.px &&
-             this.px <= topRight.px   &&
-             bottomLeft.py < this.py &&
-             this.py <= topRight.py;
+    isStrictlyInside(bottomLeft: Point, topRight: Point) {
+      return bottomLeft.px < this.px  &&
+              this.px < topRight.px   &&
+              bottomLeft.py < this.py &&
+              this.py < topRight.py;
     }
+
+    isOnBoundary(bottomLeft: Point, topRight: Point) {
+      return (bottomLeft.px === this.px  && bottomLeft.py <= this.py && this.py <= topRight.py)
+            || (topRight.px === this.px  && bottomLeft.py <= this.py && this.py <= topRight.py)
+            || (bottomLeft.py === this.py  && bottomLeft.px <= this.px && this.px <= topRight.px)
+            || (topRight.py === this.py  && bottomLeft.px <= this.px && this.px <= topRight.px);
+    }
+    
+    isInside(bottomLeft: Point, topRight: Point) {
+      return this.isStrictlyInside(bottomLeft, topRight) || this.isOnBoundary(bottomLeft, topRight);
+    }
+
+    getScalarSize() {
+      return this.px * this.py;
+    }
+
   }
   

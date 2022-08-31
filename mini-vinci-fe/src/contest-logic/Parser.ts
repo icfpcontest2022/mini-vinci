@@ -40,7 +40,7 @@ export class Parser {
         instructions.push(instruction);
       }
     }
-    let metaData = { width: 100, height: 100, backgroundColor: new RGBA([255, 255, 255, 255]) };
+    let metaData = { width: 400, height: 400, backgroundColor: new RGBA([255, 255, 255, 255]) };
 
     return { typ: 'program', result: new Program(metaData, instructions) };
 }
@@ -116,7 +116,6 @@ export class Parser {
     const swapMatchResult = line.match(SWAP_INSTRUCTION_REGEX);
     if (swapMatchResult) {
       const typ = InstructionType.SwapInstructionType;
-      console.log(swapMatchResult);
       const blockId1 = swapMatchResult[1];
       const blockId2 = swapMatchResult[5];
       return { typ: 'instruction', result: { typ, blockId1, blockId2 } as SwapInstruction };
