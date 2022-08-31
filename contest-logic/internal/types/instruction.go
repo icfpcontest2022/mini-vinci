@@ -117,7 +117,9 @@ func (i *PointCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
 	return canvas.PointCut(i.blockID, i.point)
 }
 
-func (i *VerticalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil } // TODO
+func (i *VerticalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+	return canvas.VerticalCut(i.blockID, i.lineNumber)
+}
 
 func (i *HorizontalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil } // TODO
 

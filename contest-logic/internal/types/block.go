@@ -11,6 +11,7 @@ type Block interface {
 	Children() []*SimpleBlock
 	IsPointInside(*Point) bool
 	DivideAroundPoint(p *Point) [4]Block
+	DivideVertical(lineNumber int) [2]Block
 }
 
 // type BlockType interface {
@@ -124,4 +125,43 @@ func (b *ComplexBlock) DivideAroundPoint(point *Point) [4]Block {
 	topLeftBlk := NewComplexBlock(b.id+".3", &Point{x: b.bottomLeft.x, y: point.y}, &Point{x: point.x, y: b.topRight.y}, topLeftBlocks)
 
 	return [4]Block{bottomLeftBlk, bottomRightBlk, topRightBlk, topLeftBlk}
+}
+
+func (b *SimpleBlock) DivideVertical(lineNumber int) [2]Block {
+	return [2]Block{
+		NewSimpleBlock(b.id+".0", b.bottomLeft, &Point{x: lineNumber, y: b.topRight.y}, b.color), // left block
+		NewSimpleBlock(b.id+".1", &Point{x: lineNumber, y: b.bottomLeft.y}, b.topRight, b.color), // right block
+	}
+}
+
+func (b *ComplexBlock) DivideVertical(lineNumber int) [2]Block {
+	leftBlocks := []*SimpleBlock{}
+	rightBlocks := []*SimpleBlock{}
+
+	for _, sub := range b.subBlocks {
+		if sub.bottomLeft.x >= lineNumber {
+			rightBlocks = append(rightBlocks, sub)
+			continue
+		}
+		if sub.topRight.x <= lineNumber {
+			leftBlocks = append(leftBlocks, sub)
+			continue
+		}
+		leftBlocks = append(leftBlocks, NewSimpleBlock(
+			"child",
+			sub.bottomLeft,
+			&Point{x: lineNumber, y: sub.topRight.y},
+			sub.color,
+		))
+		rightBlocks = append(rightBlocks, NewSimpleBlock(
+			"child",
+			&Point{x: lineNumber, y: sub.bottomLeft.y},
+			sub.topRight,
+			sub.color,
+		))
+	}
+	return [2]Block{
+		NewComplexBlock(b.id+".0", b.bottomLeft, &Point{x: lineNumber, y: b.topRight.y}, leftBlocks),  // left block
+		NewComplexBlock(b.id+".1", &Point{x: lineNumber, y: b.bottomLeft.y}, b.topRight, rightBlocks), // right block
+	}
 }

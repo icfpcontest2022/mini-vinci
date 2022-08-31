@@ -68,3 +68,19 @@ func (c *Canvas) PointCut(blockID string, point *Point) error {
 	}
 	return nil
 }
+
+func (c *Canvas) VerticalCut(blockID string, lineNumber int) error {
+	block, err := c.getBlock(blockID)
+	if err != nil {
+		return err
+	}
+	if !block.IsPointInside(&Point{lineNumber, lineNumber}) { // NEED REVIEW: Is this refactoring correct?
+		return fmt.Errorf("line number %d is out of block %s %s", lineNumber, blockID, block.Repr())
+	}
+	newBlocks := block.DivideVertical(lineNumber)
+	delete(c.blocks, blockID)
+	for _, b := range newBlocks {
+		c.blocks[b.BlockID()] = b
+	}
+	return nil
+}
