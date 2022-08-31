@@ -26,3 +26,7 @@ func (p *Point) IsInside(bottomLeft, topRight *Point) bool {
 func (p *Point) Repr() string {
 	return fmt.Sprintf("(%d, %d)", p.x, p.y)
 }
+
+func (p *Point) IsEqual(other *Point) bool {
+	return p.x == other.x && p.y == other.y
+}

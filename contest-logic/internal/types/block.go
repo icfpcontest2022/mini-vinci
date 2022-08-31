@@ -7,6 +7,8 @@ import (
 
 type Block interface {
 	Repr() string
+	Size() *Point
+	SetID(id string)
 	BlockID() string
 	Children() []*SimpleBlock
 	IsPointInside(*Point) bool
@@ -65,8 +67,14 @@ func (b *ComplexBlock) Children() []*SimpleBlock {
 	return b.subBlocks
 }
 
+func (b *SimpleBlock) SetID(id string)  { b.id = id }
+func (b *ComplexBlock) SetID(id string) { b.id = id }
+
 func (b *SimpleBlock) BlockID() string  { return b.id }
 func (b *ComplexBlock) BlockID() string { return b.id }
+
+func (b *SimpleBlock) Size() *Point  { return &Point{b.size.x, b.size.y} }
+func (b *ComplexBlock) Size() *Point { return &Point{b.size.x, b.size.y} }
 
 func (b *SimpleBlock) IsPointInside(p *Point) bool {
 	return p.IsInside(b.bottomLeft, b.topRight)

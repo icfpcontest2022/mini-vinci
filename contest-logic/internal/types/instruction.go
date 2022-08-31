@@ -125,6 +125,8 @@ func (i *HorizontalCutInstruction) Execute(canvas *Canvas, ctxtr Contextor) erro
 	return canvas.HorizontalCut(i.blockID, i.lineNumber)
 }
 
-func (i *SwapInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil } // TODO
+func (i *SwapInstruction) Execute(canvas *Canvas, ctxtr Contextor) error {
+	return canvas.SwapBlocks(i.blockID1, i.blockID2)
+}
 
 func (i *MergeInstruction) Execute(canvas *Canvas, ctxtr Contextor) error { return nil } // TODO

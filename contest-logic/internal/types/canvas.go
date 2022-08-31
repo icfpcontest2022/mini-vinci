@@ -100,3 +100,22 @@ func (c *Canvas) HorizontalCut(blockID string, lineNumber int) error {
 	}
 	return nil
 }
+
+func (c *Canvas) SwapBlocks(blockID1, blockID2 string) error {
+	block1, err := c.getBlock(blockID1)
+	if err != nil {
+		return err
+	}
+	block2, err := c.getBlock(blockID2)
+	if err != nil {
+		return err
+	}
+	if !block1.Size().IsEqual(block2.Size()) {
+		return fmt.Errorf("blocks %s and %s have different sizes", blockID1, blockID2)
+	}
+	block1.SetID(blockID2)
+	block2.SetID(blockID1)
+	c.blocks[blockID1] = block2
+	c.blocks[blockID2] = block1
+	return nil
+}
