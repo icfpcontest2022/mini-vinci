@@ -3,7 +3,7 @@ import { Block, BlockType } from '../Block';
 import { Canvas } from '../Canvas';
 import { RGBA } from '../Color';
 import { ColorInstruction, CommentInstruction, HorizontalCutInstruction, Instruction, InstructionType, MergeInstruction, NopInstruction, PointCutInstruction, SwapInstruction, VerticalCutInstruction } from '../Instruction';
-import { Interpreter, InterpreterError } from '../Interpreter';
+import { Interpreter } from '../Interpreter';
 import { Point } from '../Point';
 const _ = require('lodash');
 
@@ -18,10 +18,7 @@ export class ContestLogicTester {
             console.log(instruction.typ);
             instructions.push(instruction);
             const interpreterResult = interpreter.interpret(move, canvas, instruction);
-            if (interpreterResult.typ === 'error') {
-                throw Error(`Instruction sequence resulted in error: ${interpreterResult.result as InterpreterError} [${instructions}]`);
-            }
-            canvas = (interpreterResult.result as Canvas);
+            canvas = (interpreterResult.canvas as Canvas);
             this.checkCanvasInvariants(canvas);
         }
         return canvas;
