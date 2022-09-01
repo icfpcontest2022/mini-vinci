@@ -47,5 +47,7 @@ func SendEmail(payload EmailDeliveryPayload) error {
 		logrus.WithError(err).Errorf("could not send email")
 	}
 
+	logrus.Infof("Sent email [%s] to %s", payload.Subject, payload.Receiver)
+
 	return err
 }

@@ -219,7 +219,7 @@ func (uc *UserController) SendRenewPasswordEmail(c *gin.Context, params SendRene
 
 	err = async.NewEmailDeliveryTask(email.EmailDeliveryPayload{
 		Receiver: user.Email,
-		Subject:  "Renew Password of Your Vinci Account",
+		Subject:  "Renew Password of Your Robo Vinci Account",
 		HTMLBody: email.RenderRenewPasswordEmailTemplate(email.TemplateValues{
 			TeamName: user.TeamName,
 			Link:     config.Get().Email.RenewPasswordURL + "?token=" + renewPasswordToken,
