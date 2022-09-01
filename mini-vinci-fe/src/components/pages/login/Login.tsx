@@ -8,8 +8,14 @@ import { toast } from 'material-react-toastify';
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { authToken as authTokenAtom } from '../../../atoms/auth';
-import logo from '../../../assets/headerLogo.png';
-import { login, register, sendResetLink } from '../../../services/auth';
+import headerLogo from '../../../assets/headerLogo.png';
+import verificationImage from '../../../assets/verification.jpg';
+import {
+  login,
+  register,
+  resendVerification,
+  sendResetLink,
+} from '../../../services/auth';
 import Loading from '../../Loading';
 import {
   isAuthTokenExpired,
@@ -30,6 +36,7 @@ const Login = (): JSX.Element => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [teamName, setTeamName] = useState('');
+  const [verificationSent, setVerificationSent] = useState(false);
 
   useEffect(() => {
     if (!isAuthTokenExpired(authToken)) {
@@ -71,6 +78,16 @@ const Login = (): JSX.Element => {
     setTeamName(e.target.value as string);
   const handleToggleRegister = () => setIsRegistering(!isRegistering);
 
+  const handleResendVerification = () => {
+    setLoading(true);
+    resendVerification(email)
+      .then(() => {
+        toast.success(`Verification mail successfully resent to ${email}`);
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setLoading(false));
+  };
+
   const handleSubmit = () => {
     setLoading(true);
     if (forgotPassword) {
@@ -83,8 +100,9 @@ const Login = (): JSX.Element => {
     } else if (isRegistering) {
       register(email, password, teamName)
         .then(() => {
-          toast.success('Verification mail sent');
+          toast.success(`Verification mail sent to ${email}`);
           setIsRegistering(false);
+          setVerificationSent(true);
         })
         .catch((err) => toast.error(err.message))
         .finally(() => setLoading(false));
@@ -106,6 +124,46 @@ const Login = (): JSX.Element => {
   const passwordMatchMessage = 'Passwords should match';
   const teamNameLengthMessage = 'At least 3 characters (except spaces)';
   const alphanumericTeamNameMessage = 'Only alphanumeric characters or "_"';
+
+  const generateVerificationSentForm = () => (
+    <Box component='div' className={classes.gridContainer}>
+      <Grid container spacing={1.5}>
+        <Grid item xs={12}>
+          <Button
+            color='primary'
+            onClick={() => setVerificationSent(false)}
+            startIcon={<ChevronLeftIcon />}
+            style={{ textTransform: 'none' }}
+          >
+            Back
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Box component='div' className={classes.logoContainer}>
+            <img src={verificationImage} alt='' width={150} />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box component='div'>{`Verification mail successfully sent to ${email}`}</Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Box component='div' className={classes.typographyContainer}>
+            <Typography className={classes.optionTypography}>
+              Not received yet?
+              <Box component='div' className={classes.horizontalSpacer} />
+              <Button
+                style={{ textTransform: 'none', padding: 0 }}
+                endIcon={<ChevronRightIcon fontSize='small' />}
+                onClick={handleResendVerification}
+              >
+                Resend verification
+              </Button>
+            </Typography>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
 
   const generateForgotPasswordForm = () => (
     <Box component='div' className={classes.gridContainer}>
@@ -264,22 +322,23 @@ const Login = (): JSX.Element => {
       </Grid>
     </Box>
   );
-
   return (
     <Box component='div' className={classes.background}>
       <Loading open={loading} />
       <Paper className={classes.paper}>
-        <Box component='div' className={classes.logoContainer}>
-          <img src={logo} alt='' width={150} />
-        </Box>
+        {!verificationSent && (
+          <Box component='div' className={classes.logoContainer}>
+            <img src={headerLogo} alt='' width={150} />
+          </Box>
+        )}
         <ValidatorForm
           instantValidate
           onError={(errors) => toast.error(errors)}
           onSubmit={handleSubmit}
         >
-          {forgotPassword
-            ? generateForgotPasswordForm()
-            : generateLoginRegisterForm()}
+          {verificationSent && generateVerificationSentForm()}
+          {forgotPassword && generateForgotPasswordForm()}
+          {!forgotPassword && !verificationSent && generateLoginRegisterForm()}
         </ValidatorForm>
       </Paper>
     </Box>
