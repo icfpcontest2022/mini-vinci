@@ -7,16 +7,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/google/uuid"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
-	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/problem"
-	"io"
-	"io/ioutil"
-	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"time"
 )
 
@@ -30,24 +27,19 @@ type EvaluationResult struct {
 	Error  string
 }
 
-func Evaluate(sub common.Submission, prob problem.Problem) EvaluationResult {
-	dir, err := ioutil.TempDir("./evaluation/submissions", fmt.Sprintf("%d_problem%d_", sub.UserID, sub.ProblemID))
+func Evaluate(sub common.Submission) EvaluationResult {
+	tmpFileName := fmt.Sprintf("%s.isl", uuid.New().String())
+
+	subFile, err := os.Create(path.Join("../../mini-vinci-judge/submissions", tmpFileName))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	//defer os.RemoveAll(dir)
-	fmt.Println(dir)
+	defer subFile.Close()
 
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-1")})
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	subFile, err := os.Create(path.Join(dir, "submission.isl"))
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer subFile.Close()
 
 	downloader := s3manager.NewDownloader(sess)
 	numBytes, err := downloader.Download(subFile,
@@ -61,28 +53,6 @@ func Evaluate(sub common.Submission, prob problem.Problem) EvaluationResult {
 
 	fmt.Println("Downloaded", subFile.Name(), numBytes, "bytes")
 
-	response, err := http.Get(prob.TargetLink)
-	if err != nil {
-		return EvaluationResult{}
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != 200 {
-		// return errors.New("Received non 200 response code")
-	}
-
-	//Create a empty file
-	file, err := os.Create(path.Join(dir, "target.png"))
-	if err != nil {
-		//return err
-	}
-	defer file.Close()
-
-	_, err = io.Copy(file, response.Body)
-	if err != nil {
-		// return err
-	}
-
 	// We got submission.isl, target.png in dir
 
 	ctx := context.Background()
@@ -90,12 +60,17 @@ func Evaluate(sub common.Submission, prob problem.Problem) EvaluationResult {
 	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	output, err := exec.CommandContext(ctx, "npm", "Emre").Output()
+	fmt.Println(subFile.Name())
+
+	cmd := exec.CommandContext(ctx, "yarn", "run", "-s", "test", fmt.Sprintf("submissions/%s", tmpFileName), fmt.Sprintf("%d", sub.ProblemID))
+	cmd.Dir = "../../mini-vinci-judge"
+
+	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("command context error", err)
 	}
 
-	fmt.Println("output:", string(output))
+	fmt.Println("output:", strings.TrimSpace(string(output)))
 
 	return EvaluationResult{
 		Score: 11,
