@@ -32,7 +32,6 @@ import { Submission } from '../../../models/submission';
 import { formatToLocalDateTime } from '../../../utilities/time';
 import { formatSubmissionStatus } from '../../../utilities/submission';
 import { SubmissionStatus } from '../../../variables/submission';
-import NewSubmission from './NewSubmission';
 import {
   getAuthTokenFromStorage,
   isAuthTokenExpired,
