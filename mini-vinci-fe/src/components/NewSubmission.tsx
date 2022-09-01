@@ -15,6 +15,8 @@ import {
   Theme,
 } from '@mui/material';
 
+import axios from 'axios';
+
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
@@ -71,40 +73,55 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const [proposedScore, setProposedScore] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  const [targetPaintingData, setTargetPaintingData] = useState(undefined);
+
+  useEffect(() => {
+    (async () => {
+      if (problemID) {
+        const targetPaintingDataResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemID}.json`);
+
+        setTargetPaintingData(targetPaintingDataResponse.data);
+      }
+    })();
+  }, [problemID]);
+
   const interpret = (fileContent: string) => {
     const interpreter = new Interpreter();
     return interpreter.run(fileContent);
   };
 
-  const drawToCanvas = (canvasToDraw: InterpreterResult) => {
-    const interpretedCanvas = canvasToDraw.canvas;
-    const instructionCost = canvasToDraw.cost;
-    const painter = new Painter();
-    const renderedData = painter.draw(interpretedCanvas);
-    const targetPainting = SimilarityChecker.pngToFrame(
-      '../../../assets/chess_board.png',
-    );
-    const similarityCost = SimilarityChecker.imageDiff(
-      targetPainting,
-      renderedData,
-    );
-    const canvas = canvasRef.current!;
-    const context = canvas.getContext('2d')!;
+  const drawToCanvas = async (canvasToDraw: InterpreterResult) => {
+    if (targetPaintingData) {
+      const interpretedCanvas = canvasToDraw.canvas;
+      const instructionCost = canvasToDraw.cost;
+      const painter = new Painter();
+      const renderedData = painter.draw(interpretedCanvas);
 
-    canvas.width = interpretedCanvas.width;
-    canvas.height = interpretedCanvas.height;
+      const targetPainting = SimilarityChecker.dataToFrame(targetPaintingData);
+      const similarityCost = SimilarityChecker.imageDiff(
+        targetPainting,
+        renderedData,
+      );
+      const canvas = canvasRef.current!;
+      const context = canvas.getContext('2d')!;
 
-    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    renderedData.forEach((pixel: RGBA, index: number) => {
-      imgData.data[index * 4] = pixel.r;
-      imgData.data[index * 4 + 1] = pixel.g;
-      imgData.data[index * 4 + 2] = pixel.b;
-      imgData.data[index * 4 + 3] = pixel.a;
-    });
-    context.putImageData(imgData, 0, 0);
+      canvas.width = interpretedCanvas.width;
+      canvas.height = interpretedCanvas.height;
 
-    // TODO: This should also have the similarity cost added to it.
-    return instructionCost + similarityCost;
+      const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      renderedData.forEach((pixel: RGBA, index: number) => {
+        imgData.data[index * 4] = pixel.r;
+        imgData.data[index * 4 + 1] = pixel.g;
+        imgData.data[index * 4 + 2] = pixel.b;
+        imgData.data[index * 4 + 3] = pixel.a;
+      });
+      context.putImageData(imgData, 0, 0);
+
+      // TODO: This should also have the similarity cost added to it.
+      return instructionCost + similarityCost;
+    }
+
+    return 0;
   };
 
   useEffect(() => {
@@ -147,13 +164,15 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
       })
       .finally(() => setLoading(false));
   };
+
   const handlePreview = () => {
     setLoading(true);
     setSubmissionPhase(SubmissionPhase.RENDER);
     setIsRendered(true);
-    setTimeout(() => {
+
+    setTimeout(async () => {
       try {
-        setProposedScore(drawToCanvas(interpreterResult as InterpreterResult));
+        setProposedScore(await drawToCanvas(interpreterResult as InterpreterResult));
         setSubmissionPhase(SubmissionPhase.READY_TO_SUBMIT);
       } catch (err: any) {
         toast.error(err.message);
@@ -162,7 +181,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
       } finally {
         setLoading(false);
       }
-    }, 500);
+    }, 3000);
   };
   const handleTypeCheck = () => {
     setLoading(true);
