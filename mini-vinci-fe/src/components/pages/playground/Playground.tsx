@@ -1,47 +1,21 @@
-/* eslint-disable */
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextareaAutosize,
-  Theme,
-} from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import BrushIcon from '@mui/icons-material/Brush';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import InfoIcon from '@mui/icons-material/Info';
+import { Box, Button, TextareaAutosize, Theme } from '@mui/material';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { makeStyles } from 'tss-react/mui';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'material-react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { authToken as authTokenAtom } from '../../../atoms/auth';
 import { selectedTab as selectedTabAtom } from '../../../atoms/tabs';
 import AppHeader from '../../AppHeader';
 import { TabKind } from '../../../variables/tabs';
 import { sharedColors, sharedStyles } from '../../../utilities/styles';
-import { Submission } from '../../../models/submission';
-import { formatToLocalDateTime } from '../../../utilities/time';
-import { formatSubmissionStatus } from '../../../utilities/submission';
-import { SubmissionStatus } from '../../../variables/submission';
 import {
   getAuthTokenFromStorage,
   isAuthTokenExpired,
 } from '../../../utilities/auth';
-import Loading from '../../Loading';
-import { getSubmissionsList } from '../../../services/submission';
 import { Canvas } from '../../../contest-logic/Canvas';
 import { RGBA } from '../../../contest-logic/Color';
 import { Interpreter } from '../../../contest-logic/Interpreter';
-import { ContestLogicTester } from '../../../contest-logic/tester/ContestLogicTester';
 import { instructionToString } from '../../../contest-logic/Instruction';
 import { Painter } from '../../../contest-logic/Painter';
 import { RandomInstructionGenerator } from '../../../contest-logic/RandomInstructionGenerator';
@@ -51,9 +25,11 @@ const Playground = (): JSX.Element => {
 
   const navigate = useNavigate();
 
-  const [authToken, setAuthToken] = useRecoilState(authTokenAtom);
+  const setAuthToken = useSetRecoilState(authTokenAtom);
   const [playgroundCode, setPlaygroundCode] = useState('');
-  const [paintedCanvas, setPaintedCanvas] = useState(new Canvas(400, 400, new RGBA([255, 255, 255, 255])));
+  const [paintedCanvas, setPaintedCanvas] = useState(
+    new Canvas(400, 400, new RGBA([255, 255, 255, 255])),
+  );
   const [canvasDrawn, setCanvasDrawn] = useState(false);
   const setSelectedTab = useSetRecoilState(selectedTabAtom);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -64,13 +40,13 @@ const Playground = (): JSX.Element => {
   };
   const handleClickGenerateInstruction = () => {
     const interpreter = new Interpreter();
-    const instruction = RandomInstructionGenerator.generateRandomInstruction(paintedCanvas);
+    const instruction =
+      RandomInstructionGenerator.generateRandomInstruction(paintedCanvas);
     const result = interpreter.interpret(0, paintedCanvas, instruction);
-    console.log(instruction)
-    setPlaygroundCode(playgroundCode + "\n" + instructionToString(instruction));
+    setPlaygroundCode(`${playgroundCode}\n${instructionToString(instruction)}`);
     setPaintedCanvas(result.canvas);
     setCanvasDrawn(true);
-  }
+  };
 
   const drawToCanvas = () => {
     const painter = new Painter();
@@ -99,8 +75,8 @@ const Playground = (): JSX.Element => {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
     imgData.data.forEach((value, index) => {
       imgData.data[index] = 255;
-    }); 
-  }
+    });
+  };
   const handleClickRenderCanvas = () => {
     if (canvasDrawn) {
       drawToCanvas();
@@ -110,13 +86,12 @@ const Playground = (): JSX.Element => {
       setPaintedCanvas(result.canvas);
       setCanvasDrawn(true);
     }
-    
   };
   const handleReset = () => {
     setPaintedCanvas(new Canvas(400, 400, new RGBA([255, 255, 255, 255])));
     setPlaygroundCode('');
     clearCanvas();
-  }
+  };
   const initializeTokenFromStorage = () => {
     const storedAuthToken = getAuthTokenFromStorage();
     if (isAuthTokenExpired(storedAuthToken)) {
@@ -126,18 +101,14 @@ const Playground = (): JSX.Element => {
     }
   };
 
-
   useEffect(() => {
     initializeTokenFromStorage();
     setSelectedTab(TabKind.PLAYGROUND);
     document.title = 'ICFPC 2022 Playground';
   }, []);
 
-  const [loading, setLoading] = useState(false);
-
   return (
     <Box component='div' className={classes.mainContainer}>
-      <Loading open={loading} />
       <AppHeader />
       <Box component='div' className={classes.headerRow}>
         <Box className={classes.submissionsHeader}>Playground</Box>
@@ -168,15 +139,15 @@ const Playground = (): JSX.Element => {
         </Button>
       </Box>
       <Box component='div' className={classes.row}>
-          <TextareaAutosize
-            placeholder='Code to be submitted'
-            value={playgroundCode}
-            onChange={handlePlaygroundCode}
-            className={classes.textArea}
-          />
-          <Box component='div' className={classes.canvasContainer}>
-            <canvas ref={canvasRef} />
-          </Box>
+        <TextareaAutosize
+          placeholder='Code to be submitted'
+          value={playgroundCode}
+          onChange={handlePlaygroundCode}
+          className={classes.textArea}
+        />
+        <Box component='div' className={classes.canvasContainer}>
+          <canvas ref={canvasRef} />
+        </Box>
       </Box>
     </Box>
   );
