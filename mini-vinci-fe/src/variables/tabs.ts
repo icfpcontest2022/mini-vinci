@@ -11,4 +11,5 @@ export enum TabURL {
   SUPPORT = 'support',
   LOGIN = 'login',
   PLAYGROUND = 'playground',
+  RESET_PASSWORD = 'reset-password',
 }

@@ -28,6 +28,7 @@ export const getSubmissionsList = async (
 };
 
 export const makeNewSubmission = async (
+  problemID: string,
   code: string,
   authToken: string,
 ): Promise<void> => {
@@ -36,7 +37,7 @@ export const makeNewSubmission = async (
   bodyFormData.append('file', file);
 
   let request: AxiosRequestConfig = {
-    url: '/submissions/31/create',
+    url: `/submissions/${problemID}/create`,
     method: 'post',
     headers: { 'Content-Type': 'multipart/form-data' },
     data: bodyFormData,

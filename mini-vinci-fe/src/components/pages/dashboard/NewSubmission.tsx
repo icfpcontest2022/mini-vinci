@@ -1,4 +1,3 @@
-
 import {
   Box,
   Button,
@@ -7,6 +6,8 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  MenuItem,
+  Select,
   Step,
   StepLabel,
   Stepper,
@@ -24,19 +25,24 @@ import { DropzoneArea } from 'react-mui-dropzone';
 import { toast } from 'material-react-toastify';
 import { useRecoilValue } from 'recoil';
 import { authToken as authTokenAtom } from '../../../atoms/auth';
-import { sharedColors } from '../../../utilities/styles';
+import { sharedColors, sharedStyles } from '../../../utilities/styles';
 import Loading from '../../Loading';
 import { makeNewSubmission } from '../../../services/submission';
 import { getPreviewImageName } from '../../../utilities/submission';
-import { Interpreter, InterpreterResult } from '../../../contest-logic/Interpreter';
+import {
+  Interpreter,
+  InterpreterResult,
+} from '../../../contest-logic/Interpreter';
 import { RGBA } from '../../../contest-logic/Color';
 import { Painter } from '../../../contest-logic/Painter';
+import { getProblemIDs } from '../../../utilities/problem';
 import { SimilarityChecker } from '../../../contest-logic/SimilarityChecker';
 
 interface NewSubmissionProps {
   open: boolean;
   onClose: () => void;
   onSubmit: () => void;
+  problemID?: string;
 }
 
 enum SubmissionPhase {
@@ -50,33 +56,41 @@ enum SubmissionPhase {
 const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const { classes } = useStyles();
 
-  const authToken = useRecoilValue(authTokenAtom);
+  const problemIDs = getProblemIDs();
 
+  const authToken = useRecoilValue(authTokenAtom);
   const [loading, setLoading] = useState(false);
   const [submittedFile, setSubmittedFile] = useState<File | null>(null);
-  const [interpreterResult, setInterpreterResult] = useState<InterpreterResult | undefined>();
+  const [interpreterResult, setInterpreterResult] = useState(
+    undefined as InterpreterResult | undefined,
+  );
   const [codeToSubmit, setCodeToSubmit] = useState('');
   const [submissionPhase, setSubmissionPhase] = useState(
     SubmissionPhase.ENTER_CODE,
   );
   const [isRendered, setIsRendered] = useState(false);
-  const [proposedScore, setProposedScore] = useState(0);
+  const [problemID, setProblemID] = useState(props.problemID ?? problemIDs[0]);
 
+  const [proposedScore, setProposedScore] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  
+
   const interpret = (fileContent: string) => {
     const interpreter = new Interpreter();
-    const interpretedStructure = interpreter.run(fileContent);
-    return interpretedStructure;
+    return interpreter.run(fileContent);
   };
-  
+
   const drawToCanvas = (canvasToDraw: InterpreterResult) => {
     const interpretedCanvas = canvasToDraw.canvas;
     const instructionCost = canvasToDraw.cost;
     const painter = new Painter();
     const renderedData = painter.draw(interpretedCanvas);
-    const targetPainting = SimilarityChecker.pngToFrame('../../../assets/chess_board.png');
-    const similarityCost = SimilarityChecker.imageDiff(targetPainting, renderedData);
+    const targetPainting = SimilarityChecker.pngToFrame(
+      '../../../assets/chess_board.png',
+    );
+    const similarityCost = SimilarityChecker.imageDiff(
+      targetPainting,
+      renderedData,
+    );
     const canvas = canvasRef.current!;
     const context = canvas.getContext('2d')!;
 
@@ -93,13 +107,13 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     context.putImageData(imgData, 0, 0);
 
     // TODO: This should also have the similarity cost added to it.
-    const totalCost = instructionCost + similarityCost;
-    return totalCost;
+    return instructionCost + similarityCost;
   };
 
   useEffect(() => {
     setIsRendered(false);
     setSubmissionPhase(SubmissionPhase.ENTER_CODE);
+    setProblemID(props.problemID ?? problemIDs[0]);
   }, [props.open]);
 
   useEffect(() => {
@@ -115,6 +129,10 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     }
   }, [submittedFile]);
 
+  const handleChangeProblemID = (e: any) => {
+    setProblemID(e.target.value as string);
+  };
+
   const handleUploadFile = (fileList: File[]) => setSubmittedFile(fileList[0]);
   const handleChangeCodeToSubmit = (e: any) => {
     setCodeToSubmit(e.target.value as string);
@@ -124,7 +142,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
 
   const handleSubmit = () => {
     setLoading(true);
-    makeNewSubmission(codeToSubmit, authToken!)
+    makeNewSubmission(problemID, codeToSubmit, authToken!)
       .then(props.onSubmit)
       .catch((err) => {
         toast.error(err.message);
@@ -245,7 +263,37 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth>
       <Loading open={loading} />
-      <DialogTitle>New Submission</DialogTitle>
+      <DialogTitle>
+        <Box component='div' className={classes.row}>
+          <Box
+            component='div'
+            style={{ ...sharedStyles.h6, fontSize: 20 }}
+            className={classes.title}
+          >
+            {`New Submission for Problem ${props.problemID ?? ''}`}
+          </Box>
+          {!props.problemID && (
+            <Box component='div' className={classes.selectProblem}>
+              <FormControl variant='standard'>
+                <Select
+                  labelId='problem-to-submit'
+                  id='select-problem-to-submit'
+                  value={problemID}
+                  onChange={handleChangeProblemID}
+                  disabled={!!props.problemID}
+                  size='small'
+                >
+                  {problemIDs.map((problemIDOption) => (
+                    <MenuItem value={problemIDOption}>
+                      {problemIDOption}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <Box component='div' className={classes.contentWrapper}>
           <FormControl
@@ -405,6 +453,16 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
   horizontalSpacer: {
     flexGrow: 1,
+  },
+  selectProblem: {
+    marginTop: 'auto',
+    marginBottom: 'auto',
+  },
+  title: {
+    marginTop: 'auto',
+    marginBottom: 'auto',
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(1),
   },
 }));
 
