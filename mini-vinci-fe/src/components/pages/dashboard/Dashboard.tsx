@@ -30,7 +30,7 @@ import { Submission } from '../../../models/submission';
 import { formatToLocalDateTime } from '../../../utilities/time';
 import { formatSubmissionStatus } from '../../../utilities/submission';
 import { SubmissionStatus } from '../../../variables/submission';
-import NewSubmission from './NewSubmission';
+import NewSubmission from '../../NewSubmission';
 import {
   getAuthTokenFromStorage,
   isAuthTokenExpired,
@@ -153,6 +153,11 @@ const Dashboard = (): JSX.Element => {
                   Submitted At
                 </Box>
               </TableCell>
+              <TableCell key='problem-id'>
+                <Box component='div' className={classes.columnLabel}>
+                  Problem ID
+                </Box>
+              </TableCell>
               <TableCell key='submission-id'>
                 <Box component='div' className={classes.columnLabel}>
                   Submission ID
@@ -186,6 +191,11 @@ const Dashboard = (): JSX.Element => {
                 <TableCell>
                   <Box component='div' className={classes.tableStringField}>
                     {formatToLocalDateTime(submission.date)}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box component='div' className={classes.tableStringField}>
+                    {submission.problemID}
                   </Box>
                 </TableCell>
                 <TableCell>

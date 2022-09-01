@@ -21,6 +21,7 @@ import { TabURL } from './variables/tabs';
 import Support from './components/pages/support/Support';
 import Playground from './components/pages/playground/Playground';
 import ResetPassword from './components/pages/reset-password/ResetPassword';
+import Problems from './components/pages/problems/Problems';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -33,11 +34,12 @@ root.render(
           <Routes>
             <Route path={TabURL.LOGIN} element={<Login />} />
             <Route path={TabURL.DASHBOARD} element={<Dashboard />} />
+            <Route path={TabURL.PROBLEMS} element={<Problems />} />
             <Route path={TabURL.ANNOUNCEMENTS} element={<Announcements />} />
             <Route path={TabURL.PLAYGROUND} element={<Playground />} />
             <Route path={TabURL.SUPPORT} element={<Support />} />
             <Route
-              path={`${TabURL.RESET_PASSWORD}/:token`}
+              path={`${TabURL.RESET_PASSWORD}`}
               element={<ResetPassword />}
             />
             <Route path='*' element={<App />} />

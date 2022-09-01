@@ -9,5 +9,6 @@ func InitalizeServer() {
 
 	setUpRouters(r)
 
-	r.Run(":80")
+	r.Run("127.0.0.1:8000")
+	// r.RunTLS(":443", "server/cert.pem", "server/key.pem")
 }

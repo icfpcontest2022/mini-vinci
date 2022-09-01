@@ -4,6 +4,7 @@ export interface Submission {
   submissionNumber: number;
   date: Date;
   id: string;
+  problemID: string;
   status: SubmissionStatus;
   score?: number;
   code?: string;
@@ -17,6 +18,7 @@ export const submissionFromResponse = (
   submissionNumber,
   date: new Date(response.submitted_at),
   id: response.id.toString(),
+  problemID: response.problem_id.toString(),
   status: response.status,
   score: response.score,
 });
