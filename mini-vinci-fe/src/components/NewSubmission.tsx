@@ -24,19 +24,16 @@ import { useEffect, useRef, useState } from 'react';
 import { DropzoneArea } from 'react-mui-dropzone';
 import { toast } from 'material-react-toastify';
 import { useRecoilValue } from 'recoil';
-import { authToken as authTokenAtom } from '../../../atoms/auth';
-import { sharedColors, sharedStyles } from '../../../utilities/styles';
-import Loading from '../../Loading';
-import { makeNewSubmission } from '../../../services/submission';
-import { getPreviewImageName } from '../../../utilities/submission';
-import {
-  Interpreter,
-  InterpreterResult,
-} from '../../../contest-logic/Interpreter';
-import { RGBA } from '../../../contest-logic/Color';
-import { Painter } from '../../../contest-logic/Painter';
-import { getProblemIDs } from '../../../utilities/problem';
-import { SimilarityChecker } from '../../../contest-logic/SimilarityChecker';
+import { authToken as authTokenAtom } from '../atoms/auth';
+import { sharedColors, sharedStyles } from '../utilities/styles';
+import Loading from './Loading';
+import { makeNewSubmission } from '../services/submission';
+import { getPreviewImageName } from '../utilities/submission';
+import { Interpreter, InterpreterResult } from '../contest-logic/Interpreter';
+import { RGBA } from '../contest-logic/Color';
+import { Painter } from '../contest-logic/Painter';
+import { getProblemIDs } from '../utilities/problem';
+import { SimilarityChecker } from '../contest-logic/SimilarityChecker';
 
 interface NewSubmissionProps {
   open: boolean;
