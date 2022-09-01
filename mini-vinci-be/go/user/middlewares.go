@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
-	ErrEmailIsNotVerifiedYet    = errors.New("email is not verified yet")
-	ErrLoginsNotOpenedYet       = errors.New("email is verified, but not allowed to login at this time")
+	ErrIncorrectEmailOrPassword = errors.New("Incorrect Email or Password!")
+	ErrEmailIsNotVerifiedYet    = errors.New("Your email is not verified yet.")
+	ErrLoginsNotOpenedYet       = errors.New("Email is verified, you will be allowed to login once the contest starts.")
 )
 
 type LoginParams struct {
