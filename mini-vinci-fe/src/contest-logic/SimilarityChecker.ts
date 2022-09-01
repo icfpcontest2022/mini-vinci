@@ -12,19 +12,20 @@ type HSV = {
 export class SimilarityChecker {
 
   static pngToFrame(filename: string): Frame {
-    let frame: Frame = [];
-    var fs = require("fs"),
-    PNG = require("pngjs").PNG;
+    // let frame: Frame = [];
+    // var fs = require("fs"),
+    // PNG = require("pngjs").PNG;
     
-    var data = fs.readFileSync(filename);
-    var png = PNG.sync.read(data);
-    for (var y = 0; y < png.height; y++) {
-      for (var x = 0; x < png.width; x++) {
-        var idx = (png.width * y + x) << 2;
-        frame.push(new RGBA(png.data.slice(idx, idx + 4)));
-      }
-    }
-    return frame;
+    // var data = fs.readFileSync(filename);
+    // var png = PNG.sync.read(data);
+    // for (var y = 0; y < png.height; y++) {
+    //   for (var x = 0; x < png.width; x++) {
+    //     var idx = (png.width * y + x) << 2;
+    //     frame.push(new RGBA(png.data.slice(idx, idx + 4)));
+    //   }
+    // }
+    // return frame;
+    return []
   }
 
   static imageDiff(f1: Frame, f2: Frame): number {
@@ -34,7 +35,7 @@ export class SimilarityChecker {
           const p2 = f2[index];
           diff += this.pixelDiff(p1, p2);
       }
-      return diff;
+      return Math.round(diff);
   }
 
   static pixelDiff(p1: RGBA, p2: RGBA): number {

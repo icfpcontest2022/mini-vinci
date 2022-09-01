@@ -71,7 +71,7 @@ The **initial canvas** only holds exactly one block, colored with the color **RG
 
 Blocks are uniquely defined by their **block_id**.
 
-A global counter is held for block creations, the initial canvas has one block with **block_id = 0**. Each new block created by a **merge move** increases this counter by 1.
+A global counter is held for block creations via merge, the initial canvas has one block with **block_id = 0**. Each new block created by a **merge move** increases this counter by 1. Each **cut move** generates sub-blocks of the block by simply adding **.0, .1, .2 or .3** to the end of the block id depending on the cut type.
 
 ## Painting
 

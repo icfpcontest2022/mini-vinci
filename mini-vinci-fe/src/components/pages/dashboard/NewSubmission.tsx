@@ -31,6 +31,7 @@ import { getPreviewImageName } from '../../../utilities/submission';
 import { Interpreter, InterpreterResult } from '../../../contest-logic/Interpreter';
 import { RGBA } from '../../../contest-logic/Color';
 import { Painter } from '../../../contest-logic/Painter';
+import { SimilarityChecker } from '../../../contest-logic/SimilarityChecker';
 
 interface NewSubmissionProps {
   open: boolean;
@@ -74,6 +75,8 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     const instructionCost = canvasToDraw.cost;
     const painter = new Painter();
     const renderedData = painter.draw(interpretedCanvas);
+    const targetPainting = SimilarityChecker.pngToFrame('../../../assets/chess_board.png');
+    const similarityCost = SimilarityChecker.imageDiff(targetPainting, renderedData);
     const canvas = canvasRef.current!;
     const context = canvas.getContext('2d')!;
 
@@ -90,7 +93,8 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     context.putImageData(imgData, 0, 0);
 
     // TODO: This should also have the similarity cost added to it.
-    return instructionCost;
+    const totalCost = instructionCost + similarityCost;
+    return totalCost;
   };
 
   useEffect(() => {
