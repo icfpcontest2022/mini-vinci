@@ -71,3 +71,40 @@ export type Instruction =
     | HorizontalCutInstruction
     | SwapInstruction
     | MergeInstruction;
+
+export const instructionToString = (instruction: Instruction) => {
+    switch (instruction.typ) {
+        case InstructionType.NopInstructionType: {
+            const instructionAsString = "";
+            return instructionAsString;
+        }
+        case InstructionType.CommentInstructionType: {
+            const instructionAsString = `# ${instruction.comment}`;
+            return instructionAsString;
+        }
+        case InstructionType.ColorInstructionType: {
+            const instructionAsString = `color [${instruction.blockId}] [${instruction.color.r}, ${instruction.color.g}, ${instruction.color.b}, ${instruction.color.a}]`;
+            return instructionAsString;
+        }
+        case InstructionType.PointCutInstructionType: {
+            const instructionAsString = `cut [${instruction.blockId}] [${instruction.point.px}, ${instruction.point.py}]`;
+            return instructionAsString;
+        }
+        case InstructionType.VerticalCutInstructionType: {
+            const instructionAsString = `cut [${instruction.blockId}] [x] [${instruction.lineNumber}]`;
+            return instructionAsString;
+        }
+        case InstructionType.HorizontalCutInstructionType: {
+            const instructionAsString = `cut [${instruction.blockId}] [y] [${instruction.lineNumber}]`;
+            return instructionAsString;
+        }
+        case InstructionType.SwapInstructionType: {
+            const instructionAsString = `swap [${instruction.blockId1}] [${instruction.blockId2}]`;
+            return instructionAsString;
+        }
+        case InstructionType.MergeInstructionType: {
+            const instructionAsString = `merge [${instruction.blockId1}] [${instruction.blockId2}]`;
+            return instructionAsString;
+        }
+    }
+}

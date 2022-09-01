@@ -114,6 +114,7 @@ export class Interpreter {
                     color
                 )
             );
+            console.log(context.blocks);
             return new InterpreterResult(context, cost);
         }
         // Processing Ends
@@ -602,9 +603,9 @@ export class Interpreter {
                 newTopRight,
                 block1.getChildren().concat(block2.getChildren())
             );
+            context.blocks.set(newBlock.id, newBlock);
             context.blocks.delete(blockId1);
             context.blocks.delete(blockId2);
-            context.blocks.set(newBlock.id, newBlock);
             return new InterpreterResult(context, cost);
         }
 
@@ -628,9 +629,9 @@ export class Interpreter {
                 newTopRight,
                 block1.getChildren().concat(block2.getChildren())
             );
+            context.blocks.set(newBlock.id, newBlock);
             context.blocks.delete(blockId1);
             context.blocks.delete(blockId2);
-            context.blocks.set(newBlock.id, newBlock);
             return new InterpreterResult(context, cost);
         }
 

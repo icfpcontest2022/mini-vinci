@@ -42,6 +42,10 @@ const AppHeader = () => {
         navigate(`/${TabURL.SUPPORT}`);
         break;
       }
+      case TabKind.PLAYGROUND: {
+        navigate(`/${TabURL.PLAYGROUND}`);
+        break;
+      }
       default: {
         navigate(`/${TabURL.DASHBOARD}`);
       }
@@ -78,6 +82,12 @@ const AppHeader = () => {
               <Typography className={classes.tabLabel}>Support</Typography>
             }
             id='support-tab'
+          />
+          <Tab
+            label={
+              <Typography className={classes.tabLabel}>Playground</Typography>
+            }
+            id='playground-tab'
           />
         </Tabs>
       </Box>
