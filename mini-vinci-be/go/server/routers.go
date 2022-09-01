@@ -13,7 +13,9 @@ import (
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"log"
-	"net/http"
+	"path"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -40,9 +42,19 @@ func setUpRouters(r *gin.Engine) error {
 
 	r.Use(static.Serve("/", static.LocalFile(ReactBuildPath, false)))
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
+	// set general rate limiter
+	r.Use(mgin.NewMiddleware(
+		limiter.New(memory.NewStore(),
+			limiter.Rate{
+				Period: 15 * time.Minute,
+				Limit:  1000,
+			}),
+	))
+
+	apiGroup := r.Group("/api")
+
+	//user
+	userRouter := user.UserRouter{}
 
 	authMiddleware, err := user.GetAuthMiddleware()
 	if err != nil {
@@ -53,24 +65,12 @@ func setUpRouters(r *gin.Engine) error {
 		log.Fatal("error while initializing auth middleware:" + err.Error())
 	}
 
-	// set general rate limiter
-	r.Use(mgin.NewMiddleware(
-		limiter.New(memory.NewStore(),
-			limiter.Rate{
-				Period: 15 * time.Minute,
-				Limit:  1000,
-			}),
-	))
-
-	//user
-	userRouter := user.UserRouter{}
-
-	userGroup := r.Group("users")
+	userGroup := apiGroup.Group("users")
 	userGroup.Use(authMiddleware.MiddlewareFunc())
 	userGroup.GET("", userRouter.RetrieveUser)
 
 	// set non auth rate limiter
-	r.Use(mgin.NewMiddleware(
+	apiGroup.Use(mgin.NewMiddleware(
 		limiter.New(memory.NewStore(),
 			limiter.Rate{
 				Period: 1 * time.Minute,
@@ -78,7 +78,7 @@ func setUpRouters(r *gin.Engine) error {
 			}),
 	))
 
-	nonAuthUserGroup := r.Group("users")
+	nonAuthUserGroup := apiGroup.Group("users")
 	nonAuthUserGroup.POST("register", userRouter.CreateUser)
 	nonAuthUserGroup.POST("login", authMiddleware.LoginHandler)
 	nonAuthUserGroup.GET("verification", userRouter.VerificateUser)
@@ -89,7 +89,7 @@ func setUpRouters(r *gin.Engine) error {
 	// submission
 	submissionRouter := submission.SubmissionRouter{}
 
-	submissionGroup := r.Group("submissions")
+	submissionGroup := apiGroup.Group("submissions")
 	submissionGroup.Use(authMiddleware.MiddlewareFunc())
 	submissionGroup.POST(":problem_id/create", submissionRouter.CreateSubmission)
 	submissionGroup.GET(":id", submissionRouter.RetrieveSubmission)
@@ -98,14 +98,14 @@ func setUpRouters(r *gin.Engine) error {
 	// problem
 	problemRouter := problem.ProblemRouter{}
 
-	problemGroup := r.Group("problems")
+	problemGroup := apiGroup.Group("problems")
 	problemGroup.Use(authMiddleware.MiddlewareFunc())
 	problemGroup.GET("", problemRouter.GetProblems)
 
 	// support
 	supportRouter := support.SupportRouter{}
 
-	supportGroup := r.Group("support")
+	supportGroup := apiGroup.Group("support")
 	supportGroup.Use(authMiddleware.MiddlewareFunc())
 	supportGroup.GET("", supportRouter.GetMessages)
 	supportGroup.POST("", supportRouter.SendMessage)
@@ -113,17 +113,29 @@ func setUpRouters(r *gin.Engine) error {
 	// announcement
 	announcementRouter := announcement.AnnouncementRouter{}
 
-	announcementGroup := r.Group("announcements")
+	announcementGroup := apiGroup.Group("announcements")
 	announcementGroup.Use(authMiddleware.MiddlewareFunc())
 	announcementGroup.GET("", announcementRouter.GetAnnouncements)
 
 	// result
 	resultRouter := result.ResultRouter{}
 
-	resultGroup := r.Group("results")
+	resultGroup := apiGroup.Group("results")
 	resultGroup.Use(authMiddleware.MiddlewareFunc())
 	resultGroup.GET("user", resultRouter.GetUserResults)
 	resultGroup.GET("scoreboard", resultRouter.GetScoreboard)
+
+	r.NoRoute(func(c *gin.Context) {
+		escapedPath := c.Request.URL.EscapedPath()
+		dir, file := path.Split(escapedPath)
+		ext := filepath.Ext(file)
+
+		if file == "" || ext == "" {
+			c.File(ReactBuildPath + "/index.html")
+		} else {
+			c.File(ReactBuildPath + "/" + strings.TrimPrefix(path.Join(dir, file), "/"))
+		}
+	})
 
 	return nil
 }

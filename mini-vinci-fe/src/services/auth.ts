@@ -8,7 +8,7 @@ export const login = async (
   email: string,
   password: string,
 ): Promise<string> => {
-  const url = '/users/login';
+  const url = '/api/users/login';
   const res = await api.post(url, newLoginRequest(email, password));
   if (res.data?.token) {
     return res.data.token;
@@ -21,7 +21,7 @@ export const register = async (
   password: string,
   teamName: string,
 ): Promise<void> => {
-  const url = '/users/register';
+  const url = '/api/users/register';
   await api.post(url, newRegisterRequest(email, password, teamName));
 };
 
@@ -29,11 +29,11 @@ export const renewPassword = async (
   password: string,
   token: string,
 ): Promise<void> => {
-  const url = '/users/password/renew';
+  const url = '/api/users/password/renew';
   await api.post(url, newRenewPasswordRequest(password, token));
 };
 
 export const sendResetLink = async (email: string): Promise<void> => {
-  const url = '/users/password/send-renew-email';
+  const url = '/api/users/password/send-renew-email';
   await api.post(url, newSendResetLinkRequest(email));
 };

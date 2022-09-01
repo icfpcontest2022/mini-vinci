@@ -4,7 +4,7 @@ import { setAuthToken } from '../utilities/request';
 import { SupportMessage, supportMessageFromResponse } from '../models/support';
 import api from './api';
 
-const supportEndpoint = '/support';
+const supportEndpoint = '/api/support';
 
 export const getSupportHistory = async (
   authToken: string,
