@@ -3,6 +3,7 @@ import { newLoginRequest } from '../models/request/login';
 import { newRegisterRequest } from '../models/request/register';
 import { newRenewPasswordRequest } from '../models/request/renewPassword';
 import { newSendResetLinkRequest } from '../models/request/sendResetLink';
+import { newResendVerificationRequest } from '../models/request/resendVerification';
 
 export const login = async (
   email: string,
@@ -36,4 +37,9 @@ export const renewPassword = async (
 export const sendResetLink = async (email: string): Promise<void> => {
   const url = '/api/users/password/send-renew-email';
   await api.post(url, newSendResetLinkRequest(email));
+};
+
+export const resendVerification = async (email: string): Promise<void> => {
+  const url = '/api/users/verification/resend-email';
+  await api.post(url, newResendVerificationRequest(email));
 };
