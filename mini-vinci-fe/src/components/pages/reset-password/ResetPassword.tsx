@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Grid, Paper, Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 import { toast } from 'material-react-toastify';
 import logo from '../../../assets/headerLogo.png';
@@ -12,7 +12,15 @@ const ResetPassword = (): JSX.Element => {
   const { classes } = useStyles();
 
   const navigate = useNavigate();
-  const { token } = useParams();
+
+  const useQuery = () => {
+    const { search } = useLocation();
+
+    return useMemo(() => new URLSearchParams(search), [search]);
+  };
+
+  const query = useQuery();
+  const token = query.get('token');
 
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');

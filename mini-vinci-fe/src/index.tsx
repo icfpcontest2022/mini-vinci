@@ -37,7 +37,7 @@ root.render(
             <Route path={TabURL.PLAYGROUND} element={<Playground />} />
             <Route path={TabURL.SUPPORT} element={<Support />} />
             <Route
-              path={`${TabURL.RESET_PASSWORD}/:token`}
+              path={`${TabURL.RESET_PASSWORD}`}
               element={<ResetPassword />}
             />
             <Route path='*' element={<App />} />
