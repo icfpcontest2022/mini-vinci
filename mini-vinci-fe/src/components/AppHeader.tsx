@@ -34,6 +34,10 @@ const AppHeader = () => {
         navigate(`/${TabURL.DASHBOARD}`);
         break;
       }
+      case TabKind.PROBLEMS: {
+        navigate(`/${TabURL.PROBLEMS}`);
+        break;
+      }
       case TabKind.ANNOUNCEMENTS: {
         navigate(`/${TabURL.ANNOUNCEMENTS}`);
         break;
@@ -68,6 +72,12 @@ const AppHeader = () => {
               <Typography className={classes.tabLabel}>Dashboard</Typography>
             }
             id='dashboard-tab'
+          />
+          <Tab
+            label={
+              <Typography className={classes.tabLabel}>Problems</Typography>
+            }
+            id='problems-tab'
           />
           <Tab
             label={
