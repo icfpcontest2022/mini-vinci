@@ -10,7 +10,8 @@ var VerificationEmailTemplate = `<!DOCTYPE html>
     <body>
         <p>Hi {{.TeamName}},</p>
 		<p>You can verify your Vinci account via the link: <a href='{{.Link}}'>{{.Link}}</a></p>
-		<p>Good luck!</p'>
+		<p>Good luck!</p>
+		<p>For any questions related to the contest, you can reach us at info@robovinci.xyz! Please follow @icfpcontest2022 Twitter account and our announcements at icfpcontest2022.github.io</p>
     </body>
 </html>`
 
@@ -19,7 +20,7 @@ var RenewPasswordEmailTemplate = `<!DOCTYPE html>
     <body>
         <p>Hi {{.TeamName}},</p>
 		<p>You can renew password of your Vinci account via the link: <a href='{{.Link}}'>{{.Link}}</a></p>
-		<p>Best!</p'>
+		<p>For any questions related to the contest, you can reach us at info@robovinci.xyz! Please follow @icfpcontest2022 Twitter account and our announcements at icfpcontest2022.github.io</p>
     </body>
 </html>`
 
