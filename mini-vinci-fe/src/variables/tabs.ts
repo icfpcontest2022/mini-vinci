@@ -9,4 +9,5 @@ export enum TabURL {
   ANNOUNCEMENTS = 'announcements',
   SUPPORT = 'support',
   LOGIN = 'login',
+  RESET_PASSWORD = 'reset-password',
 }
