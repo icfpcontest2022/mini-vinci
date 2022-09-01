@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/announcement"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/problem"
@@ -13,9 +12,6 @@ import (
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"log"
-	"path"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -26,7 +22,7 @@ const (
 func CORS() gin.HandlerFunc {
 	// TO allow CORS
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "robovinci.xyz")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 		if c.Request.Method == "OPTIONS" {
@@ -40,7 +36,7 @@ func CORS() gin.HandlerFunc {
 func setUpRouters(r *gin.Engine) error {
 	r.Use(CORS())
 
-	r.Use(static.Serve("/", static.LocalFile(ReactBuildPath, false)))
+	// r.Use(static.Serve("/", static.LocalFile(ReactBuildPath, false)))
 
 	// set general rate limiter
 	r.Use(mgin.NewMiddleware(
@@ -125,6 +121,7 @@ func setUpRouters(r *gin.Engine) error {
 	resultGroup.GET("user", resultRouter.GetUserResults)
 	resultGroup.GET("scoreboard", resultRouter.GetScoreboard)
 
+	/*
 	r.NoRoute(func(c *gin.Context) {
 		escapedPath := c.Request.URL.EscapedPath()
 		dir, file := path.Split(escapedPath)
@@ -136,6 +133,7 @@ func setUpRouters(r *gin.Engine) error {
 			c.File(ReactBuildPath + "/" + strings.TrimPrefix(path.Join(dir, file), "/"))
 		}
 	})
+	*/
 
 	return nil
 }
