@@ -1,7 +1,7 @@
 package user
 
 type CreateUserParams struct {
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required,email,max=200"`
 	TeamName string `json:"team_name" binding:"required,min=3,max=60"`
 	Password string `json:"password" binding:"required,min=6,max=100"`
 }
