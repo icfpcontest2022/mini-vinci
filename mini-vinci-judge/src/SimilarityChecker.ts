@@ -15,7 +15,7 @@ export class SimilarityChecker {
     // let frame: Frame = [];
     // var fs = require("fs"),
     // PNG = require("pngjs").PNG;
-    
+
     // var data = fs.readFileSync(filename);
     // var png = PNG.sync.read(data);
     // for (var y = 0; y < png.height; y++) {
@@ -26,6 +26,16 @@ export class SimilarityChecker {
     // }
     // return frame;
     return []
+  }
+
+  static dataToFrame(data: [number, number, number, number][]): Frame {
+    let frame: Frame = [];
+
+    for (const item of data) {
+        frame.push(new RGBA(item));
+    }
+
+    return frame;
   }
 
   static imageDiff(f1: Frame, f2: Frame): number {
@@ -58,7 +68,7 @@ export class SimilarityChecker {
       if (minc == maxc) {
           return { hue: 0.0, sat: 0.0, val: v };
       }
-          
+
       const s = ((maxc-minc) / maxc) * 100;
       const rc = (maxc-r) / (maxc-minc);
       const gc = (maxc-g) / (maxc-minc);
@@ -80,11 +90,11 @@ export class SimilarityChecker {
           default:
               return { hue: 0.0, sat: 0.0, val: v };
       }
-          
+
       const hue = ((h/6.0) % 1.0) * 360;
       const val = v * 100;
       const sat = s * 100;
-      
+
       return { hue, sat, val };
   }
 
