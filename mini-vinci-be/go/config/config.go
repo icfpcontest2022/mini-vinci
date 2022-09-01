@@ -42,9 +42,10 @@ type AsyncConfig struct {
 }
 
 type EmailConfig struct {
-	SESRegion       string `mapstructure:"ses_region"`
-	From            string `mapstructure:"from"`
-	VerificationURL string `mapstructure:"verification_url"`
+	SESRegion        string `mapstructure:"ses_region"`
+	From             string `mapstructure:"from"`
+	VerificationURL  string `mapstructure:"verification_url"`
+	RenewPasswordURL string `mapstructure:"renew_password_url"`
 }
 
 type RedisConfig struct {

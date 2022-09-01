@@ -1,11 +1,18 @@
 package user
 
 import (
-	"fmt"
+	"errors"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"time"
+)
+
+var (
+	ErrIncorrectEmailOrPassword = errors.New("incorrect Email or Password")
+	ErrEmailIsNotVerifiedYet    = errors.New("email is not verified yet")
+	ErrLoginsNotOpenedYet       = errors.New("email is verified, but not allowed to login at this time")
 )
 
 type LoginParams struct {
@@ -17,10 +24,10 @@ var IdentityKey = "email"
 
 func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "Vinci",
+		Realm:       "Robo Vinci",
 		Key:         []byte(config.Get().JWT.LoginSecret),
-		Timeout:     time.Hour,
-		MaxRefresh:  time.Hour,
+		Timeout:     config.Get().JWT.LoginExpireTime * time.Hour,
+		MaxRefresh:  config.Get().JWT.LoginExpireTime * time.Hour,
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*User); ok {
@@ -39,12 +46,19 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 			userStore := NewUserStore()
 			usr, err := userStore.First(map[string]interface{}{"email": loginParams.Email})
 			if err != nil {
-				return "", fmt.Errorf("could not get user: %v", err)
+				return "", ErrIncorrectEmailOrPassword
 			}
-
 			err = usr.CheckPassword(loginParams.Password)
 			if err != nil {
-				return "", fmt.Errorf("could not validate is password correct: %v", err)
+				return "", ErrIncorrectEmailOrPassword
+			}
+
+			if !usr.IsVerified {
+				return "", ErrEmailIsNotVerifiedYet
+			}
+
+			if !featureflags.IsLoginAllowed() {
+				return "", ErrLoginsNotOpenedYet
 			}
 
 			return &User{
