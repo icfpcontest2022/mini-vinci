@@ -19,6 +19,7 @@ import App from './components/App';
 import Announcements from './components/pages/announcements/Announcements';
 import { TabURL } from './variables/tabs';
 import Support from './components/pages/support/Support';
+import Playground from './components/pages/playground/Playground';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -32,6 +33,7 @@ root.render(
             <Route path={TabURL.LOGIN} element={<Login />} />
             <Route path={TabURL.DASHBOARD} element={<Dashboard />} />
             <Route path={TabURL.ANNOUNCEMENTS} element={<Announcements />} />
+            <Route path={TabURL.PLAYGROUND} element={<Playground />} />
             <Route path={TabURL.SUPPORT} element={<Support />} />
             <Route path='*' element={<App />} />
           </Routes>
