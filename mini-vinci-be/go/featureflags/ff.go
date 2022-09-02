@@ -7,11 +7,13 @@ import (
 )
 
 const (
-	DefaultValueAllowLogin = true
+	DefaultValueAllowLogin      = true
+	DefaultValueAllowSubmission = true
 )
 
 type FeatureFlags struct {
-	AllowLogin bool `yaml:"allow_login"`
+	AllowLogin      bool `yaml:"allow_login"`
+	AllowSubmission bool `yaml:"allow_submission"`
 }
 
 func GetFeatureFlags() (FeatureFlags, error) {
@@ -40,4 +42,14 @@ func IsLoginAllowed() bool {
 	}
 
 	return ff.AllowLogin
+}
+
+func IsSubmissionAllowed() bool {
+	ff, err := GetFeatureFlags()
+
+	if err != nil {
+		return DefaultValueAllowSubmission
+	}
+
+	return ff.AllowSubmission
 }

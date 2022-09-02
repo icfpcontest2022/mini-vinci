@@ -11,6 +11,7 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/evaluation"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
 	"github.com/sirupsen/logrus"
@@ -21,6 +22,10 @@ import (
 type SubmissionController struct{}
 
 func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSubmissionParams) (int, interface{}) {
+	if !featureflags.IsSubmissionAllowed() {
+		return apiresponses.BadRequestError("submissions temporarily disabled")
+	}
+
 	log := logging.Logger.WithFields(logrus.Fields{
 		"location": "CreateSubmission",
 	})
