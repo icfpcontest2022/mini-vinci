@@ -34,8 +34,8 @@ Note that there will be updates to this specification, and more problems will be
 - Playground is aimed at learning. It has some bugs(probably ones we currently don't know too, so please act with caution)
 - A shape is a rectangle
 - All given canvases in the lightning round are 400x400, they are colored with RGBA(255, 255, 255, 255), sorry for the initial mistake in the specification.
-- A bug in the implementation of the instruction validity checks is fixed. (cut [0] [200,200], swap [0.1] [0.3]) now works.
-- A bug in the implementation of swap is fixed. 
+- A minor bug in the implementation of the instruction validity checks is fixed. (cut [0] [200,200], swap [0.1] [0.3]) now works.
+- A major bug in the implementation of swap is fixed. All submissions will be rejudged in regard to this change, system will be closed between 15.00-15.10 UTC. 
 
 
 \pagebreak
