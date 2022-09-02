@@ -13,7 +13,6 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"github.com/sirupsen/logrus"
-	"math/rand"
 	"os"
 	"os/exec"
 	"path"
@@ -144,22 +143,31 @@ func EvaluateSubmission(payload SubmissionEvaluationPayload) error {
 		"status_changed_at": time.Now(),
 	})
 
-	result := EvaluationResult{}
+	result := Evaluate(submission)
 
-	rand.Seed(time.Now().UnixNano())
+	// if evaluation is failed
+	if result.Result == EvaluationResultTypeFailed {
+		err = submissionStore.Update(payload.SubmissionID, map[string]interface{}{
+			"status":            common.SubmissionStatusFailed,
+			"status_changed_at": time.Now(),
+			"error":             result.Error,
+		})
+		if err != nil {
+			return fmt.Errorf("error while updating submission as failed: %v", err)
+		}
 
-	randomSleep := 2000 + rand.Intn(2000)
-	fmt.Println(randomSleep, "ms")
-	time.Sleep(time.Duration(randomSleep) * time.Millisecond)
-	result.Score = rand.Intn(100)
+		return nil
+	}
+
+	// evaluation is succeeded
 
 	err = submissionStore.Update(payload.SubmissionID, map[string]interface{}{
-		"status":            common.SubmissionStatusSucceed,
+		"status":            common.SubmissionStatusSucceeded,
 		"status_changed_at": time.Now(),
 		"score":             result.Score,
 	})
 	if err != nil {
-		return fmt.Errorf("error while updating submission: %v", err)
+		return fmt.Errorf("error while updating submission as succeeeded: %v", err)
 	}
 
 	resultStore := common.NewResultStore()
