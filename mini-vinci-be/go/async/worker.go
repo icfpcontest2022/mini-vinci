@@ -10,7 +10,7 @@ func InitializeWorker() {
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: config.Get().Redis.Address},
 		asynq.Config{
-			Concurrency: 1,
+			Concurrency: 3,
 		},
 	)
 
