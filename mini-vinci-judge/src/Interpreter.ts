@@ -548,7 +548,7 @@ export class Interpreter {
         if(block1.size.px === block2.size.px && block1.size.py === block2.size.py) {
             let newBlock1, newBlock2;
 
-            if(block2.typ == BlockType.SimpleBlockType) {
+            if(block1.typ == BlockType.SimpleBlockType) {
                 newBlock2 = new SimpleBlock(
                     blockId1,
                     block2.bottomLeft,
@@ -563,7 +563,7 @@ export class Interpreter {
                     (block2 as ComplexBlock).offsetChildren(block1.bottomLeft)
                 )
             }
-            if(block1.typ == BlockType.SimpleBlockType) {
+            if(block2.typ == BlockType.SimpleBlockType) {
                 newBlock1 = new SimpleBlock(
                     blockId2,
                     block1.bottomLeft,
@@ -579,8 +579,8 @@ export class Interpreter {
                 )
             }
 
-            context.blocks.set(blockId1, newBlock1);
-            context.blocks.set(blockId2, newBlock2);
+            context.blocks.set(blockId1, newBlock2);
+            context.blocks.set(blockId2, newBlock1);
 
             return new InterpreterResult(context, cost);
         } else {
