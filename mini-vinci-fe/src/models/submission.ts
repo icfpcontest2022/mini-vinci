@@ -7,8 +7,7 @@ export interface Submission {
   problemID: string;
   status: SubmissionStatus;
   score?: number;
-  code?: string;
-  imageUrl?: string;
+  fileUrl: string;
 }
 
 export const submissionFromResponse = (
@@ -21,4 +20,5 @@ export const submissionFromResponse = (
   problemID: response.problem_id.toString(),
   status: response.status,
   score: response.score,
+  fileUrl: response.file_url ?? '',
 });

@@ -103,11 +103,6 @@ const Scoreboard = (): JSX.Element => {
               </TableCell>
               <TableCell key='scoreboard-order'>
                 <Box component='div' className={classes.columnLabel}>
-                  User ID
-                </Box>
-              </TableCell>
-              <TableCell key='scoreboard-order'>
-                <Box component='div' className={classes.columnLabel}>
                   Team Name
                 </Box>
               </TableCell>
@@ -129,11 +124,6 @@ const Scoreboard = (): JSX.Element => {
                 <TableCell>
                   <Box component='div' className={classes.tableStringField}>
                     {userScore.order}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box component='div' className={classes.tableStringField}>
-                    {userScore.userID}
                   </Box>
                 </TableCell>
                 <TableCell>

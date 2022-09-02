@@ -13,9 +13,10 @@ import {
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BrushIcon from '@mui/icons-material/Brush';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DownloadIcon from '@mui/icons-material/Download';
 import ErrorIcon from '@mui/icons-material/Error';
-import InfoIcon from '@mui/icons-material/Info';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { makeStyles } from 'tss-react/mui';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useEffect, useState } from 'react';
@@ -36,7 +37,11 @@ import {
   isAuthTokenExpired,
 } from '../../../utilities/auth';
 import Loading from '../../Loading';
-import { getSubmissionsList } from '../../../services/submission';
+import {
+  getSubmission,
+  getSubmissionsList,
+} from '../../../services/submission';
+import ApiKeyDialog from './ApiKeyDialog';
 
 const Dashboard = (): JSX.Element => {
   const { classes } = useStyles();
@@ -80,6 +85,7 @@ const Dashboard = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
+  const [showApiTokenDialog, setShowApiTokenDialog] = useState(false);
 
   const submissionStatusIcon = (status: SubmissionStatus): JSX.Element => {
     switch (status) {
@@ -118,6 +124,19 @@ const Dashboard = (): JSX.Element => {
     refreshSubmissions();
   };
 
+  const handleDownloadSubmission = (submission: Submission) => {
+    setLoading(true);
+    getSubmission(submission.id, authToken!)
+      .then((retrievedSubmission) => {
+        const link = document.createElement('a');
+        link.download = `submission-${submission.id}.isl`;
+        link.href = retrievedSubmission.fileUrl;
+        link.click();
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <Box component='div' className={classes.mainContainer}>
       <Loading open={loading} />
@@ -127,9 +146,24 @@ const Dashboard = (): JSX.Element => {
         onClose={handleCloseNewSubmission}
         onSubmit={handleNewSubmission}
       />
+      <ApiKeyDialog
+        open={showApiTokenDialog}
+        onClose={() => setShowApiTokenDialog(false)}
+      />
       <Box component='div' className={classes.headerRow}>
         <Box className={classes.submissionsHeader}>Submissions</Box>
         <Box component='div' className={classes.horizontalSpacer} />
+        <Box component='div' className={classes.apiKeyButton}>
+          <Button
+            variant='contained'
+            startIcon={<VpnKeyIcon />}
+            onClick={() => setShowApiTokenDialog(true)}
+            style={{ ...sharedStyles.buttonText }}
+            className={classes.apiKeyButton}
+          >
+            API Key
+          </Button>
+        </Box>
         <Button
           variant='contained'
           startIcon={<NoteAddIcon />}
@@ -175,7 +209,7 @@ const Dashboard = (): JSX.Element => {
               </TableCell>
               <TableCell align='center' key='submission-id'>
                 <Box component='div' className={classes.columnLabel}>
-                  Details
+                  Submitted Code
                 </Box>
               </TableCell>
             </TableRow>
@@ -222,12 +256,9 @@ const Dashboard = (): JSX.Element => {
                 <TableCell align='center'>
                   <IconButton
                     color='primary'
-                    disabled={
-                      submission.status === SubmissionStatus.QUEUED ||
-                      submission.status === SubmissionStatus.PROCESSING
-                    }
+                    onClick={() => handleDownloadSubmission(submission)}
                   >
-                    <InfoIcon />
+                    <DownloadIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -259,6 +290,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
   horizontalSpacer: {
     flexGrow: 1,
+  },
+  apiKeyButton: {
+    marginRight: theme.spacing(1),
   },
   tableWrapper: {
     paddingLeft: theme.spacing(3),

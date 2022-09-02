@@ -12,7 +12,3 @@ export const updateAuthTokenInStorage = (authToken: string): void =>
 // TODO: Implement this method
 export const isAuthTokenExpired = (authToken: string | null): boolean =>
   !authToken;
-
-// TODO: Implement this method
-export const getTeamNameFromToken = (authToken: string): string =>
-  authToken.slice(0, 5);

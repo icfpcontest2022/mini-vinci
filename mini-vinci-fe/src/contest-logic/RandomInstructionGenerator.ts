@@ -84,7 +84,7 @@ export class RandomInstructionGenerator {
                 state.blocks.forEach((block1, blockId1) => {
                     state.blocks.forEach((block2, blockId2) => {
                         if (blockId1 != blockId2) {
-                            if (block1.size === block2.size) {
+                            if(block1.size.px === block2.size.px && block1.size.py === block2.size.py) {
                                 swapPairs.push([blockId1, blockId2]);
                             }
                         }

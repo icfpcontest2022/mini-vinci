@@ -33,6 +33,10 @@ export class SimpleBlock {
         if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
             throw Error('Invalid Block');
         }
+
+        if (this.size.getScalarSize() == 0) {
+            throw new Error('Block size cannot be 0!');
+        }
     }
 
     getChildren() {
@@ -60,6 +64,10 @@ export class ComplexBlock {
         this.topRight = topRight;
         this.size = topRight.getDiff(bottomLeft);
         this.subBlocks = subBlocks;
+
+        if (this.size.getScalarSize() == 0) {
+            throw new Error('Block size cannot be 0!');
+        }
     }
 
     getChildren() {
