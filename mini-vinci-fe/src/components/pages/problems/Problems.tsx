@@ -102,6 +102,9 @@ const Problems = (): JSX.Element => {
     link.click();
   };
 
+  const initialCanvasExists =
+    selectedProblem?.canvasLink.length && selectedProblem.canvasLink.length > 3;
+
   return (
     <Box component='div' className={classes.mainContainer}>
       <Loading open={loading} />
@@ -158,16 +161,18 @@ const Problems = (): JSX.Element => {
                   {selectedProblem.description}
                 </Box>
               </Grid>
-              <Grid item xs={2} />
-              <Grid item xs={4}>
-                <Box
-                  component='div'
-                  style={{ ...sharedStyles.h6 }}
-                  className={classes.imageTitle}
-                >
-                  Initial Canvas
-                </Box>
-              </Grid>
+              <Grid item xs={initialCanvasExists ? 2 : 4} />
+              {initialCanvasExists && (
+                <Grid item xs={4}>
+                  <Box
+                    component='div'
+                    style={{ ...sharedStyles.h6 }}
+                    className={classes.imageTitle}
+                  >
+                    Initial Canvas
+                  </Box>
+                </Grid>
+              )}
               <Grid item xs={4}>
                 <Box
                   component='div'
@@ -177,15 +182,17 @@ const Problems = (): JSX.Element => {
                   Target
                 </Box>
               </Grid>
-              <Grid item xs={2} />
-              <Grid item xs={2} />
-              <Grid item xs={4}>
-                <Box
-                  component='img'
-                  src={selectedProblem.canvasLink}
-                  className={classes.image}
-                />
-              </Grid>
+              <Grid item xs={initialCanvasExists ? 2 : 4} />
+              <Grid item xs={initialCanvasExists ? 2 : 4} />
+              {initialCanvasExists && (
+                <Grid item xs={4}>
+                  <Box
+                    component='img'
+                    src={selectedProblem.canvasLink}
+                    className={classes.image}
+                  />
+                </Grid>
+              )}
               <Grid item xs={4}>
                 <Box
                   component='img'
@@ -252,7 +259,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   image: {
     flexGrow: 1,
     border: 'groove',
-    maxWidth: '100%',
+    width: '100%',
     aspectRatio: '1 / 1',
   },
   downloadButtonContainer: {
