@@ -146,3 +146,30 @@ func (sc *SubmissionController) GetSubmissions(c *gin.Context) (int, interface{}
 
 	return http.StatusOK, GetSubmissionsSerializer{Submissions: subs}.Response()
 }
+
+func (sc *SubmissionController) RejudgeAllSubmissions(c *gin.Context) (int, interface{}) {
+	log := logging.Logger.WithFields(logrus.Fields{
+		"location": "RejudgeAllSubmissions",
+	})
+
+	resultStore := common.NewResultStore()
+	resultStore.DeleteAll()
+
+	submissionStore := common.NewSubmissionStore()
+
+	submissions, err := submissionStore.Find(map[string]interface{}{})
+	if err != nil {
+		log.WithError(err).Errorf("could not find submissions")
+		return apiresponses.InternalServerError()
+	}
+
+	for _, sub := range submissions {
+		err = async.NewSubmissionEvaluationTask(evaluation.SubmissionEvaluationPayload{SubmissionID: sub.ID})
+		if err != nil {
+			log.WithError(err).Errorf("could not plan submission evaluation task")
+			return apiresponses.InternalServerError()
+		}
+	}
+
+	return apiresponses.SuccessMessage("okay")
+}

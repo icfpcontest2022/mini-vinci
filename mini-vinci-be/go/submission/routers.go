@@ -39,6 +39,10 @@ func (r *SubmissionRouter) RetrieveSubmission(c *gin.Context) {
 	c.JSON(r.controller.RetrieveSubmission(c, params))
 }
 
+func (r *SubmissionRouter) RejudgeAllSubmission(c *gin.Context) {
+	c.JSON(r.controller.RejudgeAllSubmissions(c))
+}
+
 func (r *SubmissionRouter) GetSubmissions(c *gin.Context) {
 	c.JSON(r.controller.GetSubmissions(c))
 }
