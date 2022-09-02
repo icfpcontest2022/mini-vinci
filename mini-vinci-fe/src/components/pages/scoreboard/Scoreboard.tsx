@@ -113,12 +113,12 @@ const Scoreboard = (): JSX.Element => {
               </TableCell>
               <TableCell align='right' key='scoreboard-order'>
                 <Box component='div' className={classes.columnLabel}>
-                  Total Cost
+                  # Problems Solved
                 </Box>
               </TableCell>
               <TableCell align='right' key='scoreboard-order'>
                 <Box component='div' className={classes.columnLabel}>
-                  # Problems Solved
+                  Total Cost
                 </Box>
               </TableCell>
             </TableRow>
@@ -143,12 +143,12 @@ const Scoreboard = (): JSX.Element => {
                 </TableCell>
                 <TableCell align='right'>
                   <Box component='div' className={classes.tableStringField}>
-                    {userScore.totalCost}
+                    {userScore.solvedProblemCount}
                   </Box>
                 </TableCell>
                 <TableCell align='right'>
                   <Box component='div' className={classes.tableStringField}>
-                    {userScore.solvedProblemCount}
+                    {userScore.totalCost}
                   </Box>
                 </TableCell>
               </TableRow>
