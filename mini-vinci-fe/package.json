@@ -72,8 +72,8 @@
     "prettier-eslint": "^15.0.1"
   },
   "engines": {
-    "node": "16.17.0",
-    "yarn": "1.22.19"
+    "node": "^16.0.0",
+    "yarn": "^1.22.0"
   },
   "peerDependencies": {
     "eslint-config-airbnb": "^19.0.4",

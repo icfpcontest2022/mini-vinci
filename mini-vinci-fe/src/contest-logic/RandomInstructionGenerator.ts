@@ -11,23 +11,21 @@ export class RandomInstructionGenerator {
     static generateRandomInstruction(state: Canvas): Instruction {
         let instructionType = _.sample(
             [
-                InstructionType.ColorInstructionType, 
-                InstructionType.ColorInstructionType, 
-                InstructionType.ColorInstructionType, 
-                InstructionType.ColorInstructionType, 
+                InstructionType.ColorInstructionType,
+                InstructionType.ColorInstructionType,
+                InstructionType.ColorInstructionType,
+                InstructionType.ColorInstructionType,
                 InstructionType.HorizontalCutInstructionType,
                 InstructionType.VerticalCutInstructionType,
                 InstructionType.PointCutInstructionType,
                 InstructionType.SwapInstructionType,
                 InstructionType.MergeInstructionType,
-                
+
             ]) as InstructionType;
-        
+
         switch(instructionType) {
             case InstructionType.ColorInstructionType: {
-                console.log(Array.from(state.blocks.values()));
                 let block: Block = _.sample(Array.from(state.blocks.values())) as Block;
-                console.log(block);
                 let color = this.generateRandomColor();
                 return {
                     typ: InstructionType.ColorInstructionType,
@@ -36,9 +34,7 @@ export class RandomInstructionGenerator {
                 } as ColorInstruction;
             }
             case InstructionType.HorizontalCutInstructionType: {
-                console.log(Array.from(state.blocks.values()));
                 let block: Block = _.sample(Array.from(state.blocks.values())) as Block;
-                console.log(block);
                 let min = Math.ceil(block.bottomLeft.py) + 1;
                 let max = Math.floor(block.topRight.py) - 1;
                 let position = Math.floor(Math.random() * (max - min) + min);
@@ -49,12 +45,10 @@ export class RandomInstructionGenerator {
                     typ: InstructionType.HorizontalCutInstructionType,
                     blockId: block.id,
                     lineNumber: position
-                } as HorizontalCutInstruction;              
+                } as HorizontalCutInstruction;
             }
             case InstructionType.VerticalCutInstructionType: {
-                console.log(Array.from(state.blocks.values()));
                 let block: Block = _.sample(Array.from(state.blocks.values())) as Block;
-                console.log(block);
                 let min = Math.ceil(block.bottomLeft.px) + 1;
                 let max = Math.floor(block.topRight.px) - 1;
                 let position = Math.floor(Math.random() * (max - min) + min);
@@ -65,12 +59,10 @@ export class RandomInstructionGenerator {
                     typ: InstructionType.VerticalCutInstructionType,
                     blockId: block.id,
                     lineNumber: position
-                } as VerticalCutInstruction;              
+                } as VerticalCutInstruction;
             }
             case InstructionType.PointCutInstructionType: {
-                console.log(Array.from(state.blocks.values()));
                 let block = _.sample(Array.from(state.blocks.values())) as Block;
-                console.log(block);
                 let xMin = block.bottomLeft.px + 1;
                 let xMax = block.topRight.px - 1;
                 let xPosition = Math.floor(Math.random() * (xMax - xMin) + xMin);
@@ -85,7 +77,7 @@ export class RandomInstructionGenerator {
                     typ: InstructionType.PointCutInstructionType,
                     blockId: block.id,
                     point: position
-                } as PointCutInstruction;              
+                } as PointCutInstruction;
             }
             case InstructionType.SwapInstructionType: {
                 let swapPairs: [string, string][] = []
@@ -105,8 +97,8 @@ export class RandomInstructionGenerator {
                 return {
                     typ: InstructionType.SwapInstructionType,
                     blockId1: pair[0],
-                    blockId2: pair[1] 
-                } as SwapInstruction;        
+                    blockId2: pair[1]
+                } as SwapInstruction;
             }
             case InstructionType.MergeInstructionType: {
                 let mergePairs: [string, string][] = []
@@ -117,7 +109,7 @@ export class RandomInstructionGenerator {
                                 block1.topRight.py === block2.bottomLeft.py ) &&
                                 block1.bottomLeft.px === block2.bottomLeft.px &&
                                 block1.topRight.px === block2.topRight.px;
-                            
+
                             const leftToRight = ( block1.bottomLeft.px === block2.topRight.px ||
                                 block1.topRight.px === block2.bottomLeft.px ) &&
                                 block1.bottomLeft.py === block2.bottomLeft.py &&
@@ -137,8 +129,8 @@ export class RandomInstructionGenerator {
                 return {
                     typ: InstructionType.MergeInstructionType,
                     blockId1: pair[0],
-                    blockId2: pair[1] 
-                } as MergeInstruction;    
+                    blockId2: pair[1]
+                } as MergeInstruction;
             }
         }
         return {comment: 'Should not come here'} as CommentInstruction;

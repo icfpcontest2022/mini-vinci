@@ -11,7 +11,6 @@ export class Painter {
 
     draw(canvas: Canvas): Frame {
         const blocks = canvas.simplify();
-        console.log(blocks);
         const frame: Frame = new Array(canvas.width * canvas.height);
         let size = 0;
         blocks.forEach(block => {
