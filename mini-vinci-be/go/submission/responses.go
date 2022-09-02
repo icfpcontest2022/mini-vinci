@@ -15,7 +15,7 @@ type RetrieveSubmissionResponse struct {
 	ProblemID   uint      `json:"problem_id"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
-	Score       uint      `json:"score"`
+	Score       int64     `json:"score"`
 	FileURL     string    `json:"file_url"`
 }
 
@@ -40,7 +40,7 @@ type SingleSubmissionResponse struct {
 	ProblemID   uint      `json:"problem_id"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
-	Score       uint      `json:"score"`
+	Score       int64     `json:"score"`
 }
 
 type GetSubmissionsResponse struct {

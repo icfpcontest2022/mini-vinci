@@ -30,7 +30,7 @@ func (s *ResultStore) CreateIfRequired(userID, problemID uint) error {
 	return err
 }
 
-func (s *ResultStore) UpdateResult(userID, problemID uint, time time.Time, score int) error {
+func (s *ResultStore) UpdateResult(userID, problemID uint, time time.Time, score int64) error {
 	err := s.db.Exec(`
 			UPDATE results 
 			SET submission_count = submission_count + 1, 

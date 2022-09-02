@@ -11,5 +11,5 @@ type Result struct {
 	ProblemID       uint
 	LastSubmittedAt sql.NullTime
 	SubmissionCount uint
-	MaxScore        uint
+	MaxScore        int64
 }

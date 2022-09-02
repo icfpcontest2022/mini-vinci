@@ -20,5 +20,5 @@ type Submission struct {
 	UserID          uint
 	Status          string
 	Error           string
-	Score           uint
+	Score           int64
 }
