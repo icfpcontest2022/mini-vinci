@@ -22,7 +22,7 @@ export class SimpleBlock {
     size: Size;
 
     color: RGBA;
-    
+
     constructor(id: string, bottomLeft: Point, topRight: Point, color: RGBA) {
         this.typ = BlockType.SimpleBlockType;
         this.id = id;
@@ -31,7 +31,6 @@ export class SimpleBlock {
         this.size = topRight.getDiff(bottomLeft);
         this.color = color;
         if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
-            console.log(this)
             throw Error('Invalid Block');
         }
     }
@@ -43,7 +42,7 @@ export class SimpleBlock {
 
 export class ComplexBlock {
     typ: BlockType;
-    
+
     id: string;
 
     bottomLeft: Point;
@@ -62,8 +61,6 @@ export class ComplexBlock {
         this.size = topRight.getDiff(bottomLeft);
         this.subBlocks = subBlocks;
         if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
-            console.log(`Invalid Complex Block:`)
-            console.log(this)
         }
     }
 

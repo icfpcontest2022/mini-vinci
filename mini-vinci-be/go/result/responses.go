@@ -13,12 +13,13 @@ type SingleResultResponse struct {
 	ProblemName     string    `json:"problem_name"`
 	LastSubmittedAt time.Time `json:"last_submitted_at"`
 	SubmissionCount uint      `json:"submission_count"`
-	MaxScore        uint      `json:"max_score"`
+	MinCost         uint      `json:"min_cost"`
 }
 
 type GetUserResultsResponse struct {
-	Results    []SingleResultResponse `json:"results"`
-	TotalScore uint                   `json:"total_score"`
+	Results            []SingleResultResponse `json:"results"`
+	TotalCost          uint                   `json:"total_cost"`
+	SolvedProblemCount uint                   `json:"solved_problem_count"`
 }
 
 type GetUserResultsSerializer struct {
@@ -43,7 +44,7 @@ func (s GetUserResultsSerializer) Response() GetUserResultsResponse {
 		}
 
 		if res, ok := resultMap[p.ID]; ok {
-			r.MaxScore = res.MaxScore
+			r.MinCost = res.MaxScore
 			r.SubmissionCount = res.SubmissionCount
 
 			if res.LastSubmittedAt.Valid {
@@ -58,19 +59,25 @@ func (s GetUserResultsSerializer) Response() GetUserResultsResponse {
 		return resp.Results[i].ProblemID < resp.Results[j].ProblemID
 	})
 
-	resp.TotalScore = 0
+	resp.TotalCost = 0
+	resp.SolvedProblemCount = 0
+
 	for _, res := range resp.Results {
-		resp.TotalScore += res.MaxScore
+		if res.SubmissionCount > 0 {
+			resp.SolvedProblemCount++
+			resp.TotalCost += res.MinCost
+		}
 	}
 
 	return resp
 }
 
 type ScoreboardUserResponse struct {
-	UserID     uint                   `json:"user_id"`
-	TeamName   string                 `json:"team_name"`
-	Results    []SingleResultResponse `json:"results"`
-	TotalScore uint                   `json:"total_score"`
+	UserID             uint                   `json:"user_id"`
+	TeamName           string                 `json:"team_name"`
+	Results            []SingleResultResponse `json:"results"`
+	TotalCost          uint                   `json:"total_cost"`
+	SolvedProblemCount uint                   `json:"solved_problem_count"`
 }
 
 type GetScoreboardResponse struct {
@@ -114,7 +121,7 @@ func (s GetScoreboardSerializer) Response() GetScoreboardResponse {
 			}
 
 			if res, ok := resultMap[usr.ID][p.ID]; ok {
-				r.MaxScore = res.MaxScore
+				r.MinCost = res.MaxScore
 				r.SubmissionCount = res.SubmissionCount
 
 				if res.LastSubmittedAt.Valid {
@@ -130,16 +137,26 @@ func (s GetScoreboardSerializer) Response() GetScoreboardResponse {
 			return userResp.Results[i].ProblemID < userResp.Results[j].ProblemID
 		})
 
-		userResp.TotalScore = 0
+		userResp.TotalCost = 0
+		userResp.SolvedProblemCount = 0
 		for _, res := range userResp.Results {
-			userResp.TotalScore += res.MaxScore
+			if res.SubmissionCount > 0 {
+				userResp.SolvedProblemCount++
+				userResp.TotalCost += res.MinCost
+			}
 		}
 
-		resp.Users = append(resp.Users, userResp)
+		if userResp.SolvedProblemCount > 0 {
+			resp.Users = append(resp.Users, userResp)
+		}
 	}
 
 	sort.Slice(resp.Users, func(i, j int) bool {
-		return resp.Users[i].UserID < resp.Users[j].UserID
+		if resp.Users[i].SolvedProblemCount != resp.Users[j].SolvedProblemCount {
+			return resp.Users[i].SolvedProblemCount > resp.Users[j].SolvedProblemCount
+		}
+
+		return resp.Users[i].TotalCost < resp.Users[j].TotalCost
 	})
 
 	return resp

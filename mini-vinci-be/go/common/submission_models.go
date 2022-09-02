@@ -8,7 +8,7 @@ import (
 const (
 	SubmissionStatusQueued     = "QUEUED"
 	SubmissionStatusProcessing = "PROCESSING"
-	SubmissionStatusSucceed    = "SUCCEEDED"
+	SubmissionStatusSucceeded  = "SUCCEEDED"
 	SubmissionStatusFailed     = "FAILED"
 )
 

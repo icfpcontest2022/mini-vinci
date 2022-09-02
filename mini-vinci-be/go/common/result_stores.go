@@ -35,9 +35,12 @@ func (s *ResultStore) UpdateResult(userID, problemID uint, time time.Time, score
 			UPDATE results 
 			SET submission_count = submission_count + 1, 
 				last_submitted_at = GREATEST(last_submitted_at, ?),
-				max_score = GREATEST(max_score, ?)
+					max_score = CASE
+						WHEN submission_count = 0 THEN ?
+						ELSE LEAST(max_score, ?)
+					END 
 			WHERE user_id = ? and problem_id = ?`,
-		time, score, userID, problemID).Error
+		time, score, score, userID, problemID).Error
 
 	return err
 }

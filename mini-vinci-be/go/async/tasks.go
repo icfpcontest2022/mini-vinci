@@ -8,6 +8,7 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/email"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/evaluation"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"log"
 )
 
@@ -45,7 +46,13 @@ func HandleEmailDeliveryTask(ctx context.Context, t *asynq.Task) error {
 		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
 	}
 
-	return email.SendEmail(p)
+	err := email.SendEmail(p)
+	if err != nil {
+		logging.Logger.WithField("location", "HandleEmailDeliveryTask").
+			WithError(err).Errorf("could not send email")
+	}
+
+	return err
 }
 
 func NewSubmissionEvaluationTask(p evaluation.SubmissionEvaluationPayload) error {
@@ -77,5 +84,11 @@ func HandleSubmissionEvaluationTask(ctx context.Context, t *asynq.Task) error {
 		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
 	}
 
-	return evaluation.EvaluateSubmission(p)
+	err := evaluation.EvaluateSubmission(p)
+	if err != nil {
+		logging.Logger.WithField("location", "HandleSubmissionEvaluationTask").
+			WithError(err).Errorf("could not evaluate submission")
+	}
+
+	return err
 }

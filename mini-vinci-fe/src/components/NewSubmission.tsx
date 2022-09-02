@@ -34,8 +34,9 @@ import { getPreviewImageName } from '../utilities/submission';
 import { Interpreter, InterpreterResult } from '../contest-logic/Interpreter';
 import { RGBA } from '../contest-logic/Color';
 import { Painter } from '../contest-logic/Painter';
-import { getProblemIDs } from '../utilities/problem';
 import { SimilarityChecker } from '../contest-logic/SimilarityChecker';
+import { Problem } from '../models/problem';
+import { getProblems } from '../services/problem';
 
 interface NewSubmissionProps {
   open: boolean;
@@ -55,8 +56,6 @@ enum SubmissionPhase {
 const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const { classes } = useStyles();
 
-  const problemIDs = getProblemIDs();
-
   const authToken = useRecoilValue(authTokenAtom);
   const [loading, setLoading] = useState(false);
   const [submittedFile, setSubmittedFile] = useState<File | null>(null);
@@ -68,17 +67,33 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
     SubmissionPhase.ENTER_CODE,
   );
   const [isRendered, setIsRendered] = useState(false);
-  const [problemID, setProblemID] = useState(props.problemID ?? problemIDs[0]);
+  const [problemID, setProblemID] = useState(props.problemID);
+  const [problems, setProblems] = useState([] as Problem[]);
 
   const [proposedScore, setProposedScore] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [targetPaintingData, setTargetPaintingData] = useState(undefined);
 
+  const refreshProblems = () => {
+    setLoading(true);
+    getProblems(authToken!)
+      .then((problemsList) => {
+        setProblems(problemsList);
+        if (problemsList.length > 0) {
+          setProblemID(problemsList[0].id.toString());
+        }
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     (async () => {
       if (problemID) {
-        const targetPaintingDataResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemID}.json`);
+        const targetPaintingDataResponse = await axios.get(
+          `https://cdn.robovinci.xyz/imageframes/${problemID}.json`,
+        );
 
         setTargetPaintingData(targetPaintingDataResponse.data);
       }
@@ -127,7 +142,13 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   useEffect(() => {
     setIsRendered(false);
     setSubmissionPhase(SubmissionPhase.ENTER_CODE);
-    setProblemID(props.problemID ?? problemIDs[0]);
+    if (props.open) {
+      if (props.problemID) {
+        setProblemID(props.problemID);
+      } else {
+        refreshProblems();
+      }
+    }
   }, [props.open]);
 
   useEffect(() => {
@@ -156,7 +177,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
 
   const handleSubmit = () => {
     setLoading(true);
-    makeNewSubmission(problemID, codeToSubmit, authToken!)
+    makeNewSubmission(problemID!, codeToSubmit, authToken!)
       .then(props.onSubmit)
       .catch((err) => {
         toast.error(err.message);
@@ -172,7 +193,9 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
 
     setTimeout(async () => {
       try {
-        setProposedScore(await drawToCanvas(interpreterResult as InterpreterResult));
+        setProposedScore(
+          await drawToCanvas(interpreterResult as InterpreterResult),
+        );
         setSubmissionPhase(SubmissionPhase.READY_TO_SUBMIT);
       } catch (err: any) {
         toast.error(err.message);
@@ -259,6 +282,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
         return (
           <Button
             color='primary'
+            disabled={!problemID}
             onClick={() => {
               setSubmissionPhase(SubmissionPhase.UPLOAD);
               handleSubmit();
@@ -299,9 +323,9 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
                   disabled={!!props.problemID}
                   size='small'
                 >
-                  {problemIDs.map((problemIDOption) => (
-                    <MenuItem value={problemIDOption}>
-                      {problemIDOption}
+                  {problems.map((problem) => (
+                    <MenuItem value={problem.id.toString()}>
+                      {problem.id}
                     </MenuItem>
                   ))}
                 </Select>

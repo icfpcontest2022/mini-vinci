@@ -27,9 +27,6 @@ const islRunner = async () => {
         const targetPainting = SimilarityChecker.dataToFrame(targetPaintingDataResponse.data);
         const similarityCost = SimilarityChecker.imageDiff(targetPainting, renderedData);
 
-        // console.log(`ic:`, instructionCost);
-        // console.log(`sc:`, similarityCost);
-
         const totalCost = instructionCost + similarityCost;
         return { "result": "success", "cost": totalCost };
     } catch (error) {
