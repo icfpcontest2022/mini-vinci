@@ -553,14 +553,14 @@ export class Interpreter {
                     blockId1,
                     block2.bottomLeft,
                     block2.topRight,
-                    (block2 as SimpleBlock).color
+                    (block1 as SimpleBlock).color
                 )
             } else {
                 newBlock2 = new ComplexBlock(
                     blockId1,
                     block2.bottomLeft,
                     block2.topRight,
-                    (block2 as ComplexBlock).offsetChildren(block1.bottomLeft)
+                    (block1 as ComplexBlock).offsetChildren(block2.bottomLeft)
                 )
             }
             if(block2.typ == BlockType.SimpleBlockType) {
@@ -568,14 +568,14 @@ export class Interpreter {
                     blockId2,
                     block1.bottomLeft,
                     block1.topRight,
-                    (block1 as SimpleBlock).color
+                    (block2 as SimpleBlock).color
                 )
             } else {
                 newBlock1 = new ComplexBlock(
                     blockId2,
                     block1.bottomLeft,
                     block1.topRight,
-                    (block1 as ComplexBlock).offsetChildren(block2.bottomLeft)
+                    (block2 as ComplexBlock).offsetChildren(block1.bottomLeft)
                 )
             }
 
