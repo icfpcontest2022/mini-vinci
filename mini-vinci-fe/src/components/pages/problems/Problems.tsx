@@ -259,7 +259,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   image: {
     flexGrow: 1,
     border: 'groove',
-    maxWidth: '100%',
+    width: '100%',
     aspectRatio: '1 / 1',
   },
   downloadButtonContainer: {
