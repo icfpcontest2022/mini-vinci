@@ -165,7 +165,7 @@ const Dashboard = (): JSX.Element => {
               </TableCell>
               <TableCell align='right' key='submission-id'>
                 <Box component='div' className={classes.columnLabel}>
-                  Score
+                  Cost
                 </Box>
               </TableCell>
               <TableCell align='center' key='submission-id'>
