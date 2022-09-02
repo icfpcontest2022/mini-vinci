@@ -38,8 +38,8 @@ export class Interpreter {
         }
         let program = result.result as Program;
         let canvas = new Canvas(
-            program.metaData.width, 
-            program.metaData.height, 
+            program.metaData.width,
+            program.metaData.height,
             program.metaData.backgroundColor
         );
         let totalCost = 0;
@@ -75,7 +75,6 @@ export class Interpreter {
                 return this.mergeCanvas(lineNumber, context, instruction as MergeInstruction);
             }
         }
-        console.log(instruction);
         throw Error(`At ${lineNumber}, encountered unreachable code!`);
     }
 
@@ -87,15 +86,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Block Id of [${blockId}] is not found!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.ColorInstructionType, 
+            InstructionType.ColorInstructionType,
             block.size.getScalarSize(),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         if (block.typ === BlockType.SimpleBlockType) {
             let actualBlock = block as SimpleBlock;
@@ -106,7 +105,7 @@ export class Interpreter {
         if (block.typ === BlockType.ComplexBlockType) {
             let actualBlock = block as ComplexBlock;
             context.blocks.set(
-                blockId, 
+                blockId,
                 new SimpleBlock(
                     actualBlock.id,
                     actualBlock.bottomLeft,
@@ -114,7 +113,6 @@ export class Interpreter {
                     color
                 )
             );
-            console.log(context.blocks);
             return new InterpreterResult(context, cost);
         }
         // Processing Ends
@@ -132,15 +130,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Point is out of the [${blockId}]! Block is from ${block.bottomLeft} to ${block.topRight}, point is at ${point}!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.PointCutInstructionType, 
+            InstructionType.PointCutInstructionType,
             block.size.getScalarSize(),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         if (block.typ === BlockType.SimpleBlockType) {
             const bottomLeftBlock = new SimpleBlock(
@@ -191,7 +189,7 @@ export class Interpreter {
                  * |________|_______|_______|
                  * |        |       |       |
                  * |   7    |   8   |   9   |
-                 * |________|_______|_______| 
+                 * |________|_______|_______|
                  */
                 // Case 2
                 if (subBlock.bottomLeft.px >= point.px && subBlock.bottomLeft.py >= point.py) {
@@ -243,8 +241,8 @@ export class Interpreter {
                 }
 
                 // Case 2
-                if (subBlock.bottomLeft.px <= point.px 
-                    && point.px <= subBlock.topRight.px 
+                if (subBlock.bottomLeft.px <= point.px
+                    && point.px <= subBlock.topRight.px
                     && point.py < subBlock.bottomLeft.py) {
                     topLeftBlocks.push(new SimpleBlock(
                         'case2_tl_child',
@@ -259,10 +257,10 @@ export class Interpreter {
                         (subBlock as SimpleBlock).color
                     ));
                     return;
-                } 
+                }
                 // Case 8
-                if (subBlock.bottomLeft.px <= point.px 
-                    && point.px <= subBlock.topRight.px 
+                if (subBlock.bottomLeft.px <= point.px
+                    && point.px <= subBlock.topRight.px
                     && point.py > subBlock.topRight.py) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case8_bl_child',
@@ -277,10 +275,10 @@ export class Interpreter {
                         (subBlock as SimpleBlock).color
                     ));
                     return;
-                } 
+                }
                 // Case 4
                 if (subBlock.bottomLeft.py <= point.py
-                    && point.py <= subBlock.topRight.py 
+                    && point.py <= subBlock.topRight.py
                     && point.px < subBlock.bottomLeft.px) {
                     bottomRightBlocks.push(new SimpleBlock(
                         'case4_br_child',
@@ -295,10 +293,10 @@ export class Interpreter {
                         (subBlock as SimpleBlock).color
                     ));
                     return;
-                } 
+                }
                 // Case 6
                 if (subBlock.bottomLeft.py <= point.py
-                    && point.py <= subBlock.topRight.py 
+                    && point.py <= subBlock.topRight.py
                     && point.px > subBlock.topRight.px) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case6_bl_child',
@@ -313,7 +311,7 @@ export class Interpreter {
                         (subBlock as SimpleBlock).color
                     ));
                     return;
-                } 
+                }
             });
             const bottomLeftBlock = new ComplexBlock(
                 blockId + '.0',
@@ -362,15 +360,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Line number is out of the [${blockId}]! Block is from ${block.bottomLeft} to ${block.topRight}, point is at ${lineNumber}!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.VerticalCutInstructionType, 
+            InstructionType.VerticalCutInstructionType,
             block.size.getScalarSize(),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         if (block.typ === BlockType.SimpleBlockType) {
             const leftBlock = new SimpleBlock(
@@ -449,15 +447,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Line number is out of the [${blockId}]! Block is from ${block.bottomLeft} to ${block.topRight}, point is at ${lineNumber}!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.HorizontalCutInstructionType, 
+            InstructionType.HorizontalCutInstructionType,
             block.size.getScalarSize(),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         if (block.typ === BlockType.SimpleBlockType) {
             const bottomBlock = new SimpleBlock(
@@ -537,15 +535,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Block Id of [${blockId2}] is not found!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.SwapInstructionType, 
+            InstructionType.SwapInstructionType,
             block1.size.getScalarSize(),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         if(block1.size === block2.size) {
             block1.id = blockId2;
@@ -573,15 +571,15 @@ export class Interpreter {
             throw Error(`At ${line}, encountered: Block Id of [${blockId2}] is not found!`);
         }
         // TypeCheck Ends
-        
+
         // Scoring Starts
         const cost = InstructionCostCalculator.getCost(
-            InstructionType.MergeInstructionType, 
+            InstructionType.MergeInstructionType,
             Math.max(block1.size.getScalarSize(), block2.size.getScalarSize()),
             context.size.getScalarSize()
         )
         // Scoring Ends
-        
+
         // Processing Starts
         const bottomToTop = ( block1.bottomLeft.py === block2.topRight.py ||
                             block1.topRight.py === block2.bottomLeft.py ) &&
@@ -595,7 +593,7 @@ export class Interpreter {
                 newTopRight = block2.topRight;
             } else {
                 newBottomLeft = block2.bottomLeft;
-                newTopRight = block1.topRight;              
+                newTopRight = block1.topRight;
             }
             const newBlock = new ComplexBlock(
                 this.topLevelIdCounter.toString(),
@@ -621,7 +619,7 @@ export class Interpreter {
                 newTopRight = block2.topRight;
             } else {
                 newBottomLeft = block2.bottomLeft;
-                newTopRight = block1.topRight;              
+                newTopRight = block1.topRight;
             }
             const newBlock = new ComplexBlock(
                 this.topLevelIdCounter.toString(),
@@ -635,7 +633,7 @@ export class Interpreter {
             return new InterpreterResult(context, cost);
         }
 
-        
+
         if(!(bottomToTop || leftToRight)) {
             throw Error(`At ${line}, encountered: Blocks [${blockId1}] and [${blockId2}] are not mergable, check canvas: [${JSON.stringify(context)}]`);
         }
