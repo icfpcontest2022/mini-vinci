@@ -545,14 +545,14 @@ export class Interpreter {
         // Scoring Ends
 
         // Processing Starts
-        if(block1.size === block2.size) {
+        if(block1.size.px === block2.size.px && block1.size.py === block2.size.py) {
             block1.id = blockId2;
             block2.id = blockId1;
             context.blocks.set(blockId1, block2);
             context.blocks.set(blockId2, block1);
             return new InterpreterResult(context, cost);
         } else {
-            throw Error(`At ${line}, encountered: Blocks are not the same size, [${blockId1}] has size [${block1.size}] while [${blockId2}] has size [${block2.size}]`);
+            throw Error(`At ${line}, encountered: Blocks are not the same size, [${blockId1}] has size [${block1.size.px},${block1.size.py}] while [${blockId2}] has size [${block2.size.px},${block2.size.py}]`);
         }
         // Processing Ends
 
