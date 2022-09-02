@@ -61,7 +61,7 @@ func (s GetSubmissionsSerializer) Response() GetSubmissionsResponse {
 	}
 
 	sort.Slice(resp.Submissions, func(i, j int) bool {
-		return resp.Submissions[i].ID < resp.Submissions[j].ID
+		return resp.Submissions[i].ID > resp.Submissions[j].ID
 	})
 
 	return resp
