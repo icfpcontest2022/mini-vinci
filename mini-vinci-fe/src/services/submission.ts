@@ -27,6 +27,22 @@ export const getSubmissionsList = async (
   );
 };
 
+export const getSubmission = async (
+  submissionID: string,
+  authToken: string,
+): Promise<Submission> => {
+  let request: AxiosRequestConfig = {
+    url: `/api/submissions/${submissionID}`,
+    method: 'get',
+    headers: {},
+  };
+
+  request = setAuthToken(request, authToken);
+
+  const response = await api(request);
+  return submissionFromResponse(response.data, 0);
+};
+
 export const makeNewSubmission = async (
   problemID: string,
   code: string,
