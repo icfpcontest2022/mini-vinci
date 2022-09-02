@@ -170,8 +170,10 @@ func (sc *SubmissionController) RejudgeAllSubmissions(c *gin.Context) (int, inte
 
 	for _, sub := range submissions {
 		err = async.NewSubmissionEvaluationTask(evaluation.SubmissionEvaluationPayload{SubmissionID: sub.ID})
+		logWithField := log.WithField("submission_id", sub.ID)
+		logWithField.Infof("replanning submission evaluation task")
 		if err != nil {
-			log.WithField("submission_id", sub.ID).WithError(err).Errorf("could not plan submission evaluation task")
+			logWithField.WithError(err).Errorf("could not plan submission evaluation task")
 			return apiresponses.InternalServerError()
 		}
 	}
