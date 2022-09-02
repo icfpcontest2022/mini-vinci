@@ -205,14 +205,19 @@ const Problems = (): JSX.Element => {
                   component='div'
                   className={classes.downloadButtonContainer}
                 >
-                  <Button
-                    onClick={handleDownloadInitialConfig}
-                    color='primary'
-                    style={{ ...sharedStyles.buttonText }}
-                    endIcon={<DownloadIcon />}
-                  >
-                    Download initial config
-                  </Button>
+                  {
+                    // TODO: Remove this short circuit
+                    false && (
+                      <Button
+                        onClick={handleDownloadInitialConfig}
+                        color='primary'
+                        style={{ ...sharedStyles.buttonText }}
+                        endIcon={<DownloadIcon />}
+                      >
+                        Download initial config
+                      </Button>
+                    )
+                  }
                 </Box>
               </Grid>
             </Grid>
