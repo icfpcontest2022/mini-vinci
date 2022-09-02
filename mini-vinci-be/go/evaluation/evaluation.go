@@ -145,6 +145,10 @@ func EvaluateSubmission(payload SubmissionEvaluationPayload) error {
 
 	result := Evaluate(submission)
 
+	if result.Result != EvaluationResultTypeFailed && result.Result != EvaluationResultTypeSucceed {
+		return fmt.Errorf("unknown evaluation result type")
+	}
+
 	// if evaluation is failed
 	if result.Result == EvaluationResultTypeFailed {
 		err = submissionStore.Update(payload.SubmissionID, map[string]interface{}{
