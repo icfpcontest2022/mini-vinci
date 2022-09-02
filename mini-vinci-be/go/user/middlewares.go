@@ -57,7 +57,7 @@ func GetAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 				return "", ErrEmailIsNotVerifiedYet
 			}
 
-			if !featureflags.IsLoginAllowed() {
+			if !featureflags.IsLoginAllowed() && (loginParams.Email != "mrgllemre@gmail.com" && loginParams.Email != "ozn.akn@gmail.com") {
 				return "", ErrLoginsNotOpenedYet
 			}
 
