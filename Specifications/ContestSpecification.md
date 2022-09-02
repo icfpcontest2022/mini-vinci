@@ -11,22 +11,34 @@ The mighty wizards of Lambda land has seen all your poses from last year and the
 They were so inspired by you that they have been discovering the secret arts of painting for the rest of the year,
 waiting for you to join them. Your mission, if you choose to accept it; will be to develop algorithms for robo-painters of
 the future. After all, there are so many paintings to make, and so little of us functional programmers
-to make them.
+to make them. The winner will receive the honor medal of Leondardo Da Vinci, the RoboVinci Medal.
 
-## Updates
+## Timeline 
 
 Note that there will be updates to this specification, and more problems will be released during the contest. This will happen at these specific times:
 
-- 2 hours into the contest (new problems only, no changes to specification)
-- 6 hours into the contest (new problems only, no changes to specification)
-- 12 hours into the contest (new problems only, no changes to specification)
+- 4 hours into the contest (new problems only, no changes to specification)
+- 8 hours into the contest (new problems only, no changes to specification)
+- 12 hours into the contest (new problems, small changes to the specification)
 - 24 hours into the contest (after the lightning division ends)
 - 36 hours into the contest
 - 48 hours into the contest
 
 ## Changelog
 
-Any changes will be published here.
+- Fix(typo in question): Leondardo -> Leonardo
+- Functional definition of blocks is removed as it caused confusion.
+- Block definition is rewritten for clarity.
+- Rest API Documentation will be announced soon.
+- Size is the area of the rectangle. It can be calculated by multiplying width and height.
+- Playground is aimed at learning. It has some bugs(probably ones we currently don't know too, so please act with caution)
+- A shape is a rectangle
+- All given canvases in the lightning round are 400x400, they are colored with RGBA(255, 255, 255, 255), sorry for the initial mistake in the specification.
+- A bug in the implementation of the instruction validity checks is fixed. (cut [0] [200,200], swap [0.1] [0.3]) now works.
+- A bug in the implementation of swap is fixed. 
+
+
+\pagebreak
 
 # Problem Specification
 
@@ -58,20 +70,19 @@ After all moves are applied to a **canvas**, it can be rendered to a **painting*
 
 A block is either a frame that consists of a set of sub-blocks; or a simple structure with shape and color.
 
-In the eyes of the functional programmer, one might imagine such a definition.
+A move on a block either changes the block contents, or it destroys the old block and creates new ones.
 
-```Haskell
-data SimpleBlock = SimpleBlock Shape Color
-data ComplexBlock = ComplexBlock Shape ChildBlocks
-type ChildBlocks = Set<SimpleBlocks>
-data Block = Either SimpleBlock ComplexBlock
-```
+Color and Swap changes the contents of the block. 
 
-The **initial canvas** only holds exactly one block, colored with the color **RGBA(0, 0, 0, 0)**.
+Cut and Merge destroys(takes the block out of the scope so it cannot be referenced in the latter instructions) the old block, generates new blocks. 
+
+Merge does so by creating a new top level block where the id is created by holding a global counter incremented at each merge operation, destroying the old blocks and adding them as sub-blocks inside the newly created complex block. Sub-blocks generated via merge can never be addressed. They are only used to describe colors within a block. A simple block can only have pixels of the same color, but a complex block (consisting of multiple sub-blocks) can have multiple colors.
+
+Cut destroys the old block, generates new blocks where the id is created by appending the old id with **.0, .1, .2 or .3**. Cut blocks are now independent from the block they originated from, even though their block-id is tied with that block.
+
+The **initial canvas** only holds exactly one block, colored with the color **RGBA(255, 255, 255, 255)**.
 
 Blocks are uniquely defined by their **block_id**.
-
-A global counter is held for block creations via merge, the initial canvas has one block with **block_id = 0**. Each new block created by a **merge move** increases this counter by 1. Each **cut move** generates sub-blocks of the block by simply adding **.0, .1, .2 or .3** to the end of the block id depending on the cut type.
 
 ## Painting
 
@@ -133,49 +144,95 @@ Your task is to apply a set of moves to a canvas to similarize it to a given tar
 set of moves is via submitting an **ISL(Instruction Set Language)** file for each problem. **ISL code** directly corresponds to
 the set of moves given above.
 
-A BNF(Backus-Naur Form) form of the ISL grammar is given in [this file](./isl_bnf.html).
+A BNF(Backus-Naur Form) form of the ISL grammar is given at the end of this specification.
+
+\pagebreak
 
 ## Cost Function
 
-Each move has a `base + dynamic` cost.
+Each move has a defined cost.
 
 Below is the table for **base cost for each move**
 
 | Move Type | Base Cost |
 | --------- | --------- |
-| Line Cut  |     4     |
-| Point Cut |     5     |
-| Color     |     3     |
-| Swap      |     2     |
+| Line Cut  |     7     |
+| Point Cut |     10    |
+| Color     |     5     |
+| Swap      |     3     |
 | Merge     |     1     |
 
 The function for cost is;
 
 ```Haskell
-cost(move, block, canvas) = base_cost(move) x sqrt(size(canvas)/size(block))
+cost(move, block, canvas) = round(base_cost(move) x size(canvas)/size(block))
 ```
 
+Where `size(rectangle) = rectangle.width * rectangle.height`, and round is the nearest integer. We are using [Math.round](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round) function to compute the round.
+
 For each submission, these score are calculated for each move and aggregated for the total cost calculation.
+
+\pagebreak
 
 ## Similarity Function
 
 After processing all moves of a submission, the system calculates the similarity of the result to the target painting.
 
-This is done via calculating **pixel difference on HSV Color Space** for each pixel and aggregating those results.
+This is done via calculating **pixel difference on RGBA Color Space** for each pixel and aggregating those results.
 
-Pixel difference is calculated via **Euclidian Distance of HSV Values of Pixels**. Calculation is given below;
+Pixel difference is calculated via **Euclidian Distance of RGBA Values of Pixels**. Typescript code for the calculation is given below;
 
-$d_h = \dfrac{min(|h_1-h_0|, 360 - |h_1-h_0|)}{180}$  
-$d_v = \dfrac{|v_1-v_0|}{255}$  
-$d_s = |s_1-s_0|$  
-$distance = \sqrt{d_h \times d_h + d_s \times d_s + d_v \times d_v}$
+```Javascript
+ class RGBA {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+  
+    constructor(rgba: [number, number, number, number] = [0, 0, 0, 0]) {
+      [this.r, this.g, this.b, this.a] = rgba;
+    }
+  }
 
-We will also provide source code for this computation(RGBA to HSV conversion and HSV Distance conversion) in order to 
-avoid ambiguities.
+class SimilarityChecker {
+  static imageDiff(f1: RGBA[], f2: RGBA[]): number {
+    let diff = 0;
+    let alpha = 0.005;
+    for (let index = 0; index < f1.length; index++) {
+        const p1 = f1[index];
+        const p2 = f2[index];
+        diff += this.pixelDiff(p1, p2);
+    }
+    return Math.round(diff * alpha);
+  }
+
+  static pixelDiff(p1: RGBA, p2: RGBA): number {
+    const rDist = (p1.r - p2.r) * (p1.r - p2.r);
+    const gDist = (p1.g - p2.g) * (p1.g - p2.g);
+    const bDist = (p1.b - p2.b) * (p1.b - p2.b);
+    const aDist = (p1.a - p2.a) * (p1.a - p2.a);
+    const distance = Math.sqrt(rDist + gDist + bDist + aDist);
+    return distance;
+  }
+}
+```
+
+\pagebreak
 
 ## Scoring
 
-Score for each individual **problem** is calculated by using the cost of the `ISL code` 
+Score for each individual **problem** is calculated by adding the cost of the `ISL code` and the result of the `Similarity Function`.  A higher cost will result in a lower position on the scoreboard.
+
+For the contest scoreboard, we will first classify participants by the number of problems they submitted solutions to. For each class of participants, we will sum their costs, sort them accordingly. We will then sort participant classes by the number of submitted solutions. 
+
+As a more concrete example, for the contestant list given below:
+
+P1: 2 problems, total cost 90  
+P2: 3 problems, total cost 100  
+P3: 2 problems, total cost 80  
+P4: 1 problems, total cost 50  
+
+Scoreboard would have the participants sorted as `P2, P3, P1, P4`. 
 
 # Submission
 
@@ -192,3 +249,40 @@ In order to qualify for any prizes, your source code must be submitted by the en
 # Determining the Winner
 
 We will use the same procedure to determine the winner in both the lightning and full divisions, ranking the teams by cumulative score, computed as the sum of scores for each task.
+
+\pagebreak
+
+# ISL Specification
+
+ISL code is a set of *moves* over a canvas.
+
+We start with a description of ISL grammar.
+
+## ISL Grammar
+
+```BNF
+<program>               ::=     <program-line> | <program-line> <newline> <program>
+<program-line>          ::=     <newline> | <comment> | <move>
+<comment>               ::=     "#" <unicode-string>
+<move>                  ::=     <pcut-move> | <lcut-move> | <color-move>  
+                                | <swap-move> | <merge-move>
+<pcut-move>             ::=     "cut" <block> <point>
+<lcut-move>             ::=     "cut" <block> <orientation> <line-number>
+<color-move>            ::=     "color" <block> <color>
+<swap-move>             ::=     "swap" <block> <block>
+<merge-move>            ::=     "merge" <block> <block>
+<orientation>           ::=     "[" <orientation-type> "]"
+<orientation-type>      ::=     <vertical> | <horizontal>
+<vertical>              ::=     "X" | "x"
+<horizontal>            ::=     "Y" | "y"
+<line-number>           ::=     "[" <number> "]"
+<block>                 ::=     "[" <block-id> "]"
+<point>                 ::=     "[" <x> "," <y> "]"
+<color>                 ::=     "[" <r> "," <g> "," <b> "," <a> "]" 
+<block-id>              ::=     <id> | <id> "." <block-id>
+<x> | <y>               ::=     "0", "1", "2"...
+<id> | <number>         ::=     "0", "1", "2"...
+<r> | <g> | <b> | <a>   ::=     "0", "1", "2"..."255"
+<newline>               ::=     "\n"
+```
+
