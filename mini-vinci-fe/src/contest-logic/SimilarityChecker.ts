@@ -3,12 +3,6 @@
 import { RGBA } from "./Color";
 import { Frame } from "./Painter";
 
-type HSV = {
-  hue: number,
-  sat: number,
-  val: number
-}
-
 export class SimilarityChecker {
   static dataToFrame(data: [number, number, number, number][]): Frame {
     let frame: Frame = [];
