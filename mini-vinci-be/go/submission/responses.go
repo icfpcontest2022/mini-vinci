@@ -15,7 +15,8 @@ type RetrieveSubmissionResponse struct {
 	ProblemID   uint      `json:"problem_id"`
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
-	Score       int64     `json:"score"`
+	Cost        int64     `json:"cost"`
+	Error       string    `json:"error"`
 	FileURL     string    `json:"file_url"`
 }
 
@@ -30,7 +31,8 @@ func (s RetrieveSubmissionSerializer) Response() RetrieveSubmissionResponse {
 		ProblemID:   s.Submission.ProblemID,
 		SubmittedAt: s.Submission.CreatedAt,
 		Status:      s.Submission.Status,
-		Score:       s.Submission.Score,
+		Cost:        s.Submission.Score,
+		Error:       s.Submission.Error,
 		FileURL:     s.PresignedURl,
 	}
 }
@@ -41,6 +43,7 @@ type SingleSubmissionResponse struct {
 	SubmittedAt time.Time `json:"submitted_at"`
 	Status      string    `json:"status"`
 	Score       int64     `json:"score"`
+	Error       string    `json:"error"`
 }
 
 type GetSubmissionsResponse struct {
@@ -61,6 +64,7 @@ func (s GetSubmissionsSerializer) Response() GetSubmissionsResponse {
 			SubmittedAt: sub.CreatedAt,
 			Status:      sub.Status,
 			Score:       sub.Score,
+			Error:       sub.Error,
 		})
 	}
 

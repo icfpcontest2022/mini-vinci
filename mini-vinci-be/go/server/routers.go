@@ -91,13 +91,14 @@ func setUpRouters(r *gin.Engine) error {
 	submissionGroup.POST(":problem_id/create", submissionRouter.CreateSubmission)
 	submissionGroup.GET(":id", submissionRouter.RetrieveSubmission)
 	submissionGroup.GET("", submissionRouter.GetSubmissions)
-	submissionGroup.GET("rejudgesubsabcd", submissionRouter.RejudgeAllSubmission)
+	// submissionGroup.GET("rejudgesubsabcd", submissionRouter.RejudgeAllSubmission)
 
 	// problem
 	problemRouter := problem.ProblemRouter{}
 
 	problemGroup := apiGroup.Group("problems")
 	problemGroup.Use(authMiddleware.MiddlewareFunc())
+	problemGroup.POST(":problem_id", submissionRouter.CreateSubmission) // added to have more meaningful endpoint uri
 	problemGroup.GET("", problemRouter.GetProblems)
 
 	// support
