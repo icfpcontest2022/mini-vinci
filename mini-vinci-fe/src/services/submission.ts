@@ -23,7 +23,7 @@ export const getSubmissionsList = async (
   }
 
   return submissionsList.map((submission: any, index: number) =>
-    submissionFromResponse(submission, submissionsList.length - index),
+    submissionFromResponse(submission, index + 1),
   );
 };
 
