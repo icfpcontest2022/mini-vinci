@@ -122,7 +122,7 @@ func Evaluate(sub common.Submission) EvaluationResult {
 	fmt.Println(judgeResult)
 
 	res := EvaluationResultTypeSucceed
-	if res != "success" {
+	if judgeResult.Result != "success" {
 		res = EvaluationResultTypeFailed
 	}
 
