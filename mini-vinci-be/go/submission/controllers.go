@@ -80,7 +80,9 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 		return apiresponses.InternalServerError()
 	}
 
-	return apiresponses.SuccessMessage("submission created successfully")
+	return http.StatusOK, CreateSubmissionResponse{
+		SubmissionID: createdSub.ID,
+	}
 }
 
 func (sc *SubmissionController) RetrieveSubmission(c *gin.Context, params RetrieveSubmissionParams) (int, interface{}) {

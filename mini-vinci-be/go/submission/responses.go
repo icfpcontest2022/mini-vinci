@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+type CreateSubmissionResponse struct {
+	SubmissionID uint `json:"submission_id"`
+}
+
 type RetrieveSubmissionResponse struct {
 	ID          uint      `json:"id"`
 	ProblemID   uint      `json:"problem_id"`
