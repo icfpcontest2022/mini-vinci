@@ -13,8 +13,8 @@ import {
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import BrushIcon from '@mui/icons-material/Brush';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DownloadIcon from '@mui/icons-material/Download';
 import ErrorIcon from '@mui/icons-material/Error';
-import InfoIcon from '@mui/icons-material/Info';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { makeStyles } from 'tss-react/mui';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -36,7 +36,10 @@ import {
   isAuthTokenExpired,
 } from '../../../utilities/auth';
 import Loading from '../../Loading';
-import { getSubmissionsList } from '../../../services/submission';
+import {
+  getSubmission,
+  getSubmissionsList,
+} from '../../../services/submission';
 
 const Dashboard = (): JSX.Element => {
   const { classes } = useStyles();
@@ -118,6 +121,19 @@ const Dashboard = (): JSX.Element => {
     refreshSubmissions();
   };
 
+  const handleDownloadSubmission = (submission: Submission) => {
+    setLoading(true);
+    getSubmission(submission.id, authToken!)
+      .then((retrievedSubmission) => {
+        const link = document.createElement('a');
+        link.download = `submission-${submission.id}.isl`;
+        link.href = retrievedSubmission.fileUrl;
+        link.click();
+      })
+      .catch((err) => toast.error(err.message))
+      .finally(() => setLoading(false));
+  };
+
   return (
     <Box component='div' className={classes.mainContainer}>
       <Loading open={loading} />
@@ -175,7 +191,7 @@ const Dashboard = (): JSX.Element => {
               </TableCell>
               <TableCell align='center' key='submission-id'>
                 <Box component='div' className={classes.columnLabel}>
-                  Details
+                  Submitted Code
                 </Box>
               </TableCell>
             </TableRow>
@@ -222,12 +238,9 @@ const Dashboard = (): JSX.Element => {
                 <TableCell align='center'>
                   <IconButton
                     color='primary'
-                    disabled={
-                      submission.status === SubmissionStatus.QUEUED ||
-                      submission.status === SubmissionStatus.PROCESSING
-                    }
+                    onClick={() => handleDownloadSubmission(submission)}
                   >
-                    <InfoIcon />
+                    <DownloadIcon />
                   </IconButton>
                 </TableCell>
               </TableRow>
