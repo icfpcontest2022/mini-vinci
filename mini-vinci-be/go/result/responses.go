@@ -146,7 +146,9 @@ func (s GetScoreboardSerializer) Response() GetScoreboardResponse {
 			}
 		}
 
-		resp.Users = append(resp.Users, userResp)
+		if userResp.SolvedProblemCount > 0 {
+			resp.Users = append(resp.Users, userResp)
+		}
 	}
 
 	sort.Slice(resp.Users, func(i, j int) bool {
