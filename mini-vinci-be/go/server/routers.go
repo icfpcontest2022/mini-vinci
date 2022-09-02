@@ -43,7 +43,7 @@ func setUpRouters(r *gin.Engine) error {
 		limiter.New(memory.NewStore(),
 			limiter.Rate{
 				Period: 15 * time.Minute,
-				Limit:  1000,
+				Limit:  5000,
 			}),
 	))
 
@@ -70,7 +70,7 @@ func setUpRouters(r *gin.Engine) error {
 		limiter.New(memory.NewStore(),
 			limiter.Rate{
 				Period: 1 * time.Minute,
-				Limit:  10,
+				Limit:  50,
 			}),
 	))
 
@@ -122,17 +122,17 @@ func setUpRouters(r *gin.Engine) error {
 	resultGroup.GET("scoreboard", resultRouter.GetScoreboard)
 
 	/*
-	r.NoRoute(func(c *gin.Context) {
-		escapedPath := c.Request.URL.EscapedPath()
-		dir, file := path.Split(escapedPath)
-		ext := filepath.Ext(file)
+		r.NoRoute(func(c *gin.Context) {
+			escapedPath := c.Request.URL.EscapedPath()
+			dir, file := path.Split(escapedPath)
+			ext := filepath.Ext(file)
 
-		if file == "" || ext == "" {
-			c.File(ReactBuildPath + "/index.html")
-		} else {
-			c.File(ReactBuildPath + "/" + strings.TrimPrefix(path.Join(dir, file), "/"))
-		}
-	})
+			if file == "" || ext == "" {
+				c.File(ReactBuildPath + "/index.html")
+			} else {
+				c.File(ReactBuildPath + "/" + strings.TrimPrefix(path.Join(dir, file), "/"))
+			}
+		})
 	*/
 
 	return nil
