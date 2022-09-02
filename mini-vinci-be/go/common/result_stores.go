@@ -44,3 +44,9 @@ func (s *ResultStore) UpdateResult(userID, problemID uint, time time.Time, score
 
 	return err
 }
+
+func (s *ResultStore) DeleteAll() error {
+	err := s.db.Exec(`DELETE FROM results WHERE true`).Error
+
+	return err
+}

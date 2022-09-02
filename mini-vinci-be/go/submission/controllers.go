@@ -11,6 +11,7 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/evaluation"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
 	"github.com/sirupsen/logrus"
@@ -21,6 +22,10 @@ import (
 type SubmissionController struct{}
 
 func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSubmissionParams) (int, interface{}) {
+	if !featureflags.IsSubmissionAllowed() {
+		return apiresponses.BadRequestError("submissions temporarily disabled")
+	}
+
 	log := logging.Logger.WithFields(logrus.Fields{
 		"location": "CreateSubmission",
 	})
@@ -75,7 +80,9 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 		return apiresponses.InternalServerError()
 	}
 
-	return apiresponses.SuccessMessage("submission created successfully")
+	return http.StatusOK, CreateSubmissionResponse{
+		SubmissionID: createdSub.ID,
+	}
 }
 
 func (sc *SubmissionController) RetrieveSubmission(c *gin.Context, params RetrieveSubmissionParams) (int, interface{}) {
@@ -145,4 +152,33 @@ func (sc *SubmissionController) GetSubmissions(c *gin.Context) (int, interface{}
 	}
 
 	return http.StatusOK, GetSubmissionsSerializer{Submissions: subs}.Response()
+}
+
+func (sc *SubmissionController) RejudgeAllSubmissions(c *gin.Context) (int, interface{}) {
+	log := logging.Logger.WithFields(logrus.Fields{
+		"location": "RejudgeAllSubmissions",
+	})
+
+	resultStore := common.NewResultStore()
+	resultStore.DeleteAll()
+
+	submissionStore := common.NewSubmissionStore()
+
+	submissions, err := submissionStore.Find(map[string]interface{}{})
+	if err != nil {
+		log.WithError(err).Errorf("could not find submissions")
+		return apiresponses.InternalServerError()
+	}
+
+	for _, sub := range submissions {
+		err = async.NewSubmissionEvaluationTask(evaluation.SubmissionEvaluationPayload{SubmissionID: sub.ID})
+		logWithField := log.WithField("submission_id", sub.ID)
+		logWithField.Infof("replanning submission evaluation task")
+		if err != nil {
+			logWithField.WithError(err).Errorf("could not plan submission evaluation task")
+			return apiresponses.InternalServerError()
+		}
+	}
+
+	return apiresponses.SuccessMessage("okay")
 }
