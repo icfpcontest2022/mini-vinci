@@ -16,6 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
 import ErrorIcon from '@mui/icons-material/Error';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { makeStyles } from 'tss-react/mui';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useEffect, useState } from 'react';
@@ -40,6 +41,7 @@ import {
   getSubmission,
   getSubmissionsList,
 } from '../../../services/submission';
+import ApiKeyDialog from './ApiKeyDialog';
 
 const Dashboard = (): JSX.Element => {
   const { classes } = useStyles();
@@ -83,6 +85,7 @@ const Dashboard = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [showNewSubmissionDialog, setShowNewSubmissionDialog] = useState(false);
+  const [showApiTokenDialog, setShowApiTokenDialog] = useState(false);
 
   const submissionStatusIcon = (status: SubmissionStatus): JSX.Element => {
     switch (status) {
@@ -143,9 +146,24 @@ const Dashboard = (): JSX.Element => {
         onClose={handleCloseNewSubmission}
         onSubmit={handleNewSubmission}
       />
+      <ApiKeyDialog
+        open={showApiTokenDialog}
+        onClose={() => setShowApiTokenDialog(false)}
+      />
       <Box component='div' className={classes.headerRow}>
         <Box className={classes.submissionsHeader}>Submissions</Box>
         <Box component='div' className={classes.horizontalSpacer} />
+        <Box component='div' className={classes.apiKeyButton}>
+          <Button
+            variant='contained'
+            startIcon={<VpnKeyIcon />}
+            onClick={() => setShowApiTokenDialog(true)}
+            style={{ ...sharedStyles.buttonText }}
+            className={classes.apiKeyButton}
+          >
+            API Key
+          </Button>
+        </Box>
         <Button
           variant='contained'
           startIcon={<NoteAddIcon />}
@@ -272,6 +290,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
   horizontalSpacer: {
     flexGrow: 1,
+  },
+  apiKeyButton: {
+    marginRight: theme.spacing(1),
   },
   tableWrapper: {
     paddingLeft: theme.spacing(3),
