@@ -11,7 +11,6 @@ import { TabKind } from '../../../variables/tabs';
 import AppHeader from '../../AppHeader';
 import {
   getAuthTokenFromStorage,
-  getTeamNameFromToken,
   isAuthTokenExpired,
 } from '../../../utilities/auth';
 import { SupportMessage } from '../../../models/support';
@@ -32,7 +31,6 @@ const Support = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [supportMessages, setSupportMessages] = useState<SupportMessage[]>([]);
-  const [teamName, setTeamName] = useState('You');
   const [typedMessage, setTypedMessage] = useState('');
   const [maxMessages, setMaxMessages] = useState(5);
 
@@ -63,7 +61,6 @@ const Support = (): JSX.Element => {
 
   useEffect(() => {
     if (!isAuthTokenExpired(authToken)) {
-      setTeamName(getTeamNameFromToken(authToken!));
       refreshSupportMessages();
     }
   }, [authToken]);
@@ -139,7 +136,7 @@ const Support = (): JSX.Element => {
         {supportMessages.slice(-maxMessages).map((supportMessage) => [
           <Grid item xs={3} />,
           <Grid item xs={6}>
-            <MessagePaper supportMessage={supportMessage} teamName={teamName} />
+            <MessagePaper supportMessage={supportMessage} teamName={'you'} />
           </Grid>,
           <Grid item xs={3} />,
         ])}
