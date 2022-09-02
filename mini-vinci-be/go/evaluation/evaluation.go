@@ -2,6 +2,7 @@ package evaluation
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -10,6 +11,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/config"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
+	"github.com/sirupsen/logrus"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path"
@@ -17,8 +21,24 @@ import (
 	"time"
 )
 
+const (
+	EvaluationTimeOutInSeconds = 10
+
+	EvaluationErrSystem  = "system error"
+	EvaluationErrTimeout = "timeout"
+
+	EvaluationResultTypeSucceed = "succeed"
+	EvaluationResultTypeFailed  = "failed"
+)
+
 type SubmissionEvaluationPayload struct {
 	SubmissionID uint
+}
+
+type JudgeResult struct {
+	Result string `json:"result"`
+	Err    string `json:"err"`
+	Cost   int    `json:"cost"`
 }
 
 type EvaluationResult struct {
@@ -28,17 +48,30 @@ type EvaluationResult struct {
 }
 
 func Evaluate(sub common.Submission) EvaluationResult {
-	tmpFileName := fmt.Sprintf("%s.isl", uuid.New().String())
+	log := logging.Logger.WithFields(logrus.Fields{
+		"location":      "Evaluate",
+		"submission_id": sub.ID,
+	})
 
-	subFile, err := os.Create(path.Join("../../mini-vinci-judge/submissions", tmpFileName))
+	subFileName := fmt.Sprintf("%s.isl", uuid.New().String())
+	subFilePath := path.Join("../../mini-vinci-judge/submissions", subFileName)
+
+	subFile, err := os.Create(subFilePath)
 	if err != nil {
-		fmt.Println(err)
+		log.WithError(err).Errorf("could not create submission file")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrSystem}
 	}
-	defer subFile.Close()
+	defer func() {
+		subFile.Close()
+		if err := os.Remove(subFilePath); err != nil {
+			log.WithError(err).Errorf("could not delete submission file")
+		}
+	}()
 
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-1")})
 	if err != nil {
-		fmt.Println(err)
+		log.WithError(err).Errorf("could not create new aws session")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrSystem}
 	}
 
 	downloader := s3manager.NewDownloader(sess)
@@ -48,33 +81,51 @@ func Evaluate(sub common.Submission) EvaluationResult {
 			Key:    aws.String(sub.S3Key),
 		})
 	if err != nil {
-		fmt.Println("could not download", err)
+		log.WithError(err).Errorf("could not download submission")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrSystem}
 	}
 
 	fmt.Println("Downloaded", subFile.Name(), numBytes, "bytes")
 
-	// We got submission.isl, target.png in dir
-
 	ctx := context.Background()
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), EvaluationTimeOutInSeconds*time.Second)
 	defer cancel()
 
-	fmt.Println(subFile.Name())
+	cmd := exec.CommandContext(ctx, "yarn", "run", "-s", "test",
+		fmt.Sprintf("submissions/%s", subFileName),
+		fmt.Sprintf("%d", sub.ProblemID))
 
-	cmd := exec.CommandContext(ctx, "yarn", "run", "-s", "test", fmt.Sprintf("submissions/%s", tmpFileName), fmt.Sprintf("%d", sub.ProblemID))
 	cmd.Dir = "../../mini-vinci-judge"
 
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Println("command context error", err)
+		log.WithError(err).Errorf("could not run the command")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrSystem}
 	}
 
-	fmt.Println("output:", strings.TrimSpace(string(output)))
+	if ctx.Err() == context.DeadlineExceeded {
+		log.WithError(ctx.Err()).Errorf("timeout happened")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrTimeout}
+	}
+
+	outputAsStr := strings.TrimSpace(string(output))
+
+	log.Infof("judge result: %s", outputAsStr)
+
+	var judgeResult JudgeResult
+
+	if err := json.Unmarshal([]byte(outputAsStr), &judgeResult); err != nil {
+		log.WithError(err).Errorf("could not unmarshall judge result")
+		return EvaluationResult{Result: EvaluationResultTypeFailed, Error: EvaluationErrSystem}
+	}
+
+	fmt.Println(judgeResult)
 
 	return EvaluationResult{
-		Score: 11,
-		Error: "",
+		Result: EvaluationResultTypeSucceed,
+		Score:  judgeResult.Cost,
+		Error:  judgeResult.Result,
 	}
 }
 
@@ -94,6 +145,13 @@ func EvaluateSubmission(payload SubmissionEvaluationPayload) error {
 	})
 
 	result := EvaluationResult{}
+
+	rand.Seed(time.Now().UnixNano())
+
+	randomSleep := 2000 + rand.Intn(2000)
+	fmt.Println(randomSleep, "ms")
+	time.Sleep(time.Duration(randomSleep) * time.Millisecond)
+	result.Score = rand.Intn(100)
 
 	err = submissionStore.Update(payload.SubmissionID, map[string]interface{}{
 		"status":            common.SubmissionStatusSucceed,
