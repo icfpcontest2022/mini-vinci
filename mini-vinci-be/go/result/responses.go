@@ -13,12 +13,12 @@ type SingleResultResponse struct {
 	ProblemName     string    `json:"problem_name"`
 	LastSubmittedAt time.Time `json:"last_submitted_at"`
 	SubmissionCount uint      `json:"submission_count"`
-	MinCost         uint      `json:"min_cost"`
+	MinCost         int64     `json:"min_cost"`
 }
 
 type GetUserResultsResponse struct {
 	Results            []SingleResultResponse `json:"results"`
-	TotalCost          uint                   `json:"total_cost"`
+	TotalCost          int64                  `json:"total_cost"`
 	SolvedProblemCount uint                   `json:"solved_problem_count"`
 }
 
@@ -76,7 +76,7 @@ type ScoreboardUserResponse struct {
 	UserID             uint                   `json:"user_id"`
 	TeamName           string                 `json:"team_name"`
 	Results            []SingleResultResponse `json:"results"`
-	TotalCost          uint                   `json:"total_cost"`
+	TotalCost          int64                  `json:"total_cost"`
 	SolvedProblemCount uint                   `json:"solved_problem_count"`
 }
 

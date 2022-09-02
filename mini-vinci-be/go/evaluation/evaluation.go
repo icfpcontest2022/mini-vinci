@@ -37,12 +37,12 @@ type SubmissionEvaluationPayload struct {
 type JudgeResult struct {
 	Result string `json:"result"`
 	Err    string `json:"err"`
-	Cost   int    `json:"cost"`
+	Cost   int64  `json:"cost"`
 }
 
 type EvaluationResult struct {
 	Result string
-	Score  int
+	Score  int64
 	Error  string
 }
 
@@ -122,7 +122,7 @@ func Evaluate(sub common.Submission) EvaluationResult {
 	fmt.Println(judgeResult)
 
 	res := EvaluationResultTypeSucceed
-	if res != "success" {
+	if judgeResult.Result != "success" {
 		res = EvaluationResultTypeFailed
 	}
 
