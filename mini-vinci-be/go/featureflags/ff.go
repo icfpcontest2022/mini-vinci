@@ -7,13 +7,15 @@ import (
 )
 
 const (
-	DefaultValueAllowLogin      = true
-	DefaultValueAllowSubmission = true
+	DefaultValueAllowLogin       = true
+	DefaultValueAllowSubmission  = true
+	DefaultValueUpdateScoreboard = true
 )
 
 type FeatureFlags struct {
-	AllowLogin      bool `yaml:"allow_login"`
-	AllowSubmission bool `yaml:"allow_submission"`
+	AllowLogin       bool `yaml:"allow_login"`
+	AllowSubmission  bool `yaml:"allow_submission"`
+	UpdateScoreboard bool `yaml:"update_scoreboard"`
 }
 
 func GetFeatureFlags() (FeatureFlags, error) {
@@ -52,4 +54,14 @@ func IsSubmissionAllowed() bool {
 	}
 
 	return ff.AllowSubmission
+}
+
+func ShouldUpdateScoreboard() bool {
+	ff, err := GetFeatureFlags()
+
+	if err != nil {
+		return DefaultValueUpdateScoreboard
+	}
+
+	return ff.UpdateScoreboard
 }

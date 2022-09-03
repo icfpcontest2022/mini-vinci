@@ -6,6 +6,20 @@ import { Point } from './Point';
 
 export type Color = RGBA;
 
+export type SerializedBlock = {
+    blockId: string,
+    id: string,
+    bottomLeft: Point,
+    topRight: Point,
+    color: RGBA,
+};
+
+export type InitialConfig = {
+    width: number,
+    height: number,
+    blocks: SerializedBlock[],
+};
+
 export class Canvas {
     width: number;
 
@@ -30,6 +44,26 @@ export class Canvas {
                 backgroundColor,
             )
         );
+    }
+
+    static fromInitialConfiguration(initialConfig: InitialConfig) {
+        let canvas = new Canvas(
+            initialConfig.width,
+            initialConfig.height,
+            new RGBA([255, 255, 255, 255])
+        );
+        canvas.blocks.clear();
+        initialConfig.blocks.forEach(serializedBlock => {
+            canvas.blocks.set(
+                serializedBlock.blockId, 
+                new SimpleBlock(
+                    serializedBlock.blockId,
+                    serializedBlock.bottomLeft,
+                    serializedBlock.topRight,
+                    serializedBlock.color
+                )
+            )
+        })
     }
 
     get size(): Point {

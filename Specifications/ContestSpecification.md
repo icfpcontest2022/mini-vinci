@@ -1,7 +1,7 @@
 ---
 layout: article
 title: ICFP Contest 2022
-subtitle: Specification V0
+subtitle: Specification V0.2
 author: Alperen Keles
 ---
 
@@ -11,7 +11,7 @@ The mighty wizards of Lambda land has seen all your poses from last year and the
 They were so inspired by you that they have been discovering the secret arts of painting for the rest of the year,
 waiting for you to join them. Your mission, if you choose to accept it; will be to develop algorithms for robo-painters of
 the future. After all, there are so many paintings to make, and so little of us functional programmers
-to make them. The winner will receive the honor medal of Leondardo Da Vinci, the RoboVinci Medal.
+to make them. The winner will receive the honor medal of Leodardo Da Vinci, the RoboVinci Medal.
 
 ## Timeline 
 
@@ -19,7 +19,7 @@ Note that there will be updates to this specification, and more problems will be
 
 - 4 hours into the contest (new problems only, no changes to specification)
 - 8 hours into the contest (new problems only, no changes to specification)
-- 12 hours into the contest (new problems, small changes to the specification)
+- 12 hours into the contest (new problems, small changes to the specification - we decided no changes to the specification)
 - 24 hours into the contest (after the lightning division ends)
 - 36 hours into the contest
 - 48 hours into the contest
@@ -249,6 +249,29 @@ In order to qualify for any prizes, your source code must be submitted by the en
 # Determining the Winner
 
 We will use the same procedure to determine the winner in both the lightning and full divisions, ranking the teams by cumulative score, computed as the sum of scores for each task.
+
+# REST API
+
+You can use the given endpoints to do your submissions.
+
+## API Endpoints
+
+GET /api/users Get information of your team. This can be used to verify that you can access API with your token.
+
+POST /api/problems/$PROBLEM_ID Make a submission. The multipart/form-data body of the request should contain your isl file with the key 'file' . Returns a submission ID.
+
+Example CURL Request : 
+
+    curl --header "Authorization: Bearer YourAPIToken" -F file=@your.isl https://robovinci.xyz/api/submissions/1/create
+
+GET /api/submissions/$SUBMISSION_ID Retrieves information about a submission. It returns a JSON object with the following attributes: 
+    • status: Either QUEUED, PROCESSING, SUCCEEDED, or FAILED
+    • cost: The calculated cost, when submission is SUCCEEDED. 
+    • error: The error message, when submission is FAILED.
+    • file_url: The link of the submitted file.
+
+
+GET /api/results/user Retrieves result of all problems.
 
 \pagebreak
 
