@@ -14,6 +14,7 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/utils"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
@@ -22,10 +23,6 @@ import (
 type SubmissionController struct{}
 
 func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSubmissionParams) (int, interface{}) {
-	if !featureflags.IsSubmissionAllowed() {
-		return apiresponses.BadRequestError("submissions temporarily disabled")
-	}
-
 	log := logging.Logger.WithFields(logrus.Fields{
 		"location": "CreateSubmission",
 	})
@@ -34,6 +31,10 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 	if err != nil {
 		log.WithError(err).Errorf("could not get user from context")
 		return apiresponses.InternalServerError()
+	}
+
+	if !featureflags.IsSubmissionAllowed() && !utils.IsAdminUser(usr.Email) {
+		return apiresponses.BadRequestError("submissions temporarily disabled")
 	}
 
 	submissionStore := common.NewSubmissionStore()
