@@ -11,12 +11,19 @@ const problemId = process.argv[3];
 const islRunner = async () => {
     try {
         const problemIdNumber = Number(problemId);
+
+        let initialConfigResponse = null;
+
+        try {
+            initialConfigResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemIdNumber}.initial.json`);
+        } catch {}
+
         const targetPaintingDataResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemIdNumber}.json`);
 
         const fileContent = await fs.readFile(filename, 'utf8');
 
         const interpreter = new Interpreter();
-        const interpretedStructure = interpreter.run(fileContent);
+        const interpretedStructure = initialConfigResponse ? interpreter.run_with_config(fileContent, initialConfigResponse.data) : interpreter.run(fileContent);
 
         const interpretedCanvas = interpretedStructure.canvas;
         const instructionCost = interpretedStructure.cost;
