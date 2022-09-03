@@ -59,7 +59,7 @@ export class Canvas {
                     serializedBlock.blockId,
                     new Point(serializedBlock.bottomLeft),
                     new Point(serializedBlock.topRight),
-                    new RGBA(serializedBlock.color),
+                    new RGBA(serializedBlock.color)
                 )
             )
         })
