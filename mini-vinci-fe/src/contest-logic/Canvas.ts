@@ -8,9 +8,9 @@ export type Color = RGBA;
 
 export type SerializedBlock = {
     blockId: string,
-    bottomLeft: Point,
-    topRight: Point,
-    color: RGBA,
+    bottomLeft: [number, number],
+    topRight: [number, number],
+    color: [number, number, number, number],
 };
 
 export type InitialConfig = {
@@ -31,15 +31,15 @@ export class Canvas {
     constructor(width: number, height: number, backgroundColor: Color) {
         this.width = width;
         this.height = height;
-        
+
         this.backgroundColor = backgroundColor;
         this.blocks = new Map();
         this.blocks.set(
             "0",
             new SimpleBlock(
                 "0",
-                new Point([0, 0]), 
-                new Point([width, height]), 
+                new Point([0, 0]),
+                new Point([width, height]),
                 backgroundColor,
             )
         );
@@ -54,12 +54,12 @@ export class Canvas {
         canvas.blocks.clear();
         initialConfig.blocks.forEach(serializedBlock => {
             canvas.blocks.set(
-                serializedBlock.blockId, 
+                serializedBlock.blockId,
                 new SimpleBlock(
                     serializedBlock.blockId,
-                    serializedBlock.bottomLeft,
-                    serializedBlock.topRight,
-                    serializedBlock.color
+                    new Point(serializedBlock.bottomLeft),
+                    new Point(serializedBlock.topRight),
+                    new RGBA(serializedBlock.color),
                 )
             )
         })
