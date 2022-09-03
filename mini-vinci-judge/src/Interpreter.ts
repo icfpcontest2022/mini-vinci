@@ -1,8 +1,9 @@
 
 /* eslint-disable */
 
+import { initial } from 'lodash';
 import { BlockType, ComplexBlock, SimpleBlock } from './Block';
-import { Canvas, Color } from './Canvas';
+import { Canvas, Color, InitialConfig } from './Canvas';
 import { ColorInstruction, HorizontalCutInstruction, Instruction, InstructionType, MergeInstruction, PointCutInstruction, SwapInstruction, VerticalCutInstruction } from './Instruction';
 import { InstructionCostCalculator } from './InstructionCostCalculator';
 import { Parser } from './Parser';
@@ -50,6 +51,25 @@ export class Interpreter {
         }
         return new InterpreterResult(canvas, totalCost);
     }
+
+    run_with_config(code: string, initialConfig: InitialConfig): InterpreterResult {
+        let parser = new Parser();
+        let result = parser.parse(code);
+        if (result.typ === 'error') {
+            const [lineNumber, error] = result.result as [number, string];
+            throw Error(`At ${lineNumber}, encountered: ${error}!`)
+        }
+        let program = result.result as Program;
+        let canvas = Canvas.fromInitialConfiguration(initialConfig);
+        let totalCost = 0;
+        for(let index = 0; index < program.instructions.length; index++) {
+            const result = this.interpret(index, canvas, program.instructions[index]);
+            canvas = result.canvas;
+            totalCost += result.cost;
+        }
+        return new InterpreterResult(canvas, totalCost);
+    }
+
 
     interpret(lineNumber: number, context: Canvas, instruction: Instruction): InterpreterResult {
         switch(instruction.typ) {
