@@ -74,6 +74,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [targetPaintingData, setTargetPaintingData] = useState(undefined);
+  const [initialConfigData, setInitialConfigData] = useState(undefined);
 
   const refreshProblems = () => {
     setLoading(true);
@@ -96,12 +97,26 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
         );
 
         setTargetPaintingData(targetPaintingDataResponse.data);
+
+        try {
+          const initialConfigDataResponse = await axios.get(
+            `https://cdn.robovinci.xyz/imageframes/${problemID}.initial.json`,
+          );
+
+          setInitialConfigData(initialConfigDataResponse.data);
+        } catch {
+          setInitialConfigData(undefined);
+        }
       }
     })();
   }, [problemID]);
 
   const interpret = (fileContent: string) => {
     const interpreter = new Interpreter();
+    if (initialConfigData) {
+      return interpreter.run_with_config(fileContent, initialConfigData);
+    }
+
     return interpreter.run(fileContent);
   };
 

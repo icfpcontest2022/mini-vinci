@@ -1,8 +1,9 @@
 
 /* eslint-disable */
 
+import { initial } from 'lodash';
 import { BlockType, ComplexBlock, SimpleBlock } from './Block';
-import { Canvas, Color } from './Canvas';
+import { Canvas, Color, InitialConfig } from './Canvas';
 import { ColorInstruction, HorizontalCutInstruction, Instruction, InstructionType, MergeInstruction, PointCutInstruction, SwapInstruction, VerticalCutInstruction } from './Instruction';
 import { InstructionCostCalculator } from './InstructionCostCalculator';
 import { Parser } from './Parser';
@@ -50,6 +51,25 @@ export class Interpreter {
         }
         return new InterpreterResult(canvas, totalCost);
     }
+
+    run_with_config(code: string, initialConfig: InitialConfig): InterpreterResult {
+        let parser = new Parser();
+        let result = parser.parse(code);
+        if (result.typ === 'error') {
+            const [lineNumber, error] = result.result as [number, string];
+            throw Error(`At ${lineNumber}, encountered: ${error}!`)
+        }
+        let program = result.result as Program;
+        let canvas = Canvas.fromInitialConfiguration(initialConfig);
+        let totalCost = 0;
+        for(let index = 0; index < program.instructions.length; index++) {
+            const result = this.interpret(index, canvas, program.instructions[index]);
+            canvas = result.canvas;
+            totalCost += result.cost;
+        }
+        return new InterpreterResult(canvas, totalCost);
+    }
+
 
     interpret(lineNumber: number, context: Canvas, instruction: Instruction): InterpreterResult {
         switch(instruction.typ) {
@@ -212,7 +232,7 @@ export class Interpreter {
                     return;
                 }
                 // Case 5
-                if (point.isInside(subBlock.bottomLeft, subBlock.topRight)) {
+                if (point.isStrictlyInside(subBlock.bottomLeft, subBlock.topRight)) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'bl_child',
                         subBlock.bottomLeft,
@@ -243,7 +263,7 @@ export class Interpreter {
                 // Case 2
                 if (subBlock.bottomLeft.px <= point.px
                     && point.px <= subBlock.topRight.px
-                    && point.py < subBlock.bottomLeft.py) {
+                    && point.py <= subBlock.bottomLeft.py) {
                     topLeftBlocks.push(new SimpleBlock(
                         'case2_tl_child',
                         subBlock.bottomLeft,
@@ -261,7 +281,7 @@ export class Interpreter {
                 // Case 8
                 if (subBlock.bottomLeft.px <= point.px
                     && point.px <= subBlock.topRight.px
-                    && point.py > subBlock.topRight.py) {
+                    && point.py >= subBlock.topRight.py) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case8_bl_child',
                         subBlock.bottomLeft,
@@ -279,7 +299,7 @@ export class Interpreter {
                 // Case 4
                 if (subBlock.bottomLeft.py <= point.py
                     && point.py <= subBlock.topRight.py
-                    && point.px < subBlock.bottomLeft.px) {
+                    && point.px <= subBlock.bottomLeft.px) {
                     bottomRightBlocks.push(new SimpleBlock(
                         'case4_br_child',
                         subBlock.bottomLeft,
@@ -297,7 +317,7 @@ export class Interpreter {
                 // Case 6
                 if (subBlock.bottomLeft.py <= point.py
                     && point.py <= subBlock.topRight.py
-                    && point.px > subBlock.topRight.px) {
+                    && point.px >= subBlock.topRight.px) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case6_bl_child',
                         subBlock.bottomLeft,
