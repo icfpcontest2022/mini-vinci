@@ -6,6 +6,8 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/apiresponses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/featureflags"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/logging"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
+	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/utils"
 	"net/http"
 )
 
@@ -18,7 +20,9 @@ func (r *ResultRouter) GetUserResults(c *gin.Context) {
 }
 
 func (r *ResultRouter) GetScoreboard(c *gin.Context) {
-	if featureflags.ShouldUpdateScoreboard() {
+	usr, _ := user.GetUserFromGinContext(c)
+
+	if featureflags.ShouldUpdateScoreboard() || utils.IsAdminUser(usr.Email) {
 		c.JSON(r.controller.GetScoreboard(c))
 		return
 	}
