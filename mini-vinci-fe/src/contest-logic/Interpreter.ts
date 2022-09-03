@@ -212,7 +212,7 @@ export class Interpreter {
                     return;
                 }
                 // Case 5
-                if (point.isInside(subBlock.bottomLeft, subBlock.topRight)) {
+                if (point.isStrictlyInside(subBlock.bottomLeft, subBlock.topRight)) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'bl_child',
                         subBlock.bottomLeft,
@@ -243,7 +243,7 @@ export class Interpreter {
                 // Case 2
                 if (subBlock.bottomLeft.px <= point.px
                     && point.px <= subBlock.topRight.px
-                    && point.py < subBlock.bottomLeft.py) {
+                    && point.py <= subBlock.bottomLeft.py) {
                     topLeftBlocks.push(new SimpleBlock(
                         'case2_tl_child',
                         subBlock.bottomLeft,
@@ -261,7 +261,7 @@ export class Interpreter {
                 // Case 8
                 if (subBlock.bottomLeft.px <= point.px
                     && point.px <= subBlock.topRight.px
-                    && point.py > subBlock.topRight.py) {
+                    && point.py >= subBlock.topRight.py) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case8_bl_child',
                         subBlock.bottomLeft,
@@ -279,7 +279,7 @@ export class Interpreter {
                 // Case 4
                 if (subBlock.bottomLeft.py <= point.py
                     && point.py <= subBlock.topRight.py
-                    && point.px < subBlock.bottomLeft.px) {
+                    && point.px <= subBlock.bottomLeft.px) {
                     bottomRightBlocks.push(new SimpleBlock(
                         'case4_br_child',
                         subBlock.bottomLeft,
@@ -297,7 +297,7 @@ export class Interpreter {
                 // Case 6
                 if (subBlock.bottomLeft.py <= point.py
                     && point.py <= subBlock.topRight.py
-                    && point.px > subBlock.topRight.px) {
+                    && point.px >= subBlock.topRight.px) {
                     bottomLeftBlocks.push(new SimpleBlock(
                         'case6_bl_child',
                         subBlock.bottomLeft,
