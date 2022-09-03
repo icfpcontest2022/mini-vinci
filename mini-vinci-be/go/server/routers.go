@@ -43,8 +43,8 @@ func setUpRouters(r *gin.Engine) error {
 	r.Use(mgin.NewMiddleware(
 		limiter.New(memory.NewStore(),
 			limiter.Rate{
-				Period: 15 * time.Minute,
-				Limit:  5000,
+				Period: 3 * time.Minute,
+				Limit:  250,
 			}),
 	))
 
@@ -65,15 +65,6 @@ func setUpRouters(r *gin.Engine) error {
 	userGroup := apiGroup.Group("users")
 	userGroup.Use(authMiddleware.MiddlewareFunc())
 	userGroup.GET("", userRouter.RetrieveUser)
-
-	// set non auth rate limiter
-	apiGroup.Use(mgin.NewMiddleware(
-		limiter.New(memory.NewStore(),
-			limiter.Rate{
-				Period: 1 * time.Minute,
-				Limit:  50,
-			}),
-	))
 
 	nonAuthUserGroup := apiGroup.Group("users")
 	nonAuthUserGroup.POST("register", userRouter.CreateUser)
