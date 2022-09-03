@@ -8,7 +8,6 @@ export type Color = RGBA;
 
 export type SerializedBlock = {
     blockId: string,
-    id: string,
     bottomLeft: Point,
     topRight: Point,
     color: RGBA,
@@ -46,7 +45,7 @@ export class Canvas {
         );
     }
 
-    static fromInitialConfiguration(initialConfig: InitialConfig) {
+    static fromInitialConfiguration(initialConfig: InitialConfig): Canvas {
         let canvas = new Canvas(
             initialConfig.width,
             initialConfig.height,
@@ -64,6 +63,7 @@ export class Canvas {
                 )
             )
         })
+        return canvas;
     }
 
     get size(): Point {

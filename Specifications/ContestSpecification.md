@@ -24,6 +24,8 @@ Note that there will be updates to this specification, and more problems will be
 - 36 hours into the contest
 - 48 hours into the contest
 
+\pagebreak
+
 ## Changelog
 
 - Fix(typo in question): Leondardo -> Leonardo
@@ -36,7 +38,8 @@ Note that there will be updates to this specification, and more problems will be
 - All given canvases in the lightning round are 400x400, they are colored with RGBA(255, 255, 255, 255), sorry for the initial mistake in the specification.
 - A minor bug in the implementation of the instruction validity checks is fixed. (cut [0] [200,200], swap [0.1] [0.3]) now works.
 - A major bug in the implementation of swap is fixed. All submissions will be rejudged in regard to this change, system will be closed between 15.00-15.10 UTC. 
-
+- We decided to apply no changes to the specification at 12.
+- A bug in the implementation of Point Cut is fixed. Please resubmit your codes in that regard.
 
 \pagebreak
 
