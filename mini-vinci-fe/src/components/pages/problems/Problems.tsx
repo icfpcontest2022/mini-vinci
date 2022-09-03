@@ -207,7 +207,7 @@ const Problems = (): JSX.Element => {
                 >
                   {
                     // TODO: Remove this short circuit
-                    false && (
+                    selectedProblem.initialConfigLink && (
                       <Button
                         onClick={handleDownloadInitialConfig}
                         color='primary'
