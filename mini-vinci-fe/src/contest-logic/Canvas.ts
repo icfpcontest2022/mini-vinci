@@ -8,9 +8,9 @@ export type Color = RGBA;
 
 export type SerializedBlock = {
     blockId: string,
-    bottomLeft: Point,
-    topRight: Point,
-    color: RGBA,
+    bottomLeft: [number, number],
+    topRight: [number, number],
+    color: [number, number, number, number],
 };
 
 export type InitialConfig = {
@@ -57,9 +57,9 @@ export class Canvas {
                 serializedBlock.blockId, 
                 new SimpleBlock(
                     serializedBlock.blockId,
-                    serializedBlock.bottomLeft,
-                    serializedBlock.topRight,
-                    serializedBlock.color
+                    new Point(serializedBlock.bottomLeft),
+                    new Point(serializedBlock.topRight),
+                    new RGBA(serializedBlock.color)
                 )
             )
         })

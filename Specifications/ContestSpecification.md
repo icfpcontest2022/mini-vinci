@@ -11,7 +11,7 @@ The mighty wizards of Lambda land has seen all your poses from last year and the
 They were so inspired by you that they have been discovering the secret arts of painting for the rest of the year,
 waiting for you to join them. Your mission, if you choose to accept it; will be to develop algorithms for robo-painters of
 the future. After all, there are so many paintings to make, and so little of us functional programmers
-to make them. The winner will receive the honor medal of Leodardo Da Vinci, the RoboVinci Medal.
+to make them. The winner will receive the honor medal of Leonardo Da Vinci, the RoboVinci Medal.
 
 ## Timeline 
 
@@ -265,7 +265,8 @@ POST /api/problems/$PROBLEM_ID Make a submission. The multipart/form-data body o
 
 Example CURL Request : 
 
-    curl --header "Authorization: Bearer YourAPIToken" -F file=@your.isl https://robovinci.xyz/api/submissions/1/create
+    curl --header "Authorization: Bearer YourAPIToken" -F 
+    file=@your.isl https://robovinci.xyz/api/problems/1
 
 GET /api/submissions/$SUBMISSION_ID Retrieves information about a submission. It returns a JSON object with the following attributes: 
     • status: Either QUEUED, PROCESSING, SUCCEEDED, or FAILED
