@@ -54,6 +54,10 @@ const AppHeader = () => {
         navigate(`/${TabURL.PLAYGROUND}`);
         break;
       }
+      case TabKind.RESULTS: {
+        navigate(`/${TabURL.RESULTS}`);
+        break;
+      }
       default: {
         navigate(`/${TabURL.DASHBOARD}`);
       }
@@ -108,6 +112,12 @@ const AppHeader = () => {
               <Typography className={classes.tabLabel}>Playground</Typography>
             }
             id='playground-tab'
+          />
+          <Tab
+              label={
+                <Typography className={classes.tabLabel}>Results</Typography>
+              }
+              id='results-tab'
           />
         </Tabs>
       </Box>

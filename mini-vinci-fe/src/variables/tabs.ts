@@ -5,6 +5,7 @@ export enum TabKind {
   ANNOUNCEMENTS = 3,
   SUPPORT = 4,
   PLAYGROUND = 5,
+  RESULTS = 6,
 }
 
 export enum TabURL {
@@ -16,4 +17,5 @@ export enum TabURL {
   LOGIN = 'login',
   PLAYGROUND = 'playground',
   RESET_PASSWORD = 'reset-password',
+  RESULTS = 'results',
 }
