@@ -61,6 +61,7 @@ export class Interpreter {
         }
         let program = result.result as Program;
         let canvas = Canvas.fromInitialConfiguration(initialConfig);
+        this.topLevelIdCounter = canvas.blocks.size - 1;
         let totalCost = 0;
         for(let index = 0; index < program.instructions.length; index++) {
             const result = this.interpret(index, canvas, program.instructions[index]);

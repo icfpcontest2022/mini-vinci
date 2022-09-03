@@ -1,7 +1,7 @@
 ---
 layout: article
 title: ICFP Contest 2022
-subtitle: Specification V0.2
+subtitle: Specification V1
 author: Alperen Keles
 ---
 
@@ -11,7 +11,50 @@ The mighty wizards of Lambda land has seen all your poses from last year and the
 They were so inspired by you that they have been discovering the secret arts of painting for the rest of the year,
 waiting for you to join them. Your mission, if you choose to accept it; will be to develop algorithms for robo-painters of
 the future. After all, there are so many paintings to make, and so little of us functional programmers
-to make them. The winner will receive the honor medal of Leodardo Da Vinci, the RoboVinci Medal.
+to make them. The winner will receive the honor medal of Leonardo Da Vinci, the RoboVinci Medal.
+
+\pagebreak
+
+## Full Division
+
+As we go through the contest, we must adapt to changes. RoboPainters will no longer work on empty canvases, but rather they will be given canvases already painted. 
+
+As part of the full division problems, you will be given an initial configuration and a target painting. Initial configurations will have the following json schema.
+
+```json
+{
+  "width": <number>,
+  "height: <number>,
+  "blocks": [
+    {
+      "blockId": <block-id>, 
+      "bottomLeft": <point>, 
+      "topRight": <point>, 
+      "color": <color>
+    } 
+  ]
+}
+```
+Where `number` is an integer, `block-id` is an integer block id enclosed in double quotes, bottomLeft and topRight are `[number, number]`, color is `[number, number, number, number]`. One example is given below. This is basically the initial configuration we used in lightning division.
+
+```json
+{
+  "width": 400,
+  "height: 400,
+  "blocks": [
+    {
+      "blockId": "0", 
+      "bottomLeft": [0, 0], 
+      "topRight": [400, 400], 
+      "color": [255, 255, 255, 255]
+    } 
+  ]
+}
+```
+
+Block id's will start from `0` and go to `n-1` for `n` blocks.
+
+\pagebreak
 
 ## Timeline 
 
@@ -265,7 +308,8 @@ POST /api/problems/$PROBLEM_ID Make a submission. The multipart/form-data body o
 
 Example CURL Request : 
 
-    curl --header "Authorization: Bearer YourAPIToken" -F file=@your.isl https://robovinci.xyz/api/submissions/1/create
+    curl --header "Authorization: Bearer YourAPIToken" -F 
+    file=@your.isl https://robovinci.xyz/api/problems/1
 
 GET /api/submissions/$SUBMISSION_ID Retrieves information about a submission. It returns a JSON object with the following attributes: 
     • status: Either QUEUED, PROCESSING, SUCCEEDED, or FAILED
