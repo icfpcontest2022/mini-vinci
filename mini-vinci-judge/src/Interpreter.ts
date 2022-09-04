@@ -3,7 +3,7 @@
 
 import { initial } from 'lodash';
 import { BlockType, ComplexBlock, SimpleBlock } from './Block';
-import { Canvas, Color, InitialConfig } from './Canvas';
+import { Canvas, InitialConfig } from './Canvas';
 import { ColorInstruction, HorizontalCutInstruction, Instruction, InstructionType, MergeInstruction, PointCutInstruction, SwapInstruction, VerticalCutInstruction } from './Instruction';
 import { InstructionCostCalculator } from './InstructionCostCalculator';
 import { Parser } from './Parser';
@@ -166,25 +166,25 @@ export class Interpreter {
                 blockId + '.0',
                 block.bottomLeft,
                 point,
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, block.bottomLeft)
             );
             const bottomRightBlock = new SimpleBlock(
                 blockId + '.1',
                 new Point([point.px, block.bottomLeft.py]),
                 new Point([block.topRight.px, point.py]),
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, new Point([point.px, block.bottomLeft.py]))
             );
             const topRightBlock = new SimpleBlock(
                 blockId + '.2',
                 point,
                 block.topRight,
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, point)
             );
             const topLeftBlock = new SimpleBlock(
                 blockId + '.3',
                 new Point([block.bottomLeft.px, point.py]),
                 new Point([point.px, block.topRight.py]),
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, new Point([block.bottomLeft.px, point.py]))
             );
             context.blocks.delete(blockId);
             context.blocks.set(blockId + '.0', bottomLeftBlock);
@@ -238,25 +238,25 @@ export class Interpreter {
                         'bl_child',
                         subBlock.bottomLeft,
                         point,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                     ));
                     bottomRightBlocks.push(new SimpleBlock(
                         'br_child',
                         new Point([point.px, subBlock.bottomLeft.py]),
                         new Point([subBlock.topRight.px, point.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([point.px, subBlock.bottomLeft.py]))
                     ));
                     topRightBlocks.push(new SimpleBlock(
                         'tr_child',
                         point,
                         subBlock.topRight,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, point)
                     ));
                     topLeftBlocks.push(new SimpleBlock(
                         'tl_child',
                         new Point([subBlock.bottomLeft.px, point.py]),
                         new Point([point.px, subBlock.topRight.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([subBlock.bottomLeft.px, point.py]))
                     ));
                     return;
                 }
@@ -269,13 +269,13 @@ export class Interpreter {
                         'case2_tl_child',
                         subBlock.bottomLeft,
                         new Point([point.px, subBlock.topRight.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                     ));
                     topRightBlocks.push(new SimpleBlock(
                         'case2_tr_child',
                         new Point([point.px, subBlock.bottomLeft.py]),
                         subBlock.topRight,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([point.px, subBlock.bottomLeft.py]))
                     ));
                     return;
                 }
@@ -287,13 +287,13 @@ export class Interpreter {
                         'case8_bl_child',
                         subBlock.bottomLeft,
                         new Point([point.px, subBlock.topRight.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                     ));
                     bottomRightBlocks.push(new SimpleBlock(
                         'case8_br_child',
                         new Point([point.px, subBlock.bottomLeft.py]),
                         subBlock.topRight,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([point.px, subBlock.bottomLeft.py]))
                     ));
                     return;
                 }
@@ -305,13 +305,13 @@ export class Interpreter {
                         'case4_br_child',
                         subBlock.bottomLeft,
                         new Point([subBlock.topRight.px, point.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                     ));
                     topRightBlocks.push(new SimpleBlock(
                         'case4_tr_child',
                         new Point([subBlock.bottomLeft.px, point.py]),
                         subBlock.topRight,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([subBlock.bottomLeft.px, point.py]),)
                     ));
                     return;
                 }
@@ -323,13 +323,13 @@ export class Interpreter {
                         'case6_bl_child',
                         subBlock.bottomLeft,
                         new Point([subBlock.topRight.px, point.py]),
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                     ));
                     topLeftBlocks.push(new SimpleBlock(
                         'case6_br_child',
                         new Point([subBlock.bottomLeft.px, point.py]),
                         subBlock.topRight,
-                        (subBlock as SimpleBlock).color
+                        (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([subBlock.bottomLeft.px, point.py]))
                     ));
                     return;
                 }
@@ -396,13 +396,13 @@ export class Interpreter {
                 blockId + '.0',
                 block.bottomLeft,
                 new Point([lineNumber, block.topRight.py]),
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, block.bottomLeft)
             );
             const rightBlock = new SimpleBlock(
                 blockId + '.1',
                 new Point([lineNumber, block.bottomLeft.py]),
                 block.topRight,
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, new Point([lineNumber, block.bottomLeft.py]))
             );
             context.blocks.delete(blockId);
             context.blocks.set(blockId + '.0', leftBlock);
@@ -426,13 +426,13 @@ export class Interpreter {
                     'child',
                     subBlock.bottomLeft,
                     new Point([lineNumber, subBlock.topRight.py]),
-                    (subBlock as SimpleBlock).color
+                    (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                 ));
                 rightBlocks.push(new SimpleBlock(
                     'child',
                     new Point([lineNumber, subBlock.bottomLeft.py]),
                     subBlock.topRight,
-                    (subBlock as SimpleBlock).color
+                    (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([lineNumber, subBlock.bottomLeft.py]))
                 ));
             });
             context.blocks.delete(blockId);
@@ -483,13 +483,13 @@ export class Interpreter {
                 blockId + '.0',
                 block.bottomLeft,
                 new Point([block.topRight.px, lineNumber]),
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, block.bottomLeft)
             );
             const topBlock = new SimpleBlock(
                 blockId + '.1',
                 new Point([block.bottomLeft.px, lineNumber]),
                 block.topRight,
-                (block as SimpleBlock).color
+                (block as SimpleBlock).color.offsetColor(block.bottomLeft, new Point([block.bottomLeft.px, lineNumber]))
             );
             context.blocks.delete(blockId);
             context.blocks.set(blockId + '.0', bottomBlock);
@@ -513,13 +513,13 @@ export class Interpreter {
                     'child',
                     subBlock.bottomLeft,
                     new Point([subBlock.topRight.px, lineNumber]),
-                    (subBlock as SimpleBlock).color
+                    (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, subBlock.bottomLeft)
                 ));
                 topBlocks.push(new SimpleBlock(
                     'child',
                     new Point([subBlock.bottomLeft.px, lineNumber]),
                     subBlock.topRight,
-                    (subBlock as SimpleBlock).color
+                    (subBlock as SimpleBlock).color.offsetColor(subBlock.bottomLeft, new Point([subBlock.bottomLeft.px, lineNumber]))
                 ));
             });
             context.blocks.delete(blockId);
@@ -574,7 +574,7 @@ export class Interpreter {
                     blockId1,
                     block2.bottomLeft,
                     block2.topRight,
-                    (block1 as SimpleBlock).color
+                    (block1 as SimpleBlock).color.offsetColor(block1.bottomLeft, block2.bottomLeft)
                 )
             } else {
                 newBlock2 = new ComplexBlock(
@@ -589,7 +589,7 @@ export class Interpreter {
                     blockId2,
                     block1.bottomLeft,
                     block1.topRight,
-                    (block2 as SimpleBlock).color
+                    (block2 as SimpleBlock).color.offsetColor(block2.bottomLeft, block1.bottomLeft)
                 )
             } else {
                 newBlock1 = new ComplexBlock(

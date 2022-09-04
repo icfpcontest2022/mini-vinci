@@ -1,7 +1,8 @@
 /* eslint-disable */
 
 import { Point } from './Point';
-import { RGBA } from './Color';
+import { Color, RGBA } from './Color';
+import { StringMappingType } from 'typescript';
 
 
 export type Size = Point;
@@ -21,9 +22,9 @@ export class SimpleBlock {
 
     size: Size;
 
-    color: RGBA;
+    color: Color;
 
-    constructor(id: string, bottomLeft: Point, topRight: Point, color: RGBA) {
+    constructor(id: string, bottomLeft: Point, topRight: Point, color: Color) {
         this.typ = BlockType.SimpleBlockType;
         this.id = id;
         this.bottomLeft = bottomLeft;
@@ -35,6 +36,7 @@ export class SimpleBlock {
         }
 
         if (this.size.getScalarSize() == 0) {
+            console.log(this.id, this.bottomLeft, this.topRight);
             throw new Error('Block size cannot be 0!');
         }
     }
@@ -74,6 +76,7 @@ export class ComplexBlock {
         return this.subBlocks;
     }
 
+
     offsetChildren(newBottomLeft: Point) {
         let newChildren: SimpleBlock[] = [];
         this.subBlocks.forEach(block => {
@@ -81,7 +84,7 @@ export class ComplexBlock {
                 'child',
                 block.bottomLeft.add(newBottomLeft).subtract(this.bottomLeft),
                 block.topRight.add(newBottomLeft).subtract(this.bottomLeft),
-                block.color
+                block.color.offsetColor(block.bottomLeft, newBottomLeft)
             ))
         })
         return newChildren;

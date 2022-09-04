@@ -1,21 +1,24 @@
 /* eslint-disable */
 
 import { Block, SimpleBlock } from './Block';
-import { RGBA } from './Color';
+import { Color, PngRef, RGBA } from './Color';
 import { Point } from './Point';
 
-export type Color = RGBA;
+export type SerializedPoint = [number, number];
+export type SerializedRGBA = [number, number, number, number];
 
 export type SerializedBlock = {
     blockId: string,
-    bottomLeft: [number, number],
-    topRight: [number, number],
-    color: [number, number, number, number],
+    bottomLeft: SerializedPoint,
+    topRight: SerializedPoint,
+    color: SerializedRGBA | SerializedPoint,
 };
 
 export type InitialConfig = {
     width: number,
     height: number,
+    sourcePng: string,
+    sourcePngData: RGBA[],
     blocks: SerializedBlock[],
 };
 
@@ -28,12 +31,15 @@ export class Canvas {
 
     blocks: Map<string, Block>;
 
-    constructor(width: number, height: number, backgroundColor: Color) {
+    sourcePng: RGBA[];
+
+    constructor(width: number, height: number, backgroundColor: RGBA) {
         this.width = width;
         this.height = height;
 
         this.backgroundColor = backgroundColor;
         this.blocks = new Map();
+        this.sourcePng = [];
         this.blocks.set(
             "0",
             new SimpleBlock(
@@ -51,17 +57,33 @@ export class Canvas {
             initialConfig.height,
             new RGBA([255, 255, 255, 255])
         );
+        canvas.sourcePng = initialConfig.sourcePngData;
+
         canvas.blocks.clear();
         initialConfig.blocks.forEach(serializedBlock => {
-            canvas.blocks.set(
-                serializedBlock.blockId,
-                new SimpleBlock(
+            if (serializedBlock.color.length == 4) {
+                canvas.blocks.set(
                     serializedBlock.blockId,
-                    new Point(serializedBlock.bottomLeft),
-                    new Point(serializedBlock.topRight),
-                    new RGBA(serializedBlock.color)
+                    new SimpleBlock(
+                        serializedBlock.blockId,
+                        new Point(serializedBlock.bottomLeft),
+                        new Point(serializedBlock.topRight),
+                        new RGBA(serializedBlock.color as SerializedRGBA)
+                    )
                 )
-            )
+            } else {
+                canvas.blocks.set(
+                    serializedBlock.blockId,
+                    new SimpleBlock(
+                        serializedBlock.blockId,
+                        new Point(serializedBlock.bottomLeft),
+                        new Point(serializedBlock.topRight),
+                        new PngRef(serializedBlock.color as SerializedPoint)
+                    )
+                )
+            }
+
+
         })
         return canvas;
     }
@@ -77,4 +99,6 @@ export class Canvas {
         });
         return simplifiedBlocks;
     }
+
+
 }

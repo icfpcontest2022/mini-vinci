@@ -50,10 +50,6 @@ export class Canvas {
             )
         );
     }
-    static fetchPng(pngUrl: string): RGBA[] {
-        // todo@ozan
-        return [];
-    }
 
     static fromInitialConfiguration(initialConfig: InitialConfig): Canvas {
         let canvas = new Canvas(
@@ -61,8 +57,8 @@ export class Canvas {
             initialConfig.height,
             new RGBA([255, 255, 255, 255])
         );
-        canvas.sourcePng = this.fetchPng(initialConfig.sourcePng);
-        
+        canvas.sourcePng = initialConfig.sourcePngData;
+
         canvas.blocks.clear();
         initialConfig.blocks.forEach(serializedBlock => {
             if (serializedBlock.color.length == 4) {
@@ -72,7 +68,7 @@ export class Canvas {
                         serializedBlock.blockId,
                         new Point(serializedBlock.bottomLeft),
                         new Point(serializedBlock.topRight),
-                        new RGBA(serializedBlock.color as SerializedRGBA) 
+                        new RGBA(serializedBlock.color as SerializedRGBA)
                     )
                 )
             } else {
@@ -87,7 +83,7 @@ export class Canvas {
                 )
             }
 
-            
+
         })
         return canvas;
     }
@@ -104,5 +100,5 @@ export class Canvas {
         return simplifiedBlocks;
     }
 
-    
+
 }

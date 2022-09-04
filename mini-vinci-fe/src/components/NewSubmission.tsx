@@ -103,6 +103,14 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
             `https://cdn.robovinci.xyz/imageframes/${problemID}.initial.json`,
           );
 
+          try {
+            if (initialConfigDataResponse.data.sourcePng) {
+              initialConfigDataResponse.data.sourcePngData = (await axios.get(
+                initialConfigDataResponse.data.sourcePng,
+              )).data;
+            }
+          } catch {}
+
           setInitialConfigData(initialConfigDataResponse.data);
         } catch {
           setInitialConfigData(undefined);

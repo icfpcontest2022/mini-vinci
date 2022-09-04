@@ -18,6 +18,14 @@ const islRunner = async () => {
             initialConfigResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemIdNumber}.initial.json`);
         } catch {}
 
+        try {
+            if (initialConfigResponse && initialConfigResponse.data.sourcePng) {
+                initialConfigResponse.data.sourcePngData = (await axios.get(
+                    initialConfigResponse.data.sourcePng,
+                )).data;
+            }
+        } catch {}
+
         const targetPaintingDataResponse = await axios.get(`https://cdn.robovinci.xyz/imageframes/${problemIdNumber}.json`);
 
         const fileContent = await fs.readFile(filename, 'utf8');
