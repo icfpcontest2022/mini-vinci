@@ -63,7 +63,7 @@ export class Canvas {
         }
         canvas.blocks.clear();
         initialConfig.blocks.forEach(serializedBlock => {
-            if (serializedBlock.color.length == 4) {
+            if (serializedBlock.color) {
                 canvas.blocks.set(
                     serializedBlock.blockId,
                     new SimpleBlock(
