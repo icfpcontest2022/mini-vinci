@@ -109,7 +109,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
                 initialConfigDataResponse.data.sourcePng,
               )).data;
             }
-          } catch {}
+          } catch (err) { console.log(err); }
 
           setInitialConfigData(initialConfigDataResponse.data);
         } catch {
