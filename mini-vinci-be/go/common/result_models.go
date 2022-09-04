@@ -13,3 +13,8 @@ type Result struct {
 	SubmissionCount uint
 	MaxScore        int64
 }
+
+type ProblemBestCost struct {
+	Problem uint
+	Cost    int64
+}

@@ -4,6 +4,7 @@ export interface ProblemResult {
   submissionCount: number;
   minCost: number;
   lastSubmittedAt: Date;
+  overallBestCost: number;
 }
 export const problemResultFromResponse = (
   response: any,
@@ -13,6 +14,7 @@ export const problemResultFromResponse = (
   submissionCount: response.submission_count,
   minCost: response.min_cost,
   lastSubmittedAt: new Date(response.last_submitted_at),
+  overallBestCost: response.overall_best_cost,
 });
 
 export interface UserResult {

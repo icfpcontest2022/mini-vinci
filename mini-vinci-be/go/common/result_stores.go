@@ -50,3 +50,11 @@ func (s *ResultStore) DeleteAll() error {
 
 	return err
 }
+
+func (s *ResultStore) GetProblemBestCosts() ([]ProblemBestCost, error) {
+	var results []ProblemBestCost
+	err := s.db.Raw("SELECT problem_id as problem, min(max_score) as cost FROM results GROUP BY problem_id").
+		Scan(&results).Error
+
+	return results, err
+}

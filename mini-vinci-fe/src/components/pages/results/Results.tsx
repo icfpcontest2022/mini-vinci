@@ -122,6 +122,11 @@ const Results = (): JSX.Element => {
                   Last Submission Time
                 </Box>
               </TableCell>
+              <TableCell key='results-overall-best-cost'>
+                <Box component='div' className={classes.columnLabel}>
+                  Overall Best Cost
+                </Box>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -150,6 +155,11 @@ const Results = (): JSX.Element => {
                 <TableCell>
                   <Box component='div' className={classes.tableStringField}>
                     {problemResult.submissionCount ? formatToLocalDateTime(problemResult?.lastSubmittedAt ?? new Date()) : '-'}
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Box component='div' className={classes.tableStringField}>
+                    {problemResult.overallBestCost ? problemResult.overallBestCost : '-'}
                   </Box>
                 </TableCell>
               </TableRow>
