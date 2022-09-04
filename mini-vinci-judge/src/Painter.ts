@@ -11,7 +11,7 @@ export type Frame = RGBA[];
 export class Painter {
     getPngPixel(canvas: Canvas, block: SimpleBlock, pixelCoordinate: Point): RGBA {
         let pngBottomLeft = (block.color as PngRef).bottomLeft;
-        let pngTopLeft = new Point([pngBottomLeft.px, canvas.height - (pngBottomLeft.px - block.size.py)]);
+        let pngTopLeft = new Point([pngBottomLeft.px, canvas.height - (block.size.py + pngBottomLeft.py)]);
         const blockTopLeft = new Point([block.bottomLeft.px, canvas.height - block.topRight.py]);
         const pointOffsetOnBlock = pixelCoordinate.subtract(blockTopLeft);
         const actualCoordinateOnPng = pngTopLeft.add(pointOffsetOnBlock);
@@ -28,7 +28,6 @@ export class Painter {
 
     draw(canvas: Canvas): Frame {
         const blocks = canvas.simplify();
-        console.log(blocks)
         const frame: Frame = new Array(canvas.width * canvas.height);
         let size = 0;
         blocks.forEach(block => {
@@ -39,7 +38,7 @@ export class Painter {
             for(let y = frameTopLeft.py ; y < frameBottomRight.py ; y++) {
                     for(let x = frameTopLeft.px; x < frameBottomRight.px ; x++) {
                         frame[y * canvas.width + x] = this.getPixel(canvas, block, new Point([x, y]));
-                    
+
                 }
             }
         });

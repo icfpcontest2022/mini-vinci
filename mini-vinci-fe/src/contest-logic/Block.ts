@@ -35,7 +35,6 @@ export class SimpleBlock {
         }
 
         if (this.size.getScalarSize() == 0) {
-            console.log(this.id, this.bottomLeft, this.topRight);
             throw new Error('Block size cannot be 0!');
         }
     }
