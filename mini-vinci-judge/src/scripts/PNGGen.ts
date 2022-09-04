@@ -22,7 +22,7 @@ const generate = async () => {
         const fileContent = await fs.readFile(filename, 'utf8');
 
         const interpreter = new Interpreter();
-        const interpretedStructure = initialConfigResponse ? interpreter.run_with_config(fileContent, initialConfigResponse.data) : interpreter.run(fileContent);
+        const interpretedStructure = initialConfigResponse ? interpreter.run_with_config(fileContent, initialConfigResponse.data, problemIdNumber) : interpreter.run(fileContent);
 
         const interpretedCanvas = interpretedStructure.canvas;
 
