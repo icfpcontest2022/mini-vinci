@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import { Point } from './Point';
-import { RGBA } from './Color';
+import { Color, RGBA } from './Color';
 import { StringMappingType } from 'typescript';
 
 
@@ -22,9 +22,9 @@ export class SimpleBlock {
 
     size: Size;
 
-    color: RGBA;
+    color: Color;
 
-    constructor(id: string, bottomLeft: Point, topRight: Point, color: RGBA) {
+    constructor(id: string, bottomLeft: Point, topRight: Point, color: Color) {
         this.typ = BlockType.SimpleBlockType;
         this.id = id;
         this.bottomLeft = bottomLeft;
@@ -84,7 +84,7 @@ export class ComplexBlock {
                 'child',
                 block.bottomLeft.add(newBottomLeft).subtract(this.bottomLeft),
                 block.topRight.add(newBottomLeft).subtract(this.bottomLeft),
-                block.color
+                block.color.offsetColor(block.bottomLeft, newBottomLeft)
             ))
         })
         return newChildren;
