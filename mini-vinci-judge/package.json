@@ -4,7 +4,9 @@
     "scripts": {
         "build": "tsc",
         "test-dev": "ts-node src/ISLRunner.ts",
-        "test": "node dist/ISLRunner.js"
+        "test": "node dist/ISLRunner.js",
+        "gen-dev": "ts-node src/scripts/PNGGen.ts",
+        "gen": "node dist/scripts/PNGGen.js"
     },
     "devDependencies": {
         "@types/node": "^18.7.14",
@@ -13,6 +15,7 @@
     },
     "dependencies": {
         "axios": "^0.27.2",
+        "canvas": "^2.10.0",
         "lodash": "^4.17.21"
     }
 }
