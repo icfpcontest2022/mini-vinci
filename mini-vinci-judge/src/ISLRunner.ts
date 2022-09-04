@@ -19,9 +19,9 @@ const islRunner = async () => {
         } catch {}
 
         try {
-            if (initialConfigResponse && initialConfigResponse.data.sourcePng) {
+            if (initialConfigResponse && initialConfigResponse.data.sourcePngJSON) {
                 initialConfigResponse.data.sourcePngData = (await axios.get(
-                    initialConfigResponse.data.sourcePng,
+                    initialConfigResponse.data.sourcePngJSON,
                 )).data;
             }
         } catch {}

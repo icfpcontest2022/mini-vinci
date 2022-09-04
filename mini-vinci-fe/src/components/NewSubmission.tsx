@@ -104,9 +104,9 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
           );
 
           try {
-            if (initialConfigDataResponse.data.sourcePng) {
+            if (initialConfigDataResponse.data.sourcePngJSON) {
               initialConfigDataResponse.data.sourcePngData = (await axios.get(
-                initialConfigDataResponse.data.sourcePng,
+                initialConfigDataResponse.data.sourcePngJSON,
               )).data;
             }
           } catch (err) { console.log(err); }

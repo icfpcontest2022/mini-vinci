@@ -11,13 +11,14 @@ export type SerializedBlock = {
     blockId: string,
     bottomLeft: SerializedPoint,
     topRight: SerializedPoint,
-    color: SerializedRGBA | SerializedPoint,
+    color: SerializedRGBA,
+    pngBottomLeftPoint: SerializedPoint
 };
 
 export type InitialConfig = {
     width: number,
     height: number,
-    sourcePng: string,
+    sourcePngJSON: string,
     sourcePngData: RGBA[],
     blocks: SerializedBlock[],
 };
@@ -77,7 +78,7 @@ export class Canvas {
                         serializedBlock.blockId,
                         new Point(serializedBlock.bottomLeft),
                         new Point(serializedBlock.topRight),
-                        new PngRef(serializedBlock.color as SerializedPoint)
+                        new PngRef(serializedBlock.pngBottomLeftPoint as SerializedPoint)
                     )
                 )
             }

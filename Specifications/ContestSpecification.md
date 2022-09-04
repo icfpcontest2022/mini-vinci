@@ -1,7 +1,7 @@
 ---
 layout: article
 title: ICFP Contest 2022
-subtitle: Specification V1
+subtitle: Specification V2.2
 author: Alperen Keles
 ---
 
@@ -66,7 +66,8 @@ New initial configurations will be in the form
 {
   "width": 400,
   "height: 400,
-  "sourcePng": "https://cdn.robovinci.xyz/initialpngs/36.json", 
+  "sourcePngJSON": "https://cdn.robovinci.xyz/initialpngs/36.json", 
+  "sourcePngPNG": "https://cdn.robovinci.xyz/initialpngs/36.png", 
   "blocks": [
     {
       "blockId": "0", 
@@ -75,10 +76,10 @@ New initial configurations will be in the form
       "color": [255, 255, 255, 255]
     },
      {
-      "blockId": "0", 
+      "blockId": "1", 
       "bottomLeft": [0, 200], 
       "topRight": [400, 400], 
-      "color": [200, 200]
+      "pngBottomLeftPoint": [200, 200]
     }
   ]
 }
@@ -87,7 +88,15 @@ New initial configurations will be in the form
 This means that, while the bottom part of the canvas is filled with (255, 255, 255, 255), upper part uses the png data given at "sourcePng" to fill itself. PNG data at "sourcePng" is the serialized RGBA data of a PNG the same shape/size/area as the canvas. Hence, each pixel coordinate corresponds to the same coordinate on the canvas.
 
 
+For these problems, cost coefficients are also adjusted.
 
+| Move Type | Base Cost |
+| --------- | --------- |
+| Line Cut  |     2     |
+| Point Cut |     3     |
+| Color     |     5     |
+| Swap      |     3     |
+| Merge     |     1     |
 
 
 \pagebreak
