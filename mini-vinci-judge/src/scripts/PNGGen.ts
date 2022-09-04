@@ -43,7 +43,7 @@ const generate = async () => {
 
         const outData = canvas.toDataURL('image/png');
 
-        await fs.writeFile('out.png', outData.slice('data:image/png;base64,'.length), { encoding: 'base64' });
+        await fs.writeFile(`${filename}.png`, outData.slice('data:image/png;base64,'.length), { encoding: 'base64' });
     } catch (err) {
         console.error(err);
     }
