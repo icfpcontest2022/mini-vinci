@@ -42,7 +42,7 @@ const Playground = (): JSX.Element => {
     const interpreter = new Interpreter();
     const instruction =
       RandomInstructionGenerator.generateRandomInstruction(paintedCanvas);
-    const result = interpreter.interpret(0, paintedCanvas, instruction);
+    const result = interpreter.interpret(0, paintedCanvas, instruction, 0);
     setPlaygroundCode(`${playgroundCode}\n${instructionToString(instruction)}`);
     setPaintedCanvas(result.canvas);
     setCanvasDrawn(true);

@@ -20,7 +20,7 @@ export class ContestLogicTester {
             const instruction = RandomInstructionGenerator.generateRandomInstruction(canvas);
             console.log(instruction.typ);
             instructions.push(instruction);
-            const interpreterResult = interpreter.interpret(move, canvas, instruction);
+            const interpreterResult = interpreter.interpret(move, canvas, instruction, 0);
             canvas = (interpreterResult.canvas as Canvas);
             this.checkCanvasInvariants(canvas);
         }

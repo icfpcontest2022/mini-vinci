@@ -15,7 +15,7 @@ to make them. The winner will receive the honor medal of Leonardo Da Vinci, the 
 
 \pagebreak
 
-## Full Division
+## Full Division v.1
 
 As we go through the contest, we must adapt to changes. RoboPainters will no longer work on empty canvases, but rather they will be given canvases already painted. 
 
@@ -53,6 +53,42 @@ Where `number` is an integer, `block-id` is an integer block id enclosed in doub
 ```
 
 Block id's will start from `0` and go to `n-1` for `n` blocks.
+
+\pagebreak
+
+## Full Division v.2
+
+For the last 24 hours of the contest, we wanted to present you with a challenge worth of the time you have spent. In addition to having an initial configuration, now this initial configuration might contain a reference from a png. Your new task is to turn these pre-filled canvases to the target paintings.
+
+New initial configurations will be in the form
+
+```json
+{
+  "width": 400,
+  "height: 400,
+  "sourcePng": "https://cdn.robovinci.xyz/initialpngs/36.json", 
+  "blocks": [
+    {
+      "blockId": "0", 
+      "bottomLeft": [0, 0], 
+      "topRight": [400, 200], 
+      "color": [255, 255, 255, 255]
+    },
+     {
+      "blockId": "0", 
+      "bottomLeft": [0, 200], 
+      "topRight": [400, 400], 
+      "color": [200, 200]
+    }
+  ]
+}
+```
+
+This means that, while the bottom part of the canvas is filled with (255, 255, 255, 255), upper part uses the png data given at "sourcePng" to fill itself. PNG data at "sourcePng" is the serialized RGBA data of a PNG the same shape/size/area as the canvas. Hence, each pixel coordinate corresponds to the same coordinate on the canvas.
+
+
+
+
 
 \pagebreak
 
@@ -126,7 +162,7 @@ Merge does so by creating a new top level block where the id is created by holdi
 
 Cut destroys the old block, generates new blocks where the id is created by appending the old id with **.0, .1, .2 or .3**. Cut blocks are now independent from the block they originated from, even though their block-id is tied with that block.
 
-The **initial canvas** only holds exactly one block, colored with the color **RGBA(255, 255, 255, 255)**.
+The **initial canvas** is defined according to the initial configuration provided with the problem.
 
 Blocks are uniquely defined by their **block_id**.
 

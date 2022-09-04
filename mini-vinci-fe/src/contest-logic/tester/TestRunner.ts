@@ -18,7 +18,7 @@ const size = 2000;
 for(let move = 0; move < size  ; move++) {
     const instruction = RandomInstructionGenerator.generateRandomInstruction(canvas);
     console.log(instructionToString(instruction));
-    const interpreterResult = interpreter.interpret(move, canvas, instruction);
+    const interpreterResult = interpreter.interpret(move, canvas, instruction, 0);
     canvas = (interpreterResult.canvas as Canvas);
     tester.checkCanvasInvariants(canvas);
 }

@@ -122,7 +122,7 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
   const interpret = (fileContent: string) => {
     const interpreter = new Interpreter();
     if (initialConfigData) {
-      return interpreter.run_with_config(fileContent, initialConfigData);
+      return interpreter.run_with_config(fileContent, initialConfigData, Number(problemID));
     }
 
     return interpreter.run(fileContent);

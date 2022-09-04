@@ -45,14 +45,14 @@ export class Interpreter {
         );
         let totalCost = 0;
         for(let index = 0; index < program.instructions.length; index++) {
-            const result = this.interpret(index, canvas, program.instructions[index]);
+            const result = this.interpret(index, canvas, program.instructions[index], 0);
             canvas = result.canvas;
             totalCost += result.cost;
         }
         return new InterpreterResult(canvas, totalCost);
     }
 
-    run_with_config(code: string, initialConfig: InitialConfig): InterpreterResult {
+    run_with_config(code: string, initialConfig: InitialConfig, problemID: number): InterpreterResult {
         let parser = new Parser();
         let result = parser.parse(code);
         if (result.typ === 'error') {
@@ -64,7 +64,7 @@ export class Interpreter {
         this.topLevelIdCounter = canvas.blocks.size - 1;
         let totalCost = 0;
         for(let index = 0; index < program.instructions.length; index++) {
-            const result = this.interpret(index, canvas, program.instructions[index]);
+            const result = this.interpret(index, canvas, program.instructions[index], problemID);
             canvas = result.canvas;
             totalCost += result.cost;
         }
@@ -72,34 +72,34 @@ export class Interpreter {
     }
 
 
-    interpret(lineNumber: number, context: Canvas, instruction: Instruction): InterpreterResult {
+    interpret(lineNumber: number, context: Canvas, instruction: Instruction, problemID: number): InterpreterResult {
         switch(instruction.typ) {
             case InstructionType.NopInstructionType || InstructionType.CommentInstructionType: {
                 return new InterpreterResult(context, 0);
             }
             case InstructionType.ColorInstructionType: {
-                return this.colorCanvas(lineNumber, context, instruction as ColorInstruction);
+                return this.colorCanvas(lineNumber, context, instruction as ColorInstruction, problemID);
             }
             case InstructionType.PointCutInstructionType: {
-                return this.pointCutCanvas(lineNumber, context, instruction as PointCutInstruction);
+                return this.pointCutCanvas(lineNumber, context, instruction as PointCutInstruction, problemID);
             }
             case InstructionType.VerticalCutInstructionType: {
-                return this.verticalCutCanvas(lineNumber, context, instruction as VerticalCutInstruction);
+                return this.verticalCutCanvas(lineNumber, context, instruction as VerticalCutInstruction, problemID);
             }
             case InstructionType.HorizontalCutInstructionType: {
-                return this.horizontalCutCanvas(lineNumber, context, instruction as HorizontalCutInstruction);
+                return this.horizontalCutCanvas(lineNumber, context, instruction as HorizontalCutInstruction, problemID);
             }
             case InstructionType.SwapInstructionType: {
-                return this.swapCanvas(lineNumber, context, instruction as SwapInstruction);
+                return this.swapCanvas(lineNumber, context, instruction as SwapInstruction, problemID);
             }
             case InstructionType.MergeInstructionType: {
-                return this.mergeCanvas(lineNumber, context, instruction as MergeInstruction);
+                return this.mergeCanvas(lineNumber, context, instruction as MergeInstruction, problemID);
             }
         }
         throw Error(`At ${lineNumber}, encountered unreachable code!`);
     }
 
-    colorCanvas(line: number, context: Canvas, colorInstruction: ColorInstruction): InterpreterResult {
+    colorCanvas(line: number, context: Canvas, colorInstruction: ColorInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId, color} = colorInstruction;
         const block = context.blocks.get(blockId);
@@ -112,7 +112,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.ColorInstructionType,
             block.size.getScalarSize(),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -140,7 +141,7 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    pointCutCanvas(line: number, context: Canvas, pointCutInstruction: PointCutInstruction): InterpreterResult {
+    pointCutCanvas(line: number, context: Canvas, pointCutInstruction: PointCutInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId, point} = pointCutInstruction;
         const block = context.blocks.get(blockId);
@@ -156,7 +157,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.PointCutInstructionType,
             block.size.getScalarSize(),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -370,7 +372,7 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    verticalCutCanvas(line: number, context: Canvas, verticalCutInstruction: VerticalCutInstruction): InterpreterResult {
+    verticalCutCanvas(line: number, context: Canvas, verticalCutInstruction: VerticalCutInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId, lineNumber} = verticalCutInstruction;
         const block = context.blocks.get(blockId);
@@ -386,7 +388,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.VerticalCutInstructionType,
             block.size.getScalarSize(),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -457,7 +460,7 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    horizontalCutCanvas(line: number, context: Canvas, horizontalCutInstruction: HorizontalCutInstruction): InterpreterResult {
+    horizontalCutCanvas(line: number, context: Canvas, horizontalCutInstruction: HorizontalCutInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId, lineNumber} = horizontalCutInstruction;
         const block = context.blocks.get(blockId);
@@ -473,7 +476,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.HorizontalCutInstructionType,
             block.size.getScalarSize(),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -544,7 +548,7 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    swapCanvas(line: number, context: Canvas, swapInstruction: SwapInstruction): InterpreterResult {
+    swapCanvas(line: number, context: Canvas, swapInstruction: SwapInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId1, blockId2} = swapInstruction;
         const block1 = context.blocks.get(blockId1);
@@ -561,7 +565,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.SwapInstructionType,
             block1.size.getScalarSize(),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -612,7 +617,7 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    mergeCanvas(line: number, context: Canvas, mergeInstruction: MergeInstruction): InterpreterResult {
+    mergeCanvas(line: number, context: Canvas, mergeInstruction: MergeInstruction, problemID: number): InterpreterResult {
         // TypeCheck Starts
         const {blockId1, blockId2} = mergeInstruction;
         const block1 = context.blocks.get(blockId1);
@@ -629,7 +634,8 @@ export class Interpreter {
         const cost = InstructionCostCalculator.getCost(
             InstructionType.MergeInstructionType,
             Math.max(block1.size.getScalarSize(), block2.size.getScalarSize()),
-            context.size.getScalarSize()
+            context.size.getScalarSize(),
+            problemID
         )
         // Scoring Ends
 
@@ -695,5 +701,5 @@ export class Interpreter {
         throw Error(`At ${line}, encountered unreachable code!`);
     }
 
-    // invert(context: Canvas, instruction: Instruction): InterpreterResult {}
+    // invert(context: Canvas, instruction: Instruction, problemID: number): InterpreterResult {}
 }
