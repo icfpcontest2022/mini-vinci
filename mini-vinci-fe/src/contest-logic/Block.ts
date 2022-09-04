@@ -2,7 +2,6 @@
 
 import { Point } from './Point';
 import { Color, RGBA } from './Color';
-import { StringMappingType } from 'typescript';
 
 
 export type Size = Point;
@@ -31,6 +30,7 @@ export class SimpleBlock {
         this.topRight = topRight;
         this.size = topRight.getDiff(bottomLeft);
         this.color = color;
+        console.log(id, bottomLeft, topRight, color);
         if(this.bottomLeft.px > this.topRight.px || this.bottomLeft.py > this.topRight.py) {
             throw Error('Invalid Block');
         }
@@ -84,7 +84,7 @@ export class ComplexBlock {
                 'child',
                 block.bottomLeft.add(newBottomLeft).subtract(this.bottomLeft),
                 block.topRight.add(newBottomLeft).subtract(this.bottomLeft),
-                block.color.offsetColor(block.bottomLeft, newBottomLeft)
+                block.color
             ))
         })
         return newChildren;

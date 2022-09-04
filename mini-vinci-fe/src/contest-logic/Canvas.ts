@@ -58,7 +58,6 @@ export class Canvas {
             new RGBA([255, 255, 255, 255])
         );
         canvas.sourcePng = initialConfig.sourcePngData.map(a => new RGBA(a as any));
-
         canvas.blocks.clear();
         initialConfig.blocks.forEach(serializedBlock => {
             if (serializedBlock.color.length == 4) {
