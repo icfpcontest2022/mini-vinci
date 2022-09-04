@@ -40,9 +40,16 @@ func (rc *ResultController) GetUserResults(c *gin.Context) (int, interface{}) {
 		return apiresponses.InternalServerError()
 	}
 
+	problemBestCosts, err := resultStore.GetProblemBestCosts()
+	if err != nil {
+		log.WithError(err).Errorf("could not get best costs of problems")
+		return apiresponses.InternalServerError()
+	}
+
 	return http.StatusOK, GetUserResultsSerializer{
-		Problems: problems,
-		Results:  results,
+		Problems:         problems,
+		Results:          results,
+		ProblemBestCosts: problemBestCosts,
 	}.Response()
 }
 

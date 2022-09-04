@@ -14,6 +14,7 @@ type SingleResultResponse struct {
 	LastSubmittedAt time.Time `json:"last_submitted_at"`
 	SubmissionCount uint      `json:"submission_count"`
 	MinCost         int64     `json:"min_cost"`
+	OverallBestCost int64     `json:"overall_best_cost"`
 }
 
 type GetUserResultsResponse struct {
@@ -23,8 +24,9 @@ type GetUserResultsResponse struct {
 }
 
 type GetUserResultsSerializer struct {
-	Problems []problem.Problem
-	Results  []common.Result
+	Problems         []problem.Problem
+	Results          []common.Result
+	ProblemBestCosts []common.ProblemBestCost
 }
 
 func (s GetUserResultsSerializer) Response() GetUserResultsResponse {
@@ -37,10 +39,18 @@ func (s GetUserResultsSerializer) Response() GetUserResultsResponse {
 		resultMap[res.ProblemID] = res
 	}
 
+	problemBestCostMap := make(map[uint]int64)
+	for _, bestCost := range s.ProblemBestCosts {
+		problemBestCostMap[bestCost.Problem] = bestCost.Cost
+	}
+
 	for _, p := range s.Problems {
 		r := SingleResultResponse{
 			ProblemID:   p.ID,
 			ProblemName: p.Name,
+		}
+		if bestCostForProblem, ok := problemBestCostMap[p.ID]; ok {
+			r.OverallBestCost = bestCostForProblem
 		}
 
 		if res, ok := resultMap[p.ID]; ok {

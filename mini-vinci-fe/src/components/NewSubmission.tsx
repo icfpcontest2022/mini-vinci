@@ -358,6 +358,8 @@ const NewSubmission = (props: NewSubmissionProps): JSX.Element => {
             <DropzoneArea
               dropzoneClass={classes.dropzone}
               filesLimit={1}
+              maxFileSize={33554432}
+              acceptedFiles={['']}
               showFileNames
               onChange={handleUploadFile}
             />
