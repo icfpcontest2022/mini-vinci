@@ -2,7 +2,6 @@
 
 import { Point } from './Point';
 import { Color, RGBA } from './Color';
-import { StringMappingType } from 'typescript';
 
 
 export type Size = Point;
@@ -84,7 +83,7 @@ export class ComplexBlock {
                 'child',
                 block.bottomLeft.add(newBottomLeft).subtract(this.bottomLeft),
                 block.topRight.add(newBottomLeft).subtract(this.bottomLeft),
-                block.color.offsetColor(block.bottomLeft, newBottomLeft)
+                block.color
             ))
         })
         return newChildren;

@@ -574,7 +574,7 @@ export class Interpreter {
                     blockId1,
                     block2.bottomLeft,
                     block2.topRight,
-                    (block1 as SimpleBlock).color.offsetColor(block1.bottomLeft, block2.bottomLeft)
+                    (block1 as SimpleBlock).color//.offsetColor(block1.bottomLeft, block2.bottomLeft)
                 )
             } else {
                 newBlock2 = new ComplexBlock(
@@ -589,7 +589,7 @@ export class Interpreter {
                     blockId2,
                     block1.bottomLeft,
                     block1.topRight,
-                    (block2 as SimpleBlock).color.offsetColor(block2.bottomLeft, block1.bottomLeft)
+                    (block2 as SimpleBlock).color//.offsetColor(block2.bottomLeft, block1.bottomLeft)
                 )
             } else {
                 newBlock1 = new ComplexBlock(
