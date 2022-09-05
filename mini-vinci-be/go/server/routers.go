@@ -82,6 +82,7 @@ func setUpRouters(r *gin.Engine) error {
 	submissionGroup.POST(":problem_id/create", submissionRouter.CreateSubmission)
 	submissionGroup.GET(":id", submissionRouter.RetrieveSubmission)
 	submissionGroup.GET("", submissionRouter.GetSubmissions)
+	submissionGroup.POST("sourcecode", submissionRouter.UploadSourceCode)
 	// submissionGroup.GET("rejudgesubsabcd", submissionRouter.RejudgeAllSubmission)
 
 	// problem

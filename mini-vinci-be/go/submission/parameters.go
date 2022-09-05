@@ -10,3 +10,7 @@ type CreateSubmissionParams struct {
 type RetrieveSubmissionParams struct {
 	ID uint `uri:"id" binding:"required"`
 }
+
+type UploadSourceCodeParams struct {
+	File multipart.FileHeader `form:"file" binding:"required"`
+}

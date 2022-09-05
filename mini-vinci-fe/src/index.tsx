@@ -24,6 +24,7 @@ import ResetPassword from './components/pages/reset-password/ResetPassword';
 import Problems from './components/pages/problems/Problems';
 import Scoreboard from './components/pages/scoreboard/Scoreboard';
 import Results from './components/pages/results/Results';
+import SourceCode from './components/pages/sourcecode/SourceCode';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -42,6 +43,7 @@ root.render(
             <Route path={TabURL.PLAYGROUND} element={<Playground />} />
             <Route path={TabURL.SUPPORT} element={<Support />} />
             <Route path={TabURL.RESULTS} element={<Results />} />
+            <Route path={TabURL.SOURCE_CODE} element={<SourceCode />} />
             <Route
               path={`${TabURL.RESET_PASSWORD}`}
               element={<ResetPassword />}

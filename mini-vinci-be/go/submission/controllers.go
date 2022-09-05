@@ -1,11 +1,14 @@
 package submission
 
 import (
+	"crypto/md5"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/apiresponses"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/async"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/common"
@@ -16,6 +19,7 @@ import (
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/user"
 	"github.com/icfpcontest2022/mini-vinci/mini-vinci-be/go/utils"
 	"github.com/sirupsen/logrus"
+	"io"
 	"net/http"
 	"time"
 )
@@ -182,4 +186,58 @@ func (sc *SubmissionController) RejudgeAllSubmissions(c *gin.Context) (int, inte
 	}
 
 	return apiresponses.SuccessMessage("okay")
+}
+
+func (sc *SubmissionController) UploadSourceCode(c *gin.Context, params UploadSourceCodeParams) (int, interface{}) {
+	log := logging.Logger.WithFields(logrus.Fields{
+		"location": "UploadSourceCode",
+	})
+
+	usr, err := user.GetUserFromGinContext(c)
+	if err != nil {
+		log.WithError(err).Errorf("could not get user from context")
+		return apiresponses.InternalServerError()
+	}
+
+	sourceCodeFile, err := params.File.Open()
+	if err != nil {
+		log.WithError(err).Errorf("could not open source code file")
+		return apiresponses.InternalServerError()
+	}
+	defer sourceCodeFile.Close()
+
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(config.Get().S3.Region)},
+	)
+	if err != nil {
+		log.WithError(err).Errorf("could not start new aws session")
+		return apiresponses.InternalServerError()
+	}
+
+	uploader := s3manager.NewUploader(sess)
+
+	s3Key := fmt.Sprintf("user%d_source_%s.zip", usr.ID, uuid.New().String())
+
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String("robovinci-source-codes"),
+		Key:    aws.String(s3Key),
+		Body:   sourceCodeFile,
+	})
+	if err != nil {
+		log.WithError(err).Errorf("could not upload to s3")
+		return apiresponses.InternalServerError()
+	}
+
+	log.Infof("uploaded source code - user with id:%d mail:%s, source code s3 key:%s", usr.ID, usr.Email, s3Key)
+
+	hash := md5.New()
+	_, err = io.Copy(hash, sourceCodeFile)
+	if err != nil {
+		log.WithError(err).Errorf("could not get md5 checksum")
+		return apiresponses.InternalServerError()
+	}
+
+	return http.StatusOK, UploadSourceCodeSerializer{
+		MD5: fmt.Sprintf("%x", hash.Sum(nil)),
+	}.Response()
 }

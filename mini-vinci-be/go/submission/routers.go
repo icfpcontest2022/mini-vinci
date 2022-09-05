@@ -46,3 +46,15 @@ func (r *SubmissionRouter) RejudgeAllSubmission(c *gin.Context) {
 func (r *SubmissionRouter) GetSubmissions(c *gin.Context) {
 	c.JSON(r.controller.GetSubmissions(c))
 }
+
+func (r *SubmissionRouter) UploadSourceCode(c *gin.Context) {
+	var params UploadSourceCodeParams
+
+	if err := c.Bind(&params); err != nil {
+		logging.Logger.WithField("location", "UploadSourceCode").WithError(err).Warnf("could not bind params")
+		c.JSON(apiresponses.BadRequestError(err.Error()))
+		return
+	}
+
+	c.JSON(r.controller.UploadSourceCode(c, params))
+}

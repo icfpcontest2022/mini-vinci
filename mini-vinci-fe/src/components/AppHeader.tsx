@@ -58,6 +58,10 @@ const AppHeader = () => {
         navigate(`/${TabURL.RESULTS}`);
         break;
       }
+      case TabKind.SOURCECODE: {
+        navigate(`/${TabURL.SOURCE_CODE}`);
+        break;
+      }
       default: {
         navigate(`/${TabURL.DASHBOARD}`);
       }
@@ -118,6 +122,12 @@ const AppHeader = () => {
                 <Typography className={classes.tabLabel}>Results</Typography>
               }
               id='results-tab'
+          />
+          <Tab
+              label={
+                <Typography className={classes.tabLabel}>Source Code</Typography>
+              }
+              id='sourcecode-tab'
           />
         </Tabs>
       </Box>

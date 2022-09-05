@@ -74,3 +74,17 @@ func (s GetSubmissionsSerializer) Response() GetSubmissionsResponse {
 
 	return resp
 }
+
+type UploadSourceCodeResponse struct {
+	MD5 string `json:"md5"`
+}
+
+type UploadSourceCodeSerializer struct {
+	MD5 string
+}
+
+func (s UploadSourceCodeSerializer) Response() UploadSourceCodeResponse {
+	return UploadSourceCodeResponse{
+		MD5: s.MD5,
+	}
+}

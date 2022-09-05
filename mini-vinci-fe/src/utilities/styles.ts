@@ -53,6 +53,13 @@ export const sharedStyles = {
     fontSize: '20px',
     lineHeight: '33px',
   },
+  h2Bold: {
+    fontFamily: 'Roboto',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: '20px',
+    lineHeight: '33px',
+  },
   h5: {
     fontFamily: 'Roboto',
     fontStyle: 'normal',
