@@ -38,7 +38,7 @@ func (sc *SubmissionController) CreateSubmission(c *gin.Context, params CreateSu
 	}
 
 	if !featureflags.IsSubmissionAllowed() && !utils.IsAdminUser(usr.Email) {
-		return apiresponses.BadRequestError("submissions temporarily disabled")
+		return apiresponses.BadRequestError("the contest is over. no more submissions allowed.")
 	}
 
 	submissionStore := common.NewSubmissionStore()
