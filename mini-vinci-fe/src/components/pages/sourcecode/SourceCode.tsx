@@ -30,7 +30,7 @@ const SourceCode = (): JSX.Element => {
 
   const [submittedFile, setSubmittedFile ] = useState<File | null>(null);
 
-  const [uploadInfo, setUploadInfo] = useState('Please upload your file from below.');
+  const [uploadInfo, setUploadInfo] = useState('Please upload your file below.');
 
   const [loading, setLoading] = useState(false);
 
